@@ -2,11 +2,17 @@ const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { signToken } = require('../utils/jwt');
 
-
+// Initialise Prisma Client
 const prisma = new PrismaClient();
 
+// For sending emails (e.g. welcome email after registration)
+const { sendEmail } = require("../utils/email");
+const {
+  baseTemplate,
+  registrationTemplate
+} = require("../utils/email.template");
 
-
+// Controller functions for authentication routes
   exports.register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
@@ -33,7 +39,6 @@ const prisma = new PrismaClient();
 
 
   //Create user
-  
     const user = await prisma.user.create({
       data: {
         firstName,
@@ -43,6 +48,14 @@ const prisma = new PrismaClient();
       }
     });
 
+    //Send welcome email
+    await sendEmail({
+      to: user.email,
+      subject: "Welcome to OJ Furniture",
+      html: baseTemplate(
+        registrationTemplate(user.firstName)
+  )
+});
 
 //Auto-login after registration 
     const token = signToken(user.id); 
