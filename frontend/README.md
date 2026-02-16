@@ -1,70 +1,180 @@
-# Getting Started with Create React App
+# Getting Started with OJ E-commerce Web app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# project root
+ backend
+ frontend
 
-## Available Scripts
+# Backend Setup
 
-In the project directory, you can run:
+# Step 1: Navigate to Backend
 
-### `npm start`
+# In the project directory run:
+cd backend
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
+# Step 2: Install Dependencies
+
+# In the project directory run:
+npm install
+
+
+# Backend Dependencies Used
+express prisma @prisma/client bcryptjs jsonwebtoken cors helmet cookie-parser dotenv
+
+
+# Step 3: Setup Environment Variables
+Create a .env file inside the backend folder:
+
+PORT=5000
+DATABASE_URL="mysql://USERNAME:PASSWORD@localhost:3306/oj_furniture"
+JWT_SECRET=your_super_secret_key
+
+
+# Replace:
+USERNAME, PASSWORD and oj_furniture with your MySQL database
+
+# Step 4: Setup Database
+
+# Run:
+npx prisma migrate dev --name init
+
+
+# Step 5: Start Backend Server
+npm run dev
+
+# This make page reload when you make changes.
 You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# or
 
-### `npm run build`
+node server.js
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Server runs on:
+http://localhost:5000
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Frontend Setup
+# Step 1: To navigate to Frontend Folder
+cd frontend
 
-### `npm run eject`
+# Step 2: Install Dependencies
+npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Frontend Dependencies Used
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+react react-router-dom axios
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# Step 3: Start Frontend
+npm start
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# Frontend runs on:
+http://localhost:3000
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Authentication uses:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+JWT tokens
 
-### Code Splitting
+Stored in HTTP-only cookies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Verified using middleware
 
-### Analyzing the Bundle Size
+Global AuthContext for frontend state
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+# How to Register
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Open:
 
-### Advanced Configuration
+http://localhost:3000/register
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# Enter:
 
-### Deployment
+First Name
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Last Name
 
-### `npm run build` fails to minify
+Email
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Password (minimum 6 characters)
+
+# Click Register
+
+
+
+
+# How to Login
+
+Go to:
+
+http://localhost:3000/login
+
+
+Enter:
+
+Registered Email
+
+Password
+
+# Click Login
+
+After successful login:
+
+JWT cookie is set
+
+Navbar shows:
+
+Home  Hello, FirstName  Logout
+
+
+# How to Logout
+
+# Click Logout in Navbar
+
+Cookie is cleared
+
+Auth state resets
+
+Navbar updates to:
+
+Home  Register  Login
+
+# Authentication Behavior
+
+# State	           Navbar Display
+Not Logged In	   Home • Register • Login
+Logged In	       Home • Hello, FirstName • Logout
+
+
+# Security Features
+
+Password hashing with bcrypt
+
+JWT signed with secret key
+
+HTTP-only cookies
+
+CORS configured for credentials
+
+Helmet for secure headers
+
+# Development Notes
+
+# If you change Prisma schema:
+
+npx prisma migrate dev
+
+
+# If you reset database:
+
+npx prisma migrate reset
+
+# Project Status
+
+Registration
+Login
+Logout
+Authenticated Navbar
+JWT Authentication
+Protected user endpoint

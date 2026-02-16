@@ -6,12 +6,34 @@ const { signToken } = require('../utils/jwt');
 const prisma = new PrismaClient();
 
 
-exports.register = async (req, res) => {
+
+  exports.register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
+  // 1. Basic validation
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!email.includes("@")) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: "Password must be at least 6 characters" });
+  }
+
+  //Prevent duplicate emails
+  const existing = await prisma.user.findUnique({ where: { email } }); 
+  if (existing) { return res.status(400).json({ message: "Email already exists" }); }
+
+
+  //Hash password
   const hashed = await bcrypt.hash(password, 10);
 
-  try {
+
+  //Create user
+  
     const user = await prisma.user.create({
       data: {
         firstName,
@@ -21,14 +43,15 @@ exports.register = async (req, res) => {
       }
     });
 
-    res.json({ message: "User registered", user });
-  } catch (err) {
-    res.status(400).json({ message: "Email already exists" });
-  }
-};
 
-
-
+//Auto-login after registration 
+    const token = signToken(user.id); 
+    res.cookie("token", token, { 
+        httpOnly: true, 
+        sameSite: "lax" }); 
+    res.json({ message: "Registered and signed in", token }); 
+  
+ }
 exports.signin = async (req, res) => {
 const { email, password } = req.body;
 
@@ -46,7 +69,7 @@ const token = signToken(user.id);
 // Store JWT in HTTP‑only cookie
 res.cookie('token', token, {
 httpOnly: true,
-sameSite: 'strict'
+sameSite: 'lax'
 });
 
 

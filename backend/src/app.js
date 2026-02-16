@@ -5,7 +5,9 @@ const helmet = require('helmet');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.routes');
-
+const auth = require('./middlewares/auth.middleware');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 
 
@@ -33,6 +35,19 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 
+
+//Protected route 
+app.get('/api/user/me', auth, async (req, res) => { 
+    const user = await prisma.user.findUnique({ 
+        where: { id: req.userId }, 
+        select: { 
+            id: true, 
+            firstName: true, 
+            lastName: true, 
+            email: true 
+        } }); 
+        res.json(user);
+     });
 
 // Health check route
 app.get('/api/health', (req, res) => {

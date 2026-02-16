@@ -1,15 +1,21 @@
 import { useEffect } from "react";
-import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/auth.context";
+
 
 export default function Signout() {
+  const { signout } = useAuth();
   const navigate = useNavigate();
 
+  
   useEffect(() => {
-    api.post("/auth/signout").finally(() => {
-      navigate("/signin");
-    });
-  }, [navigate]);
+  const handleSignout = async () => {
+    await signout();
+    navigate("/");
+  };
 
-  return <p>Signing out...</p>;
+  handleSignout();
+}, [signout, navigate]);
+
+  
 }
