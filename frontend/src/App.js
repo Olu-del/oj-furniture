@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import Signin from "./pages/Signin";
 import Signout from "./pages/Signout";
 import Welcome from "./pages/Welcome";
+import Contact from "./pages/Contact";
 
 
 export default function App() {
@@ -20,8 +21,9 @@ export default function App() {
         <Route path="/" element={<Welcome />} />
           <Route path="/welcome" element={<Welcome />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/Signin" element={<Signin />} />
-        <Route path="/Signout" element={<Signout />} />
+        <Route path="/signin" element={<Signin />} />
+         <Route path="/signout" element={<Signout />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       </AuthProvider>
     </BrowserRouter>
