@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.routes');
 const auth = require('./middlewares/auth.middleware');
+const contactRoutes = require("./routes/contact.routes");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -33,7 +34,10 @@ app.use(express.json());
 // Parse cookies from requests
 app.use(cookieParser());
 
+
+// API routes
 app.use('/api/auth', authRoutes);
+app.use("/api/contact", contactRoutes);
 
 
 //Protected route 
@@ -48,6 +52,7 @@ app.get('/api/user/me', auth, async (req, res) => {
         } }); 
         res.json(user);
      });
+     
 
 // Health check route
 app.get('/api/health', (req, res) => {
