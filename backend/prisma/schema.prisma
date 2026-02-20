@@ -10,13 +10,33 @@ url = env("DATABASE_URL")
 
 
 model User {
-id Int @id @default(autoincrement())
-firstName String
-lastName  String
-email String @unique
-password String
-createdAt DateTime @default(now())
+id                     Int    @id @default(autoincrement())
+firstName              String
+lastName               String
+email                  String @unique
+password               String
+address                Address[]
+failedLoginAttempts    Int @default(0)
+accountLocked          Boolean @default(false)
+resetCode              String?
+resetCodeExpiry        DateTime?
+orders                 Order[]
+
+createdAt              DateTime @default(now())
+
 }
+
+
+model Address {
+  id             Int     @id @default(autoincrement())
+  userId         Int
+  line1          String
+  city           String
+  postcode       String
+  country        String
+  user           User    @relation(fields: [userId], references: [id])
+}
+
 
 
 
@@ -35,6 +55,7 @@ model Order {
 id Int @id @default(autoincrement())
 userId Int
 total Int
+user      User     @relation(fields: [userId], references: [id])
 createdAt DateTime @default(now())
 }
 
