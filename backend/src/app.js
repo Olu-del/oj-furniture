@@ -41,18 +41,19 @@ app.use("/api/contact", contactRoutes);
 
 
 //Protected route 
-app.get('/api/user/me', auth, async (req, res) => { 
+app.get('/api/auth/me', auth, async (req, res) => { 
     const user = await prisma.user.findUnique({ 
         where: { id: req.userId }, 
         select: { 
             id: true, 
             firstName: true, 
             lastName: true, 
-            email: true 
+            email: true,
+            address: true
         } }); 
         res.json(user);
      });
-     
+
 
 // Health check route
 app.get('/api/health', (req, res) => {

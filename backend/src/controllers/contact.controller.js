@@ -10,7 +10,7 @@ const {
 } = require("../utils/email.template");
 
 
-// Controller function for handling contact form submissions
+// Handle contact form submission
 async function submitContact(req, res) {
   const { name, email, message } = req.body;
 
