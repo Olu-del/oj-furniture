@@ -10,6 +10,8 @@ import Signin from "./pages/Signin";
 import Signout from "./pages/Signout";
 import Welcome from "./pages/Welcome";
 import Contact from "./pages/Contact";
+import RequestReset from "./pages/RequestReset";
+import ResetPassword from "./pages/ResetPassword";
 
 
 export default function App() {
@@ -22,7 +24,9 @@ export default function App() {
           <Route path="/welcome" element={<Welcome />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signin" element={<Signin />} />
-         <Route path="/signout" element={<Signout />} />
+        <Route path="/request-reset" element={<RequestReset />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/signout" element={<Signout />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
       </AuthProvider>

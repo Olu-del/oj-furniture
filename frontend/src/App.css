@@ -47,3 +47,120 @@ button:hover {
   border-bottom: 1px solid #ddd;
   padding: 1rem 0;
 }
+
+
+/* ========================= */
+/* AUTH PAGES (SIGNIN/REGISTER/CONTACT) */
+/* ========================= */
+
+.auth-container {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.auth-card input {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.auth-card input:focus {
+  outline: none;
+  border-color: #819cac;
+  box-shadow: 0 0 0 2px rgba(129, 156, 172, 0.2);
+}
+
+.auth-card button {
+  background: #819cac;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.auth-card button:hover {
+  background: #6d8796;
+}
+
+
+.auth-card textarea {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 0.6rem;
+  min-height: 120px;
+  resize: vertical;
+  transition: 0.2s ease;
+}
+
+.auth-card textarea:focus {
+  outline: none;
+  border-color: #819cac;
+  box-shadow: 0 0 0 2px rgba(129, 156, 172, 0.2);
+}
+
+
+.auth-footer {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 1rem;
+}
+
+.auth-footer a {
+  color: #819cac;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Password toggle wrapper */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  color: #555;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+
+.auth-card {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
