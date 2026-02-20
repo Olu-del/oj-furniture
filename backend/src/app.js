@@ -41,7 +41,7 @@ app.use("/api/contact", contactRoutes);
 
 
 //Protected route 
-app.get('/api/auth/me', auth, async (req, res) => { 
+app.get('/api/user/me', auth, async (req, res) => { 
     const user = await prisma.user.findUnique({ 
         where: { id: req.userId }, 
         select: { 

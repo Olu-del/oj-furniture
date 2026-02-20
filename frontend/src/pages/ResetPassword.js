@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate, } from "react-router-dom";
 import api from "../services/api";
 
 export default function ResetPassword() {
@@ -11,17 +11,42 @@ export default function ResetPassword() {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
 
+//     await api.post("/auth/reset-password", {
+//       email,
+//       code,
+//       newPassword
+//     });
+
+//     navigate("/login");
+//   };
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
     await api.post("/auth/reset-password", {
       email,
       code,
       newPassword
     });
 
-    navigate("/login");
-  };
+    alert("Password successfully reset.");
+    navigate("/signin");
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Reset failed.");
+  }
+};
+
+
+ useEffect(() => {
+  if (!email) navigate("/request-reset");
+ }, [email, navigate]);
 
   return (
     <div className="page">

@@ -1,7 +1,7 @@
 //Routes for authentication (register, signin, signout, get current user info)
 const express = require('express');
-const { signin, signout, register, me, requestPasswordReset, resetPassword} = require('../controllers/auth.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
+const { signin, signout, register, requestPasswordReset, resetPassword} = require('../controllers/auth.controller');
+
 
 
 //Router for authentication-related endpoints
@@ -9,7 +9,6 @@ const router = express.Router();
 
 //Routes for authentication
 router.post('/register', register);
-router.get('/me', authMiddleware, me);
 router.post('/signin', signin);
 router.post("/request-reset", requestPasswordReset);
 router.post("/reset-password", resetPassword);

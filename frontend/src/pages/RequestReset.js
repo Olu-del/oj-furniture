@@ -7,11 +7,7 @@ export default function RequestReset() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     await api.post("/auth/request-reset", { email });
-//     navigate("/reset-password", { state: { email } });
-//   };
+
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -21,7 +17,8 @@ const handleSubmit = async (e) => {
     setMessage("A reset code has been sent to your email.");
     navigate("/reset-password", { state: { email } });
   } catch (err) {
-    setMessage("Something went wrong. Please try again.");
+    setMessage(err.response?.data?.message || "Request failed.");
+    
   }
 };
 

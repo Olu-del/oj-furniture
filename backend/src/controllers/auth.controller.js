@@ -12,6 +12,8 @@ const {
   registrationTemplate
 } = require("../utils/email.template");
 
+
+
 // User registration controller
 exports.register = async (req, res) => {
   try {
@@ -36,6 +38,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Email is already registered. Please sign in instead." });
     }
 
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -52,77 +55,38 @@ exports.register = async (req, res) => {
       }
     });
 
+
     // Send welcome email
     try {
       await sendEmail({
         to: user.email,
         subject: "Welcome to OJ Furniture",
-        html: baseTemplate(registrationTemplate(user.firstName))
+        html: baseTemplate(
+          registrationTemplate(user.firstName))
       });
     } catch (emailError) {
       console.error("Email failed:", emailError.message);
     }
 
-    // Auto-Signin after registration
+
+// Auto-Signin after registration
     const token = signToken(user.id);
 
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   sameSite: "lax"
-    // });
+     res.cookie("token", token, {
+       httpOnly: true,
+       sameSite: "lax"
+     });
 
-    res.cookie("token", token, {
-    httpOnly: true,
-   sameSite: "none",
-   secure: false   // must be false on localhost; true only in production HTTPS
-});
-
-
-    return res.status(201).json({
-      message: "Registered and signed in",
-      token
-    });
-
-    //
+    res.status(201).json({ message: "User registered successfully" });
+    
    } catch (error) {
      console.error(error);
-     return res.status(500).json({ message: "Server error" });
-  }
-
-
-
-  
-
+     res.status(500).json({ message: "Server error" });
+    }
 
 };
 
 
-exports.me = async (req, res) => {
-  try {
-    if (!req.userId) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: req.userId },
-      select: {
-        firstName: true,
-        lastName: true,
-        email: true
-      }
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.json(user);
-
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
 
 
 exports.signin = async (req, res) => {
@@ -132,9 +96,7 @@ const { email, password } = req.body;
 const user = await prisma.user.findUnique({ where: { email } });
 if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-
 const valid = await bcrypt.compare(password, user.password);
-if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
 
 
 if (user.accountLocked)
@@ -184,22 +146,20 @@ const token = signToken(user.id);
 
 
 // Store JWT in HTTP‑only cookie
-// res.cookie('token', token, {
-// httpOnly: true,
-// sameSite: 'lax'
-// });
+ res.cookie('token', token, {
+ httpOnly: true,
+ sameSite: 'lax'
+ });
 
 
-res.cookie("token", token, {
-    httpOnly: true,
-   sameSite: "none",
-   secure: false   // must be false on localhost; true only in production HTTPS
-});
 
 res.json({ message: 'Signed in', token });
 };
 
 
+function generateResetCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 exports.requestPasswordReset = async (req, res) => {
   const { email } = req.body;
@@ -219,7 +179,7 @@ exports.requestPasswordReset = async (req, res) => {
       resetCodeExpiry: expiry
     }
   });
-
+// Send reset code email
   await sendEmail({
     to: user.email,
     subject: "Password Reset Code",
@@ -235,7 +195,7 @@ exports.requestPasswordReset = async (req, res) => {
 };
 
 
-
+// Reset password controller
 exports.resetPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
 
@@ -263,6 +223,8 @@ exports.resetPassword = async (req, res) => {
   res.json({ message: "Password successfully reset" });
 };
 
+
+// Signout controller
 exports.signout = (req, res) => {
 res.clearCookie('token');
 res.json({ message: 'Signed out' });

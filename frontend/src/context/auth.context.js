@@ -6,18 +6,35 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined);
 
-  const fetchUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.data);
-    } catch (error) {
-      setUser(null);
-    }
-  };
+  // const fetchUser = async () => {
+  //   try {
+  //     const res = await api.get("/user/me");
+  //     setUser(res.data);
+  //   } catch {
+  //     setUser(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+  // useEffect(() => {
+  //   fetchUser();
+  // }, []);
+
+
+
+  const fetchUser = async () => {
+  try {
+    const res = await api.get("/user/me");
+    setUser(res.data);
+  } catch (err) {
+    // Ignore 401 errors (unauthenticated)
+    if (err.response?.status !== 401) console.error(err);
+    setUser(null);
+  }
+};
+
+useEffect(() => {
+  fetchUser();
+}, []);
 
   const signin = async (email, password) => {
     await api.post("/auth/signin", { email, password });
