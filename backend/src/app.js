@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.routes');
 const auth = require('./middlewares/auth.middleware');
 const contactRoutes = require("./routes/contact.routes");
+const productRoutes = require('./routes/product.routes');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -38,6 +39,7 @@ app.use(cookieParser());
 // API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/contact", contactRoutes);
+app.use('/api/product', productRoutes);
 
 
 //Protected route 
