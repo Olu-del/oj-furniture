@@ -12,6 +12,7 @@ import Welcome from "./pages/Welcome";
 import Contact from "./pages/Contact";
 import RequestReset from "./pages/RequestReset";
 import ResetPassword from "./pages/ResetPassword";
+import Product from "./pages/product";
 
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/signout" element={<Signout />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/product" element={<Product />} />
       </Routes>
       </AuthProvider>
     </BrowserRouter>

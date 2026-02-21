@@ -7,9 +7,10 @@ export default function Navbar() {
   if (user === undefined) return <nav>Loading...</nav>;
 
   return (
-    <nav style={{ display: "flex", gap: "20px" }}>
+    <nav >
       <Link to="/">Home</Link>
       <Link to="/contact">Contact</Link>
+      <Link to="/product">Products</Link>
 
       {!user && (
         <>
