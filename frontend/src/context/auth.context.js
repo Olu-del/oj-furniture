@@ -1,26 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "../services/api";
 
+// Create AuthContext
 const AuthContext = createContext();
 
+// AuthProvider component to wrap the app and provide auth state and functions
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined);
 
-  // const fetchUser = async () => {
-  //   try {
-  //     const res = await api.get("/user/me");
-  //     setUser(res.data);
-  //   } catch {
-  //     setUser(null);
-  //   }
-  // };
 
-  // useEffect(() => {
-  //   fetchUser();
-  // }, []);
-
-
-
+// Function to fetch current user info
   const fetchUser = async () => {
   try {
     const res = await api.get("/user/me");
@@ -32,6 +21,8 @@ export function AuthProvider({ children }) {
   }
 };
 
+
+//useEffect to check auth status on app load
 useEffect(() => {
   fetchUser();
 }, []);
@@ -53,4 +44,6 @@ useEffect(() => {
   );
 }
 
+
+//export custom hook for easy access to auth context
 export const useAuth = () => useContext(AuthContext);
