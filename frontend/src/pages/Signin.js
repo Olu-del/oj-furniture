@@ -7,7 +7,9 @@ export default function Signin() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [ setError] = useState("");
+  const [error, setError] = useState("");
+  
+
   
   const { signin } = useAuth();
   const navigate = useNavigate();
@@ -33,10 +35,7 @@ export default function Signin() {
         setError(message);
         setLocked(true);
 
-        // Set lock expiry to 15 minutes from now
-        // const expires = new Date(Date.now() + 15 * 60 * 1000);
-        // setLockExpiresAt(expires);
-
+        
         return;
       }
 
@@ -57,6 +56,7 @@ export default function Signin() {
     return (
       <div className="page locked-screen">
         <h2>Account Locked</h2>
+        <p>{error}</p>
         <p>
         You have entered an incorrect password 3 times. Your account is now locked. Please reset your password.
       </p>

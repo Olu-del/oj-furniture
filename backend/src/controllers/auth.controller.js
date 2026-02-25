@@ -50,7 +50,7 @@ exports.register = async (req, res) => {
         email,
         password: hashedPassword,
         address: {
-          create: { line1, city, postcode, country }
+          create: [{ line1, city, postcode, country }]
         }
       }
     });
@@ -69,20 +69,30 @@ exports.register = async (req, res) => {
     }
 
 
-// Auto-Signin after registration
-    const token = signToken(user.id);
+      // Auto-Signin after registration
+      const token = signToken({
+      id: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin
+      });
 
      res.cookie("token", token, {
        httpOnly: true,
        sameSite: "lax"
      });
 
-    res.status(201).json({ message: "User registered successfully" });
-    
-   } catch (error) {
-     console.error(error);
-     res.status(500).json({ message: "Server error" });
-    }
+    // res.status(201).json({ message: "User registered successfully" });
+          res.json({
+        id: user.id,
+        email: user.email,
+        isAdmin: user.isAdmin
+      });
+
+      
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: "Server error" });
+          }
 
 };
 
@@ -96,15 +106,15 @@ const { email, password } = req.body;
 const user = await prisma.user.findUnique({ where: { email } });
 if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
-const valid = await bcrypt.compare(password, user.password);
+
 
 
 if (user.accountLocked)
     return res.status(403).json({
-      message: "Account locked. Please reset your password."
+      message: "You entered an incorrect password 3 times. Your account is now locked. Please reset your password to continue."
     });
 
-  // const valid = await bcrypt.compare(password, user.password);
+  const valid = await bcrypt.compare(password, user.password);
 
   if (!valid) {
     const attempts = user.failedLoginAttempts + 1;
@@ -142,7 +152,13 @@ if (user.accountLocked)
   });
 
 
-const token = signToken(user.id);
+// const token = signToken(user.id);
+const token = signToken({
+  id: user.id,
+  email: user.email,
+  isAdmin: user.isAdmin
+});
+
 
 
 // Store JWT in HTTP‑only cookie
@@ -153,7 +169,13 @@ const token = signToken(user.id);
 
 
 
-res.json({ message: 'Signed in', token });
+// res.json({ message: 'Signed in'});
+res.json({
+  id: user.id,
+  email: user.email,
+  isAdmin: user.isAdmin
+});
+
 };
 
 
@@ -195,7 +217,7 @@ exports.requestPasswordReset = async (req, res) => {
 };
 
 
-// Reset password controller
+
 exports.resetPassword = async (req, res) => {
   const { email, code, newPassword } = req.body;
 
@@ -223,8 +245,6 @@ exports.resetPassword = async (req, res) => {
   res.json({ message: "Password successfully reset" });
 };
 
-
-// Signout controller
 exports.signout = (req, res) => {
 res.clearCookie('token');
 res.json({ message: 'Signed out' });

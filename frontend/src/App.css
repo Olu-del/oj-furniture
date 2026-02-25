@@ -48,6 +48,13 @@ button:hover {
   padding: 1rem 0;
 }
 
+.product-image {
+  width: 100%;
+  max-width: 250px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
 
 /* ========================= */
 /* AUTH PAGES (SIGNIN/REGISTER/CONTACT) */

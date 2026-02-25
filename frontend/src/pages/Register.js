@@ -48,7 +48,7 @@ export default function Register() {
 
 
     // Registration successful → redirect
-    window.location.href = "/signin";
+    window.location.href = "/";
 
   } catch (err) {
     if (err.response && err.response.data && err.response.data.message) {
