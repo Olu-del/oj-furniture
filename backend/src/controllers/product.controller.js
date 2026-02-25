@@ -25,35 +25,45 @@ exports.createProduct = async (req, res) => {
 };
 
 
-// Get all products
+
 exports.getProducts = async (req, res) => {
+  const { categoryId, subCategoryId, colour, sort } = req.query;
 
+  const where = {};
 
-const products = await prisma.product.findMany();
+  if (categoryId) {
+    where.categoryId = Number(categoryId);
+  }
 
-const formatted = products.map(p => ({
-  ...p,
-  price: Number(p.price),
-  deliveryPrice: Number(p.deliveryPrice)
-}));
+  if (subCategoryId) {
+    where.subCategoryId = Number(subCategoryId);
+  }
 
-res.json(formatted);
+  if (colour) {
+    where.colour = colour;
+  }
 
-}
-// Search products by name or description
-exports.searchProducts = async (req, res) => {
-  const { q } = req.query;
+  const orderBy = {};
+
+  if (sort === "priceLow") {
+    orderBy.price = "asc";
+  }
+
+  if (sort === "priceHigh") {
+    orderBy.price = "desc";
+  }
+
   const products = await prisma.product.findMany({
-    where: {
-      OR: [
-        { name: { contains: q, mode: "insensitive" } },
-        { description: { contains: q, mode: "insensitive" } }
-      ]
+    where,
+    orderBy,
+    include: {
+      category: true,
+      subCategory: true
     }
   });
+
   res.json(products);
 };
-
 
 
 exports.updateProduct = async (req, res) => {
@@ -93,5 +103,27 @@ exports.deleteProduct = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to delete product" });
+  }
+};
+
+
+
+exports.searchProducts = async (req, res) => {
+  const { q } = req.query;
+
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        name: {
+          contains: q,
+          mode: "insensitive"
+        }
+      }
+    });
+
+    res.json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Search failed" });
   }
 };

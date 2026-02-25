@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth.routes');
 const auth = require('./middlewares/auth.middleware');
 const contactRoutes = require("./routes/contact.routes");
 const productRoutes = require('./routes/product.routes');
+const categoryRoutes = require("./routes/category.routes");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -58,6 +59,7 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use("/api/contact", contactRoutes);
 app.use('/api/product', productRoutes);
+app.use("/api/category", categoryRoutes);
 
 
 // Protected route to get current user info
@@ -72,7 +74,15 @@ app.get('/api/user/me', auth, async (req, res) => {
         email: true,
         isAdmin: true,   
         role: true,
-        address: true,
+        address: {
+          select: {
+            id: true,
+            line1: true,
+            city: true,
+            postcode: true,
+            country: true
+          }
+        }
       }
     });
 // If user not found, return 404
