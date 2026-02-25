@@ -1,34 +1,98 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import api from "../services/api";
 import { getProducts, searchProducts } from "../services/productApi";
 
+// Product listing page with filters and search
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState("");
 
+  const [filters, setFilters] = useState({
+    categoryId: "",
+    subCategoryId: "",
+    colour: "",
+    sort: ""
+  });
+
+  // Helper function to format price in GBP
   const formatGBP = (amount) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP"
     }).format(Number(amount));
 
-  const fetchAll = async () => {
-    const res = await getProducts();
+  const fetchProducts = useCallback(async () => {
+    const res = await getProducts(filters);
     setProducts(res.data);
+  }, [filters]);
+
+  const fetchCategories = async () => {
+    const res = await api.get("/category");
+    setCategories(res.data);
   };
 
+  // Handle search button click
   const handleSearch = async () => {
-    if (!query) return fetchAll();
+    if (!query) return fetchProducts();
     const res = await searchProducts(query);
     setProducts(res.data);
   };
 
+  // Fetch products when filters change
   useEffect(() => {
-    fetchAll();
+    fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
 
+  // When category changes, reset subcategory filter
   return (
     <div className="page">
       <h2>Products</h2>
+
+      {/* Category Dropdown */}
+      <select
+        value={filters.categoryId}
+        onChange={(e) =>
+          setFilters({ ...filters, categoryId: e.target.value })
+        }
+      >
+        <option value="">All Categories</option>
+        {categories.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
+
+      {/* Colour Filter */}
+      <select
+        value={filters.colour}
+        onChange={(e) =>
+          setFilters({ ...filters, colour: e.target.value })
+        }
+      >
+        <option value="">All Colours</option>
+        <option value="Black">Black</option>
+        <option value="White">White</option>
+        <option value="Grey">Grey</option>
+        <option value="Oak">Oak</option>
+      </select>
+
+      {/* Price Sorting */}
+      <select
+        value={filters.sort}
+        onChange={(e) =>
+          setFilters({ ...filters, sort: e.target.value })
+        }
+      >
+        <option value="">Sort By</option>
+        <option value="priceLow">Price: Low to High</option>
+        <option value="priceHigh">Price: High to Low</option>
+      </select>
 
       <div>
         <input
@@ -41,7 +105,7 @@ export default function Products() {
       </div>
 
       <div className="product-list">
-        {products.map(p => (
+        {products.map((p) => (
           <div key={p.id} className="product-card">
             {p.imageUrl && (
               <img

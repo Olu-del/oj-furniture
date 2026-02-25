@@ -13,23 +13,7 @@ export default function Register() {
   const [country, setCountry] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // const submit = async (e) => {
-  //   e.preventDefault();
-  //   await api.post("/auth/register", {
-  //     firstName,
-  //     lastName,
-  //     email,
-  //     password,
-  //     address,
-  //     line1,
-  //     city,
-  //     postcode,
-  //     country
-  //   });
-  //   window.location.href = "/signin";
-  // };
-
-
+  
   const submit = async (e) => {
   e.preventDefault();
 
