@@ -1,3 +1,4 @@
+// user controller: profile endpoints etc
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");

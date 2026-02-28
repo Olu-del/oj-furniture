@@ -1,3 +1,4 @@
+// auth controller: register/login/reset
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { signToken } = require('../utils/jwt');
@@ -99,6 +100,7 @@ exports.register = async (req, res) => {
 
 
 
+// signin handler
 exports.signin = async (req, res) => {
 const { email, password } = req.body;
  
@@ -179,6 +181,7 @@ res.json({
 };
 
 
+// make a short numeric code for resets
 function generateResetCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }

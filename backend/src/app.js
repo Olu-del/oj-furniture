@@ -54,7 +54,6 @@ app.use(
 
 
 
-
 // API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/contact", contactRoutes);
@@ -96,6 +95,8 @@ app.get('/api/user/me', auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 // Health check route
 app.get('/api/health', (req, res) => {

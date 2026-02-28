@@ -1,3 +1,4 @@
+// entry point - boot up the Express app
 const app = require('./app');
 
 // Load environment variables from .env file

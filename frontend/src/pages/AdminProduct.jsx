@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
-    const res = await api.get("/products");
+    const res = await api.get("/product");
     setProducts(res.data);
   };
 
@@ -14,20 +16,47 @@ export default function AdminProducts() {
   }, []);
 
   const handleDelete = async (id) => {
-    await api.delete(`/products/${id}`);
+    await api.delete(`/product/${id}`);
     fetchProducts();
   };
 
   return (
-    <div className="page">
+    <div className="page admin-page">
       <h2>Manage Products</h2>
 
-      {products.map(p => (
-        <div key={p.id} className="admin-product">
-          <h4>{p.name}</h4>
-          <button onClick={() => handleDelete(p.id)}>Delete</button>
-        </div>
-      ))}
+      <button
+        className="add-btn"
+        onClick={() => navigate("/admin/product/new")}
+      >
+        + Add New Product
+      </button>
+
+      <div className="admin-product-list">
+        {products.map((p) => (
+          <div key={p.id} className="admin-product-card">
+            <div className="admin-product-info">
+              <h4>{p.name}</h4>
+              <p>{p.category?.name} → {p.subCategory?.name}</p>
+            </div>
+
+            <div className="admin-product-actions">
+              <button
+                className="edit-btn"
+                onClick={() => navigate(`/admin/product/edit/${p.id}`)}
+              >
+                Edit
+              </button>
+
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(p.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+// Utility functions for JWT token handling
 const jwt = require('jsonwebtoken');
 
 // Function to sign JWT token with user info

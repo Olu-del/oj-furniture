@@ -1,3 +1,4 @@
+// email sender helper using nodemailer
 const nodemailer = require("nodemailer");
 
 // Create reusable transporter object using Gmail service

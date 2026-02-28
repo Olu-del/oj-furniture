@@ -1,9 +1,12 @@
+// product controller handles CRUD operations for products, including image upload and search
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Create a new product
+
+// create a new product - admin only
 exports.createProduct = async (req, res) => {
-  const { name, description, price, deliveryPrice } = req.body;
+  // pull fields from request body
+  const { name, description, price, deliveryPrice, colour, categoryId, subCategoryId } = req.body;
 
   try {
     const product = await prisma.product.create({
@@ -12,8 +15,10 @@ exports.createProduct = async (req, res) => {
         description,
         price: parseFloat(price),
         deliveryPrice: parseFloat(deliveryPrice),
+        colour,
+        categoryId: Number(categoryId),
+        subCategoryId: Number(subCategoryId),
         imageUrl: req.file ? `/uploads/${req.file.filename}` : null
-
       }
     });
 
@@ -24,12 +29,11 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-
-
 exports.getProducts = async (req, res) => {
   const { categoryId, subCategoryId, colour, sort } = req.query;
 
-  const where = {};
+  // build filters based on query params
+  const where = {}; 
 
   if (categoryId) {
     where.categoryId = Number(categoryId);
@@ -65,24 +69,68 @@ exports.getProducts = async (req, res) => {
   res.json(products);
 };
 
+// Get product by ID for editing or details page
+exports.getProductById = async (req, res) => {
+  // validate and parse ID from route params
+  const rawId = req.params.id;
+  const id = Number(rawId);
 
-exports.updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const { name, description, price, deliveryPrice, stock } = req.body;
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "Invalid product ID" });
+  }
 
   try {
-    const product = await prisma.product.update({
-      where: { id: parseInt(id) },
+    const product = await prisma.product.findUnique({
+      where: { id }
+    });
+
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    res.json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching product" });
+  }
+};
+
+
+exports.updateProduct = async (req, res) => {
+  const id = Number(req.params.id);
+  const {
+    name,
+    description,
+    price,
+    deliveryPrice,
+    colour,
+    categoryId,
+    subCategoryId,
+    stock
+  } = req.body;
+
+  try {
+    const updated = await prisma.product.update({
+      where: { id },
       data: {
         name,
         description,
         price: parseFloat(price),
         deliveryPrice: parseFloat(deliveryPrice),
-        stock: parseInt(stock)
+        colour,
+       ...(stock !== undefined && { stock: Number(stock) }),
+        //update category and subcategory associations
+        category: {
+          connect: { id: Number(categoryId) }
+        },
+        subCategory: {
+          connect: { id: Number(subCategoryId) }
+        },
+
+        //Update image only if new file uploaded
+        ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
       }
     });
 
-    res.json(product);
+    res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to update product" });
@@ -92,11 +140,13 @@ exports.updateProduct = async (req, res) => {
 
 
 exports.deleteProduct = async (req, res) => {
-  const { id } = req.params;
+     const id = Number(req.params.id);
+
 
   try {
     await prisma.product.delete({
-      where: { id: parseInt(id) }
+        where: { id }
+
     });
 
     res.json({ message: "Product deleted successfully" });
@@ -115,8 +165,8 @@ exports.searchProducts = async (req, res) => {
     const products = await prisma.product.findMany({
       where: {
         name: {
-          contains: q,
-          mode: "insensitive"
+          contains: q.toLowerCase()
+
         }
       }
     });

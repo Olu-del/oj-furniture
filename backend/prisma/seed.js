@@ -1,3 +1,4 @@
+//seed script to populate category data
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -22,6 +23,7 @@ async function main() {
         create: [
           { name: "Sofas" },
           { name: "Sofa beds" },
+          { name: "Sideboard" },
           { name: "Sofa sets" },
           { name: "TV units and stands" },
           { name: "Bookcases" }

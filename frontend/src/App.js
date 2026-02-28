@@ -15,8 +15,10 @@ import RequestReset from "./pages/RequestReset";
 import ResetPassword from "./pages/ResetPassword";
 import Product from "./pages/product";
 import AdminDashboard from "./pages/AdminDashboard";
-import AddProduct from "./pages/AddProduct";
-import AdminRoute from "./pages/AdminRoute";
+
+// import AdminRoute from "./pages/AdminRoute";
+import AdminProducts from "./pages/AdminProduct";
+import AdminProductForm from "./pages/AdminProductForm";
 
 
 
@@ -38,25 +40,11 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/product" element={<Product />} />
 
-<Route path="/admin" element={ <AdminRoute>
-      <AdminDashboard />
-    </AdminRoute>
-  }
-/>
 
-<Route path="/admin/product" element={ <AdminRoute>
-      <AddProduct />
-    </AdminRoute>
-  }
-/>
-
-        {/* <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/product" element={<AddProduct />} />
-         */}
-
-        {/* {user?.role === "admin" && (
-            <Route path="/admin" element={<AdminDashboard />} /> */}
-{/* )} */}
+      <Route path="/admin/product" element={<AdminProducts />} />
+      <Route path="/admin/product/new" element={<AdminProductForm />} />
+      <Route path="/admin/product/edit/:id" element={<AdminProductForm />} /> 
+      <Route path="/admin" element={<AdminDashboard />} /> 
 
       </Routes>
       </AuthProvider>

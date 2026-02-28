@@ -6,7 +6,9 @@ import { getProducts, searchProducts } from "../services/productApi";
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [query, setQuery] = useState("");
+  
 
   const [filters, setFilters] = useState({
     categoryId: "",
@@ -39,6 +41,17 @@ export default function Products() {
     setProducts(res.data);
   };
 
+
+  const handleCategoryChange = (e) => {
+  const categoryId = e.target.value;
+
+  setFilters({ ...filters, categoryId, subCategoryId: "" });
+
+  const selected = categories.find(c => c.id === Number(categoryId));
+  setSubCategories(selected ? selected.subCategories : []);
+};
+
+
   // Fetch products when filters change
   useEffect(() => {
     fetchProducts();
@@ -52,21 +65,29 @@ export default function Products() {
   return (
     <div className="page">
       <h2>Products</h2>
+ 
 
-      {/* Category Dropdown */}
-      <select
-        value={filters.categoryId}
-        onChange={(e) =>
-          setFilters({ ...filters, categoryId: e.target.value })
-        }
-      >
-        <option value="">All Categories</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+          
+
+        {/* Category Dropdown */}
+        <select value={filters.categoryId} onChange={handleCategoryChange}>
+          <option value="">All Categories</option>
+          {categories.map(c => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+
+        {/* Subcategory Dropdown */}
+        <select
+          value={filters.subCategoryId}
+          onChange={(e) => setFilters({ ...filters, subCategoryId: e.target.value })}
+          disabled={!subCategories.length}
+        >
+          <option value="">All Subcategories</option>
+          {subCategories.map(sc => (
+            <option key={sc.id} value={sc.id}>{sc.name}</option>
+          ))}
+        </select>
 
       {/* Colour Filter */}
       <select

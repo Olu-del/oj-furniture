@@ -2,8 +2,6 @@
  import api from "../services/api";
 
 
-
-
 export default function Contact() {
   const [form, setForm] = useState({
     name: "",

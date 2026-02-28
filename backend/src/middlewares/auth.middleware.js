@@ -1,3 +1,4 @@
+// simple JWT check and attach user info
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {

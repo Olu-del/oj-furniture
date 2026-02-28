@@ -1,3 +1,4 @@
+// contact controller handles contact form submissions
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 

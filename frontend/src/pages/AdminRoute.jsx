@@ -9,20 +9,19 @@ export default function AdminRoute({ children }) {
     return <div>Loading...</div>;
   }
 
-  // Not logged in
+  // Not signed in
   if (user === null) {
     return <Navigate to="/signin" replace />;
   }
 
-  // Logged in but not admin
+  // Signed in but not admin
   if (!user.isAdmin) {
     return <Navigate to="/" replace />;
   }
 
-  console.log("ADMIN ROUTE USER:", user);
+  
 
-
-  // Authorized admin
+  // Authorised admin
   return children;
 
   

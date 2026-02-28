@@ -1,3 +1,4 @@
+// email HTML templates used across the app
 function baseTemplate(content) {
   return `
   <!DOCTYPE html>
