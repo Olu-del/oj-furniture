@@ -73,17 +73,32 @@ export default function AdminProductForm() {
 
     if (image) formData.append("image", image);
 
-    if (isEditing) {
-      await api.put(`/product/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-    } else {
-      await api.post("/product/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-    }
+    // if (isEditing) {
+    //   await api.put(`/product/${id}`, formData, {
+    //     headers: { "Content-Type": "multipart/form-data" }
+    //   });
+    // } else {
+    //   await api.post("/product/create", formData, {
+    //     headers: { "Content-Type": "multipart/form-data" }
+    //   });
+    // }
 
-    navigate("/admin/product");
+    // navigate("/admin/product");
+
+if (isEditing) {
+  await api.put(`/product/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  alert("Product updated successfully.");
+} else {
+  await api.post("/product/create", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
+  alert("Product created successfully.");
+}
+
+navigate("/admin/products");
+
   };
 
   return (

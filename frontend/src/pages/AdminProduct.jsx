@@ -15,10 +15,27 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (id) => {
+  // const handleDelete = async (id) => {
+  //   await api.delete(`/product/${id}`);
+  //   fetchProducts();
+  // };
+
+const handleDelete = async (id) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
+
+  if (!confirmed) return;
+
+  try {
     await api.delete(`/product/${id}`);
-    fetchProducts();
-  };
+    setProducts(prev => prev.filter(p => p.id !== id));
+    alert("Product deleted successfully.");
+  } catch (err) {
+    alert("Failed to delete product.");
+  }
+};
+
 
   return (
     <div className="page admin-page">
