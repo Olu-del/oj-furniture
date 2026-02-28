@@ -136,11 +136,28 @@ export default function Products() {
               />
             )}
 
+
             <h3>{p.name}</h3>
-            <p>{p.description}</p>
-            <p>Price: {formatGBP(p.price)}</p>
-            <p>Delivery: {formatGBP(p.deliveryPrice)}</p>
-          </div>
+            <p>
+             <strong>Description:</strong> {p.description}</p>
+             <p>{p.productDescription}</p>
+            <p>
+            <strong>Condition:</strong>{" "}
+            {p.condition
+            .replaceAll("_", " ")
+            .toLowerCase()
+            .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+          </p>
+        
+          <p>
+          <strong>Price:</strong> {formatGBP(p.price)}</p>
+          
+          <p>
+            <strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}</p> 
+            </div>
+
+                    
+                  
         ))}
       </div>
     </div>

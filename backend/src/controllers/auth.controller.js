@@ -74,7 +74,7 @@ exports.register = async (req, res) => {
       const token = signToken({
       id: user.id,
       email: user.email,
-      isAdmin: user.isAdmin
+      role: user.role
       });
 
      res.cookie("token", token, {
@@ -86,7 +86,9 @@ exports.register = async (req, res) => {
           res.json({
         id: user.id,
         email: user.email,
-        isAdmin: user.isAdmin
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
       });
 
       
@@ -154,12 +156,14 @@ if (user.accountLocked)
   });
 
 
-// const token = signToken(user.id);
+// create JWT with user id and role
 const token = signToken({
   id: user.id,
-  email: user.email,
-  isAdmin: user.isAdmin
+  role: user.role
 });
+
+  
+
 
 
 
@@ -169,13 +173,11 @@ const token = signToken({
  sameSite: 'lax'
  });
 
-
-
-// res.json({ message: 'Signed in'});
+// send user info back
 res.json({
   id: user.id,
   email: user.email,
-  isAdmin: user.isAdmin
+  role: user.role
 });
 
 };

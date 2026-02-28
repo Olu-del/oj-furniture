@@ -16,9 +16,10 @@ import ResetPassword from "./pages/ResetPassword";
 import Product from "./pages/product";
 import AdminDashboard from "./pages/AdminDashboard";
 
-// import AdminRoute from "./pages/AdminRoute";
+import AdminRoute from "./pages/AdminRoute";
 import AdminProducts from "./pages/AdminProduct";
 import AdminProductForm from "./pages/AdminProductForm";
+
 
 
 
@@ -41,10 +42,39 @@ export default function App() {
         <Route path="/product" element={<Product />} />
 
 
-      <Route path="/admin/product" element={<AdminProducts />} />
-      <Route path="/admin/product/new" element={<AdminProductForm />} />
-      <Route path="/admin/product/edit/:id" element={<AdminProductForm />} /> 
-      <Route path="/admin" element={<AdminDashboard />} /> 
+      <Route
+        path="/admin/product"
+        element={
+          <AdminRoute>
+            <AdminProducts />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/product/new"
+        element={
+          <AdminRoute>
+            <AdminProductForm />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/product/edit/:id"
+        element={
+          <AdminRoute>
+            <AdminProductForm />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      /> 
+
 
       </Routes>
       </AuthProvider>

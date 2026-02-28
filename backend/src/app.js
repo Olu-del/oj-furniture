@@ -70,8 +70,7 @@ app.get('/api/user/me', auth, async (req, res) => {
         id: true,
         firstName: true,
         lastName: true,
-        email: true,
-        isAdmin: true,   
+        email: true,  
         role: true,
         address: {
           select: {

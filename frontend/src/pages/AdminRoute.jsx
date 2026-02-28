@@ -15,7 +15,7 @@ export default function AdminRoute({ children }) {
   }
 
   // Signed in but not admin
-  if (!user.isAdmin) {
+  if (user.role !== "ADMIN") {
     return <Navigate to="/" replace />;
   }
 

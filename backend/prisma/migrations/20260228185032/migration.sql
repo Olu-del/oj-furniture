@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `product` MODIFY `condition` ENUM('NEW', 'USED', 'AS_GOOD_AS_NEW', 'VERY_GOOD', 'GOOD', 'ACCEPTABLE', 'DAMAGED') NOT NULL;

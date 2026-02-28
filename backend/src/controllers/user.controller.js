@@ -21,7 +21,7 @@ exports.getMe = async (req, res) => {
         email: true,
         firstName: true,
         lastName: true,
-        isAdmin: true
+        role: true
       }
     });
 

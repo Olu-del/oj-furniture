@@ -15,10 +15,6 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
-  // const handleDelete = async (id) => {
-  //   await api.delete(`/product/${id}`);
-  //   fetchProducts();
-  // };
 
 const handleDelete = async (id) => {
   const confirmed = window.confirm(

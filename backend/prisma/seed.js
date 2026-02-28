@@ -1,10 +1,29 @@
-//seed script to populate category data
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
+
 const prisma = new PrismaClient();
 
 async function main() {
-  const bedroom = await prisma.category.create({
-    data: {
+  // ---------- CREATE ADMIN ----------
+  const hashedPassword = await bcrypt.hash("Admin123!", 10);
+
+  await prisma.user.upsert({
+    where: { email: "admin@yourdomain.com" },
+    update: {},
+    create: {
+      firstName: "System",
+      lastName: "Admin",
+      email: "ojfurniture2026@gmail.com",
+      password: hashedPassword,
+      role: "ADMIN"
+    }
+  });
+
+  // ---------- CATEGORIES ----------
+  await prisma.category.upsert({
+    where: { name: "Bedroom furniture" },
+    update: {},
+    create: {
       name: "Bedroom furniture",
       subCategories: {
         create: [
@@ -16,8 +35,10 @@ async function main() {
     }
   });
 
-  const living = await prisma.category.create({
-    data: {
+  await prisma.category.upsert({
+    where: { name: "Living room furniture" },
+    update: {},
+    create: {
       name: "Living room furniture",
       subCategories: {
         create: [
@@ -32,8 +53,10 @@ async function main() {
     }
   });
 
-  const office = await prisma.category.create({
-    data: {
+  await prisma.category.upsert({
+    where: { name: "Office furniture" },
+    update: {},
+    create: {
       name: "Office furniture",
       subCategories: {
         create: [
@@ -44,8 +67,10 @@ async function main() {
     }
   });
 
-  const dining = await prisma.category.create({
-    data: {
+  await prisma.category.upsert({
+    where: { name: "Dining room furniture" },
+    update: {},
+    create: {
       name: "Dining room furniture",
       subCategories: {
         create: [
@@ -56,6 +81,15 @@ async function main() {
       }
     }
   });
+
+  console.log("✅ Database seeded successfully");
 }
 
-main().finally(() => prisma.$disconnect());
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

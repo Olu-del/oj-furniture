@@ -12,6 +12,7 @@ export default function AdminProductForm() {
   const [price, setPrice] = useState("");
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [colour, setColour] = useState("");
+  const [condition, setCondition] = useState("");
   const [image, setImage] = useState(null);
 
   const [categories, setCategories] = useState([]);
@@ -37,6 +38,7 @@ export default function AdminProductForm() {
       setPrice(p.price);
       setDeliveryPrice(p.deliveryPrice);
       setColour(p.colour);
+      setCondition(p.condition);
       setCategoryId(p.categoryId);
       setSubCategoryId(p.subCategoryId);
       setStock(p.stock);
@@ -67,38 +69,32 @@ export default function AdminProductForm() {
     formData.append("price", price);
     formData.append("deliveryPrice", deliveryPrice);
     formData.append("colour", colour);
+    formData.append("condition", condition);
     formData.append("categoryId", categoryId);
     formData.append("subCategoryId", subCategoryId);
     formData.append("stock", stock);
 
     if (image) formData.append("image", image);
 
-    // if (isEditing) {
-    //   await api.put(`/product/${id}`, formData, {
-    //     headers: { "Content-Type": "multipart/form-data" }
-    //   });
-    // } else {
-    //   await api.post("/product/create", formData, {
-    //     headers: { "Content-Type": "multipart/form-data" }
-    //   });
-    // }
+    try {
+      if (isEditing) {
+        await api.put(`/product/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        alert("Product updated successfully.");
+      } else {
+        await api.post("/product/create", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        alert("Product created successfully.");
+      }
 
-    // navigate("/admin/product");
-
-if (isEditing) {
-  await api.put(`/product/${id}`, formData, {
-    headers: { "Content-Type": "multipart/form-data" }
-  });
-  alert("Product updated successfully.");
-} else {
-  await api.post("/product/create", formData, {
-    headers: { "Content-Type": "multipart/form-data" }
-  });
-  alert("Product created successfully.");
-}
-
-navigate("/admin/products");
-
+      navigate("/admin/product");
+    } catch (err) {
+      console.error("Error saving product:", err);
+      const errorMsg = err.response?.data?.message || err.message;
+      alert("Failed to save product: " + errorMsg);
+    }
   };
 
   return (
@@ -119,6 +115,22 @@ navigate("/admin/products");
           onChange={(e) => setDescription(e.target.value)}
           required
         />
+
+        <select
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+          required
+        >
+          <option value="">Select Condition</option>
+          <option value="AS_GOOD_AS_NEW">As Good As New</option>
+          <option value="VERY_GOOD">Very Good</option>
+          <option value="GOOD">Good</option>
+          <option value="ACCEPTABLE">Acceptable</option>
+          <option value="DAMAGED">Damaged</option>
+          <option value="NEW">New</option>
+          <option value="USED">Used</option>
+        </select>
+
 
         <input
           type="number"

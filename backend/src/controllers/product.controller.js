@@ -5,8 +5,13 @@ const prisma = new PrismaClient();
 
 // create a new product - admin only
 exports.createProduct = async (req, res) => {
+  console.log('createProduct called by', req.userId, req.role);
   // pull fields from request body
-  const { name, description, price, deliveryPrice, colour, categoryId, subCategoryId } = req.body;
+  let { name, description, price, deliveryPrice, colour, condition, categoryId, subCategoryId, stock } = req.body;
+  // enum values must be uppercase
+  if (condition) {
+    condition = condition.toUpperCase();
+  }
 
   try {
     const product = await prisma.product.create({
@@ -16,16 +21,18 @@ exports.createProduct = async (req, res) => {
         price: parseFloat(price),
         deliveryPrice: parseFloat(deliveryPrice),
         colour,
+        condition,
+        stock: stock ? Number(stock) : 0,
         categoryId: Number(categoryId),
         subCategoryId: Number(subCategoryId),
-        imageUrl: req.file ? `/uploads/${req.file.filename}` : null
+        imageUrl: req.file ? `/uploads/${req.file.filename}` : "https://via.placeholder.com/300x300?text=No+Image"
       }
     });
 
     res.status(201).json(product);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", details: err.message });
   }
 };
 
@@ -96,16 +103,21 @@ exports.getProductById = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   const id = Number(req.params.id);
-  const {
+  let {
     name,
     description,
     price,
     deliveryPrice,
     colour,
+    condition,
     categoryId,
     subCategoryId,
     stock
   } = req.body;
+  // convert to enum value if provided
+  if (condition) {
+    condition = condition.toUpperCase();
+  }
 
   try {
     const updated = await prisma.product.update({
@@ -116,6 +128,7 @@ exports.updateProduct = async (req, res) => {
         price: parseFloat(price),
         deliveryPrice: parseFloat(deliveryPrice),
         colour,
+        condition,
        ...(stock !== undefined && { stock: Number(stock) }),
         //update category and subcategory associations
         category: {
@@ -166,6 +179,7 @@ exports.searchProducts = async (req, res) => {
       where: {
         name: {
           contains: q.toLowerCase()
+
 
         }
       }
