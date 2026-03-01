@@ -176,14 +176,15 @@ exports.updateProduct = async (req, res) => {
 
 
 exports.deleteProduct = async (req, res) => {
-     const id = Number(req.params.id);
-
+  const id = Number(req.params.id);
 
   try {
-    await prisma.product.delete({
-        where: { id }
+    // remove any cart items referencing this product first (FK constraint)
+    await prisma.cartItem.deleteMany({ where: { productId: id } });
+    // also clear order items if any exist
+    await prisma.orderItem.deleteMany({ where: { productId: id } });
 
-    });
+    await prisma.product.delete({ where: { id } });
 
     res.json({ message: "Product deleted successfully" });
   } catch (err) {
