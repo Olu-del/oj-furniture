@@ -21,8 +21,13 @@ exports.register = async (req, res) => {
     const { firstName, lastName, email, password, line1, city, postcode, country } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !email || !password || !line1 || !city || !postcode || !country) {
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // address details must also be provided
+    if (!line1 || !city || !postcode || !country) {
+      return res.status(400).json({ message: "Shipping address is required" });
     }
 
     if (!email.includes("@")) {
@@ -70,21 +75,21 @@ exports.register = async (req, res) => {
     }
 
 
-      // Auto-Signin after registration
+      // Auto-signin after registration
       const token = signToken({
-      id: userid,
-      email: user.email,
-      role: user.role
+        id: user.id,
+        email: user.email,
+        role: user.role
       });
 
-     res.cookie("token", token, {
-       httpOnly: true,
-       sameSite: "lax"
-     });
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "lax"
+      });
 
-    // res.status(201).json({ message: "User registered successfully" });
-          res.json({
-        id: userid,
+      // send back user info along with assigned id
+      res.json({
+        id: user.id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

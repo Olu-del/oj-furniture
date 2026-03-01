@@ -38,11 +38,8 @@ useEffect(() => {
   };
 
   const signout = async () => {
-    try {
-      await api.post("/auth/signout");
-    } catch (err) {
-      // ignore errors
-    }
+    await api.post("/auth/signout");
+    // clear stored token and update user state
     localStorage.removeItem("token");
     setUser(null);
   };

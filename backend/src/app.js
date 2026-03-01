@@ -28,10 +28,19 @@ app.use(
 );
 
 
-// Allow frontend to send cookies
+// Allow frontend to send cookies from either development port
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002'];
 app.use(cors({
-origin: 'http://localhost:3000',
-credentials: true
+  origin: function(origin, callback) {
+    // allow requests with no origin (e.g. mobile apps, curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 
 
@@ -48,7 +57,11 @@ app.use(
   express.static("uploads", {
     setHeaders: (res) => {
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-      res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+      // reflect origin if allowed
+      const reqOrigin = res.req.headers.origin;
+      if (allowedOrigins.includes(reqOrigin)) {
+        res.setHeader("Access-Control-Allow-Origin", reqOrigin);
+      }
       res.setHeader("Access-Control-Allow-Credentials", "true");
     }
   })

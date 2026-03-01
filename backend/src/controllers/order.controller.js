@@ -1,6 +1,6 @@
 exports.getUserOrders = async (req, res) => {
   const orders = await prisma.order.findMany({
-    where: { userId: req.userid },
+    where: { userId: req.userId },
     include: { orderItems: true }
   });
 

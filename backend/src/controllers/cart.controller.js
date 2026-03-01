@@ -35,6 +35,12 @@ exports.addToCart = async (req, res) => {
   const pid = Number(productId);
   const qty = Number(quantity) || 1;
 
+  // Verify product exists
+  const product = await prisma.product.findUnique({ where: { id: pid } });
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
   let cart = await prisma.cart.findUnique({
     where: { userId: req.userId }
   });

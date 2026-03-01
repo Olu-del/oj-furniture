@@ -8,7 +8,7 @@ exports.checkout = async (req, res) => {
   try {
     const order = await prisma.$transaction(async (tx) => {
       const cart = await tx.cart.findUnique({
-        where: { userId: req.userid },
+        where: { userId: req.userId },
         include: {
           items: { include: { product: true } }
         }
@@ -39,7 +39,7 @@ exports.checkout = async (req, res) => {
 
       const order = await tx.order.create({
         data: {
-          userId: req.userid,
+          userId: req.userId,
           total,
           status: "PAID", // fake payment success
           shippingAddress,
