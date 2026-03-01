@@ -200,7 +200,7 @@ exports.requestPasswordReset = async (req, res) => {
   const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
   await prisma.user.update({
-    where: { id: userid },
+    where: { id: user.id },
     data: {
       resetCode: code,
       resetCodeExpiry: expiry
@@ -237,7 +237,7 @@ exports.resetPassword = async (req, res) => {
   const hashed = await bcrypt.hash(newPassword, 10);
 
   await prisma.user.update({
-    where: { id: userid },
+    where: { id: user.id },
     data: {
       password: hashed,
       failedLoginAttempts: 0,
