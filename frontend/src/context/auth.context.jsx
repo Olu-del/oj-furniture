@@ -28,12 +28,22 @@ useEffect(() => {
 }, []);
 
   const signin = async (email, password) => {
-    await api.post("/auth/signin", { email, password });
+    const res = await api.post("/auth/signin", { email, password });
+    // Store token from response
+    if (res.data.token) {
+      localStorage.setItem("token", res.data.token);
+    }
     await fetchUser();
+    return res;
   };
 
   const signout = async () => {
-    await api.post("/auth/signout");
+    try {
+      await api.post("/auth/signout");
+    } catch (err) {
+      // ignore errors
+    }
+    localStorage.removeItem("token");
     setUser(null);
   };
 
