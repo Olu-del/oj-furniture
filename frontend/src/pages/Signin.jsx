@@ -1,4 +1,5 @@
 import { useState} from "react";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 
@@ -18,36 +19,76 @@ export default function Signin() {
   
   
   //Signin handler with lockout logic
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLocked(false);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLocked(false);
 
-    try {
-       await signin(email, password);
-       navigate("/welcome");
-    } catch (err) {
-      const status = err.response?.status;
-      const message = err.response?.data?.message;
+    
 
-      if (status === 403) {
-        // Account locked
-        setError(message);
-        setLocked(true);
+  //   try {
+  //      await signin(email, password);
+  //      navigate("/welcome");
+  //   } catch (err) {
+  //     const status = err.response?.status;
+  //     const message = err.response?.data?.message;
+
+  //     if (status === 403) {
+  //       // Account locked
+  //       setError(message);
+  //       setLocked(true);
 
         
-        return;
-      }
+  //       return;
+  //     }
 
-      if (status === 401) {
-        setError("Invalid email or password");
-        return;
-      }
+  //     if (status === 401) {
+  //       setError("Invalid email or password");
+  //       return;
+  //     }
 
-      setError("Something went wrong. Try again.");
+  //     setError("Something went wrong. Try again.");
+  //   }
+  // };
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLocked(false);
+
+  try {
+    // Sign in through AuthContext
+    await signin(email, password);
+
+    // 🔥 Merge guest cart AFTER successful signin
+    const guestCart = JSON.parse(localStorage.getItem("guestCart"));
+
+    if (guestCart && guestCart.length > 0) {
+      await api.post("/cart/merge", { items: guestCart });
+      localStorage.removeItem("guestCart");
     }
-  };
 
+    navigate("/welcome");
+
+  } catch (err) {
+    const status = err.response?.status;
+    const message = err.response?.data?.message;
+
+    if (status === 403) {
+      setError(message);
+      setLocked(true);
+      return;
+    }
+
+    if (status === 401) {
+      setError("Invalid email or password");
+      return;
+    }
+
+    setError("Something went wrong. Try again.");
+  }
+};
 
    // -------------------------------
   // ACCOUNT LOCKED SCREEN

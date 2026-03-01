@@ -14,11 +14,17 @@ import Contact from "./pages/Contact";
 import RequestReset from "./pages/RequestReset";
 import ResetPassword from "./pages/ResetPassword";
 import Product from "./pages/product";
-import AdminDashboard from "./pages/AdminDashboard";
+import Order from "./pages/Order";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
+
+import AdminOrders from "./pages/AdminOrder";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./pages/AdminRoute";
 import AdminProducts from "./pages/AdminProduct";
 import AdminProductForm from "./pages/AdminProductForm";
+
 
 
 
@@ -40,6 +46,10 @@ export default function App() {
         <Route path="/signout" element={<Signout />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Order />} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
 
 
       <Route

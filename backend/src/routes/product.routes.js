@@ -1,5 +1,5 @@
 const express = require('express');
-const { createProduct, getProducts, searchProducts, getProductById, updateProduct, deleteProduct} = require('../controllers/product.controller');
+const { createProduct, getProducts, searchProducts, getProductById, updateProduct, deleteProduct,  getProductsByIds} = require('../controllers/product.controller');
 const auth = require('../middlewares/auth.middleware');
 const admin = require('../middlewares/admin.middleware');
 const upload = require('../middlewares/upload.middleware');
@@ -21,6 +21,10 @@ router.get('/', getProducts);
 
 // SEARCH products by name, category, colour, etc.
 router.get('/search', searchProducts);
+
+
+// Get products by multiple IDs (for guest cart)
+router.post('/by-ids', getProductsByIds);
 
 // READ single product (for editing)
 router.get('/:id', getProductById);

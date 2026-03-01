@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 import { getProducts, searchProducts } from "../services/productApi";
 
 // Product listing page with filters and search
@@ -8,6 +9,7 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
   
 
   const [filters, setFilters] = useState({
@@ -60,6 +62,51 @@ export default function Products() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Add product to cart (signed-in or guest)
+  const addToCart = async (productId) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      if (token) {
+        // Signed-in user → DB cart
+        await api.post("/cart/add", {
+          productId,
+          quantity: 1,
+        });
+      } else {
+        // Guest → localStorage cart
+        const guestCart =
+          JSON.parse(localStorage.getItem("guestCart")) || [];
+
+        const existing = guestCart.find(
+          (item) => item.productId === productId
+        );
+
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          guestCart.push({ productId, quantity: 1 });
+        }
+
+        localStorage.setItem(
+          "guestCart",
+          JSON.stringify(guestCart)
+        );
+      }
+
+      const goToCart = window.confirm(
+        "Product added to cart.\n\nGo to cart?"
+      );
+
+      if (goToCart) {
+        navigate("/cart");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to add to cart");
+    }
+  };
 
   // When category changes, reset subcategory filter
   return (
@@ -154,6 +201,15 @@ export default function Products() {
           
           <p>
             <strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}</p> 
+
+
+            <button
+            className="primary-btn"
+            disabled={p.stock === 0}
+            onClick={() => addToCart(p.id)}
+          >
+            {p.stock === 0 ? "Out of Stock" : "Add to Cart"}
+          </button>
             </div>
 
                     

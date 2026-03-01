@@ -9,6 +9,8 @@ const auth = require('./middlewares/auth.middleware');
 const contactRoutes = require("./routes/contact.routes");
 const productRoutes = require('./routes/product.routes');
 const categoryRoutes = require("./routes/category.routes");
+const cartRoutes = require('./routes/cart.routes');
+const checkoutRoutes = require('./routes/checkout.routes');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -59,6 +61,11 @@ app.use('/api/auth', authRoutes);
 app.use("/api/contact", contactRoutes);
 app.use('/api/product', productRoutes);
 app.use("/api/category", categoryRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/checkout', checkoutRoutes);
+
+
+
 
 
 // Protected route to get current user info

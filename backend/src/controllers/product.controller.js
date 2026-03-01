@@ -76,6 +76,29 @@ exports.getProducts = async (req, res) => {
   res.json(products);
 };
 
+
+exports.getProductsByIds = async (req, res) => {
+  const { ids } = req.body;
+
+  if (!ids || !Array.isArray(ids)) {
+    return res.status(400).json({ message: "Invalid IDs array" });
+  }
+
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: ids.map(Number) },
+      },
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 // Get product by ID for editing or details page
 exports.getProductById = async (req, res) => {
   // validate and parse ID from route params

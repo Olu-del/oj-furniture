@@ -72,7 +72,7 @@ exports.register = async (req, res) => {
 
       // Auto-Signin after registration
       const token = signToken({
-      id: user.id,
+      id: userid,
       email: user.email,
       role: user.role
       });
@@ -84,7 +84,7 @@ exports.register = async (req, res) => {
 
     // res.status(201).json({ message: "User registered successfully" });
           res.json({
-        id: user.id,
+        id: userid,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -155,7 +155,6 @@ if (user.accountLocked)
     }
   });
 
-
 // create JWT with user id and role
 const token = signToken({
   id: user.id,
@@ -177,7 +176,8 @@ const token = signToken({
 res.json({
   id: user.id,
   email: user.email,
-  role: user.role
+  role: user.role,
+  token: token
 });
 
 };
@@ -200,7 +200,7 @@ exports.requestPasswordReset = async (req, res) => {
   const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
   await prisma.user.update({
-    where: { id: user.id },
+    where: { id: userid },
     data: {
       resetCode: code,
       resetCodeExpiry: expiry
@@ -237,7 +237,7 @@ exports.resetPassword = async (req, res) => {
   const hashed = await bcrypt.hash(newPassword, 10);
 
   await prisma.user.update({
-    where: { id: user.id },
+    where: { id: userid },
     data: {
       password: hashed,
       failedLoginAttempts: 0,

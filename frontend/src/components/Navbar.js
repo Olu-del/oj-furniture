@@ -13,6 +13,7 @@ export default function Navbar() {
       <Link to="/Home">Home</Link>
       <Link to="/contact">Contact</Link>
       <Link to="/product">Products</Link>
+      <Link to="/cart">Basket</Link>
     
 
       {!user && (

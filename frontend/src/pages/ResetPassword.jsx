@@ -11,19 +11,6 @@ export default function ResetPassword() {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     await api.post("/auth/reset-password", {
-//       email,
-//       code,
-//       newPassword
-//     });
-
-//     navigate("/login");
-//   };
-
-
 
 const handleSubmit = async (e) => {
   e.preventDefault();
