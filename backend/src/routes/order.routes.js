@@ -4,7 +4,8 @@ const admin = require("../middlewares/admin.middleware");
 const {
   getUserOrders,
   getAllOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  updateDeliveryStatus
 } = require("../controllers/order.controller");
 
 const router = express.Router();
@@ -12,5 +13,7 @@ const router = express.Router();
 router.get("/my", auth, getUserOrders);
 router.get("/", auth, admin, getAllOrders);
 router.put("/:id/status", auth, admin, updateOrderStatus);
+router.put("/:id/delivery-status", auth, admin, updateDeliveryStatus);
+
 
 module.exports = router;

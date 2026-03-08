@@ -6,35 +6,66 @@ const prisma = new PrismaClient();
 // create a new product - admin only
 exports.createProduct = async (req, res) => {
   console.log('createProduct called by', req.userId, req.role);
-  // pull fields from request body
-  let { name, description, price, deliveryPrice, colour, condition, categoryId, subCategoryId, stock } = req.body;
-  // enum values must be uppercase
+
+  let {
+    name,
+    description,
+    price,
+    deliveryPrice,
+    colour,
+    condition,
+    categoryId,
+    subCategoryId,
+    stock,
+    dimensions,
+    material,
+    age,
+    sustainabilityScore
+  } = req.body;
+
   if (condition) {
     condition = condition.toUpperCase();
   }
 
-    try {
-      const product = await prisma.product.create({
-        data: {
-          name,
-          description,
-          price: parseFloat(price),
-          deliveryPrice: parseFloat(deliveryPrice),
-          colour,
-          condition,
-          stock: stock ? Number(stock) : 0,
-          categoryId: Number(categoryId),
-          subCategoryId: Number(subCategoryId),
-          imageUrl: req.file ? `/uploads/${req.file.filename}` : "https://via.placeholder.com/300x300?text=No+Image"
-        }
-      });
+  // AUTO-GENERATED DESCRIPTION
+  const generatedDescription = `
+${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
+Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
+Dimensions: ${dimensions || "not provided"}.
+${description}
+  `.trim();
 
-        res.status(201).json(product);
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error", details: err.message });
+  try {
+    const product = await prisma.product.create({
+      data: {
+        name,
+        description: generatedDescription,
+        price: parseFloat(price),
+        deliveryPrice: parseFloat(deliveryPrice),
+        colour,
+        condition,
+        stock: stock ? Number(stock) : 0,
+        categoryId: Number(categoryId),
+        subCategoryId: Number(subCategoryId),
+
+        // NEW FIELDS
+        dimensions: dimensions || null,
+        material: material || null,
+        age: age ? Number(age) : null,
+        sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
+
+        imageUrl: req.file
+          ? `/uploads/${req.file.filename}`
+          : "https://via.placeholder.com/300x300?text=No+Image"
       }
-  };
+    });
+
+    res.status(201).json(product);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", details: err.message });
+  }
+};
 
       exports.getProducts = async (req, res) => {
         const { categoryId, subCategoryId, colour, sort } = req.query;
@@ -127,53 +158,66 @@ exports.createProduct = async (req, res) => {
 
 
         exports.updateProduct = async (req, res) => {
-          const id = Number(req.params.id);
-          let {
-            name,
-            description,
-            price,
-            deliveryPrice,
-            colour,
-            condition,
-            categoryId,
-            subCategoryId,
-            stock
-          } = req.body;
-          // convert to enum value if provided
-          if (condition) {
-            condition = condition.toUpperCase();
-          }
-          
-          try {
-            const updated = await prisma.product.update({
-              where: { id },
-              data: {
-                name,
-                description,
-                price: parseFloat(price),
-                deliveryPrice: parseFloat(deliveryPrice),
-                colour,
-                condition,
-              ...(stock !== undefined && { stock: Number(stock) }),
-                //update category and subcategory associations
-                category: {
-                  connect: { id: Number(categoryId) }
-                },
-                subCategory: {
-                  connect: { id: Number(subCategoryId) }
-                },
+  const id = Number(req.params.id);
 
-                //Update image only if new file uploaded
-                ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
-              }
-            });
+  let {
+    name,
+    description,
+    price,
+    deliveryPrice,
+    colour,
+    condition,
+    categoryId,
+    subCategoryId,
+    stock,
+    dimensions,
+    material,
+    age,
+    sustainabilityScore
+  } = req.body;
 
-            res.json(updated);
-          } catch (err) {
-            console.error(err);
-            res.status(500).json({ message: "Failed to update product" });
-          }
+  if (condition) {
+    condition = condition.toUpperCase();
+  }
+
+  const updatedDescription = `
+${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
+Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
+Dimensions: ${dimensions || "not provided"}.
+${description}
+  `.trim();
+
+  try {
+    const updated = await prisma.product.update({
+      where: { id },
+      data: {
+        name,
+        description: updatedDescription,
+        price: parseFloat(price),
+        deliveryPrice: parseFloat(deliveryPrice),
+        colour,
+        condition,
+        stock: stock ? Number(stock) : 0,
+
+        dimensions: dimensions || null,
+        material: material || null,
+        age: age ? Number(age) : null,
+        sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
+
+        category: { connect: { id: Number(categoryId) } },
+        subCategory: { connect: { id: Number(subCategoryId) } },
+
+        ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update product" });
+  }
 };
+
 
 
 

@@ -12,6 +12,8 @@ const categoryRoutes = require("./routes/category.routes");
 const cartRoutes = require('./routes/cart.routes');
 const checkoutRoutes = require('./routes/checkout.routes');
 const orderRoutes = require('./routes/order.routes');
+const adminRoutes = require("./routes/admin.routes");
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -78,6 +80,8 @@ app.use("/api/category", categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/order', orderRoutes);
+app.use("/api/admin", adminRoutes);
+
 
 
 

@@ -6,8 +6,8 @@ exports.getUserOrders = async (req, res) => {
     const orders = await prisma.order.findMany({
       where: { userId: req.userId },
        include: {
-    orderItems: {
-      include: {
+       orderItems: {
+        include: {
         product: true
       }
     }
@@ -42,4 +42,22 @@ exports.updateOrderStatus = async (req, res) => {
   });
 
   res.json(order);
+};
+
+
+
+exports.updateDeliveryStatus = async (req, res) => {
+  const { deliveryStatus } = req.body;
+
+  try {
+    const order = await prisma.order.update({
+      where: { id: parseInt(req.params.id) },
+      data: { deliveryStatus }
+    });
+
+    res.json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update delivery status" });
+  }
 };

@@ -57,6 +57,9 @@ model Order {
   user              User        @relation(fields: [userId], references: [id], map: "Order_userId_fkey")
   orderItems        OrderItem[]
   shippingAddress   String @db.Text
+  deliverySlot   String?
+  deliveryDate   DateTime?
+  deliveryStatus String?
 
   @@index([userId], map: "Order_userId_fkey")
 }
@@ -69,6 +72,8 @@ model OrderItem {
   quantity      Int
   price         Decimal @db.Decimal(10, 2)
   deliveryPrice Decimal @db.Decimal(10, 2)
+  deliverySlot      String?   // "Morning", "Afternoon", "Evening"
+  deliveryStatus    String?   // "Scheduled", "Out for Delivery", "Delivered"
   name          String
   imageUrl      String
   order         Order   @relation(fields: [orderId], references: [id], map: "OrderItem_orderId_fkey")
@@ -115,6 +120,11 @@ model Product {
   orderItems    OrderItem[]
   cartItems     CartItem[]
   condition     ProductCondition
+  age                 Int?
+  dimensions          String?
+  material            String?
+  sustainabilityScore Int?
+
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
