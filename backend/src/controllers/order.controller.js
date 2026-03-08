@@ -1,22 +1,35 @@
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 exports.getUserOrders = async (req, res) => {
-  const orders = await prisma.order.findMany({
-    where: { userId: req.userId },
-    include: { orderItems: true }
-  });
-
-  res.json(orders);
-};
-
-
-exports.getAllOrders = async (req, res) => {
-  const orders = await prisma.order.findMany({
-    include: {
-      user: true,
-      orderItems: true
+  try {
+    const orders = await prisma.order.findMany({
+      where: { userId: req.userId },
+       include: {
+    orderItems: {
+      include: {
+        product: true
+      }
     }
-  });
+  },
+      orderBy: { createdAt: "desc" }
+        });
 
-  res.json(orders);
+        res.json(orders);
+      } catch (err) {
+        res.status(500).json({ message: "Server error" });
+      }
+    };
+
+      exports.getAllOrders = async (req, res) => {
+        const orders = await prisma.order.findMany({
+          include: {
+            user: true,
+            orderItems: true
+          }
+        });
+
+        res.json(orders);
 };
 
 

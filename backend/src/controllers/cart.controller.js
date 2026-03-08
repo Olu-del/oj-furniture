@@ -16,11 +16,17 @@ exports.getCart = async (req, res) => {
   if (cart && Array.isArray(cart.items)) {
     cart.items = cart.items.map((item) => {
       const prod = item.product;
-      if (prod && prod.price !== undefined && prod.price !== null) {
-        // Prisma Decimal -> string, convert to number for UI calculations
-        const priceNum = Number(prod.price.toString());
-        return { ...item, product: { ...prod, price: priceNum } };
-      }
+
+      if (prod) {
+          return {
+            ...item,
+            product: {
+              ...prod,
+              price: Number(prod.price?.toString() || 0),
+              deliveryPrice: Number(prod.deliveryPrice?.toString() || 0)
+            }
+          };
+        }
       return item;
     });
   }
@@ -29,50 +35,134 @@ exports.getCart = async (req, res) => {
 };
 
 
+
+
 exports.addToCart = async (req, res) => {
-  const { productId, quantity } = req.body;
+  try {
+    const { productId, quantity } = req.body;
+    const pid = Number(productId);
+    const qty = Number(quantity) || 1;
 
-  const pid = Number(productId);
-  const qty = Number(quantity) || 1;
+    await prisma.$transaction(async (tx) => {
 
-  // Verify product exists
-  const product = await prisma.product.findUnique({ where: { id: pid } });
-  if (!product) {
-    return res.status(404).json({ error: "Product not found" });
-  }
+      const product = await tx.product.findUnique({
+        where: { id: pid }
+      });
 
-  let cart = await prisma.cart.findUnique({
-    where: { userId: req.userId }
-  });
-
-  if (!cart) {
-    cart = await prisma.cart.create({
-      data: { userId: req.userId }
-    });
-  }
-
-  await prisma.cartItem.upsert({
-    where: {
-      cartId_productId: {
-        cartId: cart.id,
-        productId: pid
+      if (!product) {
+        throw new Error("Product not found");
       }
-    },
-    update: {
-      quantity: { increment: qty }
-    },
-    create: {
-      cartId: cart.id,
-      productId: pid,
-      quantity: qty
-    }
-  });
 
-  res.json({ message: "Product added to cart" });
+    
+
+
+    const cart = await prisma.cart.findUnique({
+        where: { userId: req.userId },
+        include: {
+          items: {
+            include: {
+              product: true
+            }
+          }
+        }
+      });
+
+      if (!cart) {
+        cart = await tx.cart.create({
+          data: { userId: req.userId }
+        });
+      }
+
+      await tx.cartItem.upsert({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId: pid
+          }
+        },
+        update: {
+          quantity: { increment: qty }
+        },
+        create: {
+          cartId: cart.id,
+          productId: pid,
+          quantity: qty
+        }
+      });
+
+    });
+
+    res.json({ message: "Product added to cart" });
+
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };
 
+exports.mergeCart = async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ error: "Invalid cart data" });
+    }
+
+    const productIds = items.map(i => Number(i.productId));
+
+    const products = await prisma.product.findMany({
+      where: { id: { in: productIds } }
+    });
+
+    const validProductIds = new Set(products.map(p => p.id));
+
+    let cart = await prisma.cart.findUnique({
+      where: { userId: req.userId }
+    });
+
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: { userId: req.userId }
+      });
+    }
+
+    await prisma.$transaction(async (tx) => {
+
+      for (const item of items) {
+        const pid = Number(item.productId);
+        const qty = Number(item.quantity) || 1;
+
+        if (!validProductIds.has(pid)) continue;
+
+        await tx.cartItem.upsert({
+          where: {
+            cartId_productId: {
+              cartId: cart.id,
+              productId: pid
+            }
+          },
+          update: {
+            quantity: { increment: qty }
+          },
+          create: {
+            cartId: cart.id,
+            productId: pid,
+            quantity: qty
+          }
+        });
+      }
+
+    });
+
+    res.json({ message: "Cart merged successfully" });
+
+  } catch (err) {
+    console.error("Merge cart error:", err);
+    res.status(500).json({ error: "Failed to merge cart" });
+  }
+};
+
+
 exports.updateCartItem = async (req, res) => {
-  // Frontend sends { productId, quantity } — update by cartId+productId
   const { productId, quantity } = req.body;
   const pid = Number(productId);
   const qty = Number(quantity);
@@ -112,45 +202,5 @@ exports.removeCartItem = async (req, res) => {
   res.json({ message: "Product removed from cart" });
 };
 
-
-exports.mergeCart = async (req, res) => {
-  try {
-    const { items } = req.body;
-
-    let cart = await prisma.cart.findUnique({
-      where: { userId: req.userId }
-    });
-
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: { userId: req.userId }
-      });
-    }
-
-    for (const item of items) {
-      await prisma.cartItem.upsert({
-        where: {
-          cartId_productId: {
-            cartId: cart.id,
-            productId: item.productId
-          }
-        },
-        update: {
-          quantity: { increment: item.quantity }
-        },
-        create: {
-          cartId: cart.id,
-          productId: item.productId,
-          quantity: item.quantity
-        }
-      });
-    }
-
-    res.json({ message: "Cart merged" });
-  } catch (err) {
-    console.error("Merge cart error:", err);
-    res.status(500).json({ error: "Failed to merge cart" });
-  }
-}
 
 

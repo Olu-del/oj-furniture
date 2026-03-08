@@ -80,27 +80,64 @@ function contactTemplate(name) {
   `;
 }
 
-function orderTemplate(firstName, orderId, total) {
-  return `
+
+function orderTemplate(firstName, order) {
+
+  const itemsHtml = order.orderItems.map(item => `
+    <tr style="border-bottom:1px solid #eee;">
+      
+      <td style="padding:10px;">
+        ${item.imageUrl ? `
+        <img 
+          src="http://localhost:5000${item.imageUrl}" 
+          alt="${item.name}" 
+          width="80"
+          style="border-radius:6px; display:block; margin-bottom:8px;"
+        />
+        ` : ""}
+        <strong>${item.name}</strong>
+      </td>
+
+      <td style="padding:10px; text-align:center;">
+        ${item.quantity}
+      </td>
+
+      <td style="padding:10px; text-align:right;">
+        £${Number(item.price).toFixed(2)}
+      </td>
+
+      <td style="padding:10px; text-align:right;">
+        £${Number(item.deliveryPrice || 0).toFixed(2)}
+      </td>
+
+    </tr>
+  `).join("");
+
+  return baseTemplate(`
     <h2>Order Confirmation 🛒</h2>
     <p>Hi ${firstName},</p>
     <p>Your order has been successfully placed.</p>
 
-    <table width="100%" cellpadding="10" 
-      style="border-collapse: collapse; margin-top:20px;">
+    <table width="100%" cellpadding="0" cellspacing="0" 
+      style="border-collapse:collapse; width:100%;">
+
       <tr style="background:#f4f4f4;">
-        <td><strong>Order ID</strong></td>
-        <td>${orderId}</td>
+        <th align="left" style="padding:10px;">Product</th>
+        <th align="center" style="padding:10px;">Qty</th>
+        <th align="right" style="padding:10px;">Price</th>
+        <th align="right" style="padding:10px;">Delivery</th>
       </tr>
-      <tr>
-        <td><strong>Total</strong></td>
-        <td>₦${total}</td>
-      </tr>
+
+      ${itemsHtml}
+
     </table>
 
     <br/>
-    <p>We appreciate your business.</p>
-  `;
+
+    <p><strong>Subtotal:</strong> £${Number(order.subtotal || 0).toFixed(2)}</p>
+    <p><strong>Delivery:</strong> £${Number(order.deliveryTotal || 0).toFixed(2)}</p>
+    <h3><strong>Total:</strong> £${Number(order.total).toFixed(2)}</h3>
+  `);
 }
 
 module.exports = {

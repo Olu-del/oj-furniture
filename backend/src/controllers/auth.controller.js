@@ -152,7 +152,7 @@ if (user.accountLocked)
     });
   }
 
-  // Reset attempts on successful login
+  // Reset attempts on successful signin
   await prisma.user.update({
     where: { id: user.id },
     data: {

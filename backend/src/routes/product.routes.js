@@ -10,8 +10,6 @@ const router = express.Router();
 
 // Protected route for adding products with image upload and admin check
 // CREATE product (admin only)
-
-// CREATE product (admin only)
 router.post("/create", auth, admin, upload.single("image"),
   createProduct
 );
@@ -46,9 +44,5 @@ router.delete(
   deleteProduct
 );
 
-
-
-
-router.get('/search', searchProducts);
 
 module.exports = router;

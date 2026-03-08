@@ -8,6 +8,15 @@ const {
   mergeCart
 } = require("../controllers/cart.controller");
 
+
+
+console.log({
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  mergeCart
+});
 const router = express.Router();
 
 router.get("/", auth, getCart);
