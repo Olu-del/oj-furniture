@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+                                                                                                                     
+import { useEffect, useState } from "react";                                                                                                                        
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 
@@ -109,12 +110,17 @@ export default function AdminProductForm() {
           required
         />
 
+      
+
         <textarea
-          placeholder="Product Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+            placeholder="Product Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+            rows={5}
+            style={{ width: "100%", resize: "vertical" }}
+/>
+
 
         <select
           value={condition}
@@ -168,6 +174,8 @@ export default function AdminProductForm() {
           <option value="Black">Black</option>
           <option value="White">White</option>
           <option value="Grey">Grey</option>
+           <option value="Blue">Blue</option>
+          <option value="Green">Green</option>
           <option value="Oak">Oak</option>
           <option value="Brown">Brown</option>
         </select>

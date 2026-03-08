@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; 
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
@@ -15,23 +15,20 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+    if (!confirmed) return;
 
-const handleDelete = async (id) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this product?"
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await api.delete(`/product/${id}`);
-    setProducts(prev => prev.filter(p => p.id !== id));
-    alert("Product deleted successfully.");
-  } catch (err) {
-    alert("Failed to delete product.");
-  }
-};
-
+    try {
+      await api.delete(`/product/${id}`);
+      setProducts(prev => prev.filter(p => p.id !== id));
+      alert("Product deleted successfully.");
+    } catch (err) {
+      alert("Failed to delete product.");
+    }
+  };
 
   return (
     <div className="page admin-page">
@@ -40,17 +37,26 @@ const handleDelete = async (id) => {
       <button
         className="add-btn"
         onClick={() => navigate("/admin/product/new")}
+        style={{ marginBottom: "20px" }}
       >
         + Add New Product
       </button>
 
-      <div className="admin-product-list">
+      <div className="admin-product-grid">
         {products.map((p) => (
           <div key={p.id} className="admin-product-card">
-            <div className="admin-product-info">
-              <h4>{p.name}</h4>
-              <p>{p.category?.name} → {p.subCategory?.name}</p>
-            </div>
+            {p.imageUrl && (
+              <img
+                src={`http://localhost:5000${p.imageUrl}`}
+                alt={p.name}
+                className="admin-product-thumbnail"
+                onClick={() => navigate(`/product/${p.id}`)}
+                style={{ cursor: "pointer" }}
+              />
+            )}
+
+            <h4>{p.name}</h4>
+            <p>{p.category?.name} → {p.subCategory?.name}</p>
 
             <div className="admin-product-actions">
               <button

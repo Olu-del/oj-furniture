@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-// import "./Orders.css"; // CSS file not yet created
+
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);

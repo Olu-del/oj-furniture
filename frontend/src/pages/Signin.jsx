@@ -9,47 +9,8 @@ export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
   const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
-  
-
-  
   const { signin } = useAuth();
   const navigate = useNavigate();
-
-
-  
-  
-  //Signin handler with lockout logic
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setLocked(false);
-
-    
-
-  //   try {
-  //      await signin(email, password);
-  //      navigate("/welcome");
-  //   } catch (err) {
-  //     const status = err.response?.status;
-  //     const message = err.response?.data?.message;
-
-  //     if (status === 403) {
-  //       // Account locked
-  //       setError(message);
-  //       setLocked(true);
-
-        
-  //       return;
-  //     }
-
-  //     if (status === 401) {
-  //       setError("Invalid email or password");
-  //       return;
-  //     }
-
-  //     setError("Something went wrong. Try again.");
-  //   }
-  // };
 
 
 const handleSubmit = async (e) => {
@@ -61,13 +22,18 @@ const handleSubmit = async (e) => {
     // Sign in through AuthContext
     await signin(email, password);
 
-    // 🔥 Merge guest cart AFTER successful signin
-    const guestCart = JSON.parse(localStorage.getItem("guestCart"));
+    const guestCart =
+  JSON.parse(localStorage.getItem("guestCart")) || [];
 
-    if (guestCart && guestCart.length > 0) {
-      await api.post("/cart/merge", { items: guestCart });
-      localStorage.removeItem("guestCart");
-    }
+if (Array.isArray(guestCart) && guestCart.length > 0) {
+  try {
+    await api.post("/cart/merge", { items: guestCart });
+    localStorage.removeItem("guestCart");
+  } catch (err) {
+    console.error("Cart merge failed:", err);
+  }
+}
+
 
     navigate("/welcome");
 

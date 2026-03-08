@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { getProducts, searchProducts } from "../services/productApi";
 
 // Product listing page with filters and search
@@ -9,15 +10,23 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [query, setQuery] = useState("");
+  const location = useLocation();
   const navigate = useNavigate();
   
 
-  const [filters, setFilters] = useState({
+  
+const getInitialFilters = () => {
+  const params = new URLSearchParams(location.search);
+  return {
     categoryId: "",
-    subCategoryId: "",
+    subCategoryId: params.get("subCategoryId") || "",
     colour: "",
     sort: ""
-  });
+  };
+};
+
+const [filters, setFilters] = useState(getInitialFilters);
+
 
   // Helper function to format price in GBP
   const formatGBP = (amount) =>
@@ -26,10 +35,12 @@ export default function Products() {
       currency: "GBP"
     }).format(Number(amount));
 
+ 
+
   const fetchProducts = useCallback(async () => {
-    const res = await getProducts(filters);
-    setProducts(res.data);
-  }, [filters]);
+  const res = await getProducts(filters);
+  setProducts(res.data);
+}, [filters]);
 
   const fetchCategories = async () => {
     const res = await api.get("/category");
@@ -63,6 +74,23 @@ export default function Products() {
     fetchCategories();
   }, []);
 
+  
+
+  useEffect(() => {
+  if (!filters.subCategoryId || !categories.length) return;
+
+  const selectedCategory = categories.find(cat =>
+    cat.subCategories.some(sc => sc.id === Number(filters.subCategoryId))
+  );
+
+  if (selectedCategory) {
+    setSubCategories(selectedCategory.subCategories);
+    setFilters(prev => ({
+      ...prev,
+      categoryId: selectedCategory.id
+    }));
+  }
+}, [filters.subCategoryId, categories]);
   // Add product to cart (signed-in or guest)
   const addToCart = async (productId) => {
     const token = localStorage.getItem("token");
@@ -147,7 +175,10 @@ export default function Products() {
         <option value="Black">Black</option>
         <option value="White">White</option>
         <option value="Grey">Grey</option>
+        <option value="Blue">Blue</option>
+        <option value="Green">Green</option>
         <option value="Oak">Oak</option>
+        <option value="Brown">Brown</option>
       </select>
 
       {/* Price Sorting */}
@@ -172,7 +203,10 @@ export default function Products() {
         <button onClick={handleSearch}>Search</button>
       </div>
 
+
+
       <div className="product-list">
+
         {products.map((p) => (
           <div key={p.id} className="product-card">
             {p.imageUrl && (
@@ -180,42 +214,42 @@ export default function Products() {
                 src={`http://localhost:5000${p.imageUrl}`}
                 alt={p.name}
                 className="product-image"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/product/${p.id}`)}
               />
             )}
 
-
             <h3>{p.name}</h3>
-            <p>
-             <strong>Description:</strong> {p.description}</p>
-             <p>{p.productDescription}</p>
-            <p>
-            <strong>Condition:</strong>{" "}
-            {p.condition
-            .replaceAll("_", " ")
-            .toLowerCase()
-            .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
-          </p>
-        
-          <p>
-          <strong>Price:</strong> {formatGBP(p.price)}</p>
-          
-          <p>
-            <strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}</p> 
+            <p className="product-description">
+              <strong>Description:</strong> {p.description}
+            </p>
 
+            <p>
+              <strong>Condition:</strong>{" "}
+              {p.condition
+                .replaceAll("_", " ")
+                .toLowerCase()
+                .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+            </p>
+
+            <p>
+              <strong>Price:</strong> {formatGBP(p.price)}
+            </p>
+
+            <p>
+              <strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}
+            </p>
 
             <button
-            className="primary-btn"
-            disabled={p.stock === 0}
-            onClick={() => addToCart(p.id)}
-          >
-            {p.stock === 0 ? "Out of Stock" : "Add to Cart"}
-          </button>
-            </div>
-
-                    
-                  
-        ))}
-      </div>
+              className="primary-btn"
+              disabled={p.stock === 0}
+              onClick={() => addToCart(p.id)}
+            >
+              {p.stock === 0 ? "Out of Stock" : "Add to Cart"}
+            </button>
+    </div>
+  ))}
+</div>
     </div>
   );
-}
+}  

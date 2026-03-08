@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./pages/AdminRoute";
 import AdminProducts from "./pages/AdminProduct";
 import AdminProductForm from "./pages/AdminProductForm";
+import ProductDetails from "./pages/ProductDetails";
 
 
 
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Order />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
 
 
       <Route

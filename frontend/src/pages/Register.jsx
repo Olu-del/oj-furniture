@@ -19,29 +19,29 @@ export default function Register() {
 
   try {
     await api.post("/auth/register", {
-  firstName,
-  lastName,
-  email,
-  password,
-  address,
-  line1,
-  city,
-  postcode,
-  country
-});
+      firstName,
+      lastName,
+      email,
+      password,
+      address,
+      line1,
+      city,
+      postcode,
+      country
+    });
 
 
     // Registration successful → redirect
-    window.location.href = "/";
+      window.location.href = "/";
 
-  } catch (err) {
-    if (err.response && err.response.data && err.response.data.message) {
-      alert(err.response.data.message); // show backend message
-    } else {
-      alert("Something went wrong.");
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message); // show backend message
+      } else {
+        alert("Something went wrong.");
+      }
     }
-  }
-};
+  };
 
 
   return (
