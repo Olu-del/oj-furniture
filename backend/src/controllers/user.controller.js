@@ -21,6 +21,7 @@ exports.getMe = async (req, res) => {
         email: true,
         firstName: true,
         lastName: true,
+        address: true,
         role: true
       }
     });

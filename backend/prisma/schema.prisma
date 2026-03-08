@@ -27,11 +27,12 @@ model User {
 model Address {
   id       Int    @id @default(autoincrement())
   userId   Int
+  address  String?
   line1    String
+  line2    String?
   city     String
   postcode String
   country  String
-
   user     User   @relation(fields: [userId], references: [id], map: "Address_userId_fkey")
 
   @@index([userId], map: "Address_userId_fkey")

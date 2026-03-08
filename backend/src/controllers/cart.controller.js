@@ -12,26 +12,50 @@ exports.getCart = async (req, res) => {
     }
   });
 
-  // Convert Decimal prices to numbers for the frontend and ensure product exists
-  if (cart && Array.isArray(cart.items)) {
-    cart.items = cart.items.map((item) => {
-      const prod = item.product;
-
-      if (prod) {
-          return {
-            ...item,
-            product: {
-              ...prod,
-              price: Number(prod.price?.toString() || 0),
-              deliveryPrice: Number(prod.deliveryPrice?.toString() || 0)
-            }
-          };
-        }
-      return item;
+  if (!cart) {
+    return res.json({
+      items: [],
+      subtotal: 0,
+      deliveryPrice: 0,
+      total: 0
     });
   }
 
-  res.json(cart);
+  // Convert Decimal → Number
+  cart.items = cart.items.map((item) => ({
+    ...item,
+    product: {
+      ...item.product,
+      price: Number(item.product.price),
+      deliveryPrice: Number(item.product.deliveryPrice)
+    }
+  }));
+
+  const items = cart.items;
+
+  // Subtotal
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
+
+  // Highest delivery price
+  const highestDelivery = Math.max(
+    ...items.map(i => i.product.deliveryPrice)
+  );
+
+  // Free delivery threshold
+  const deliveryPrice = subtotal >= 50 ? 0 : highestDelivery;
+
+  // Total
+  const total = subtotal + deliveryPrice;
+
+  res.json({
+    items,
+    subtotal,
+    deliveryPrice,
+    total
+  });
 };
 
 
@@ -163,6 +187,7 @@ exports.mergeCart = async (req, res) => {
 
 
 exports.updateCartItem = async (req, res) => {
+
   const { productId, quantity } = req.body;
   const pid = Number(productId);
   const qty = Number(quantity);
