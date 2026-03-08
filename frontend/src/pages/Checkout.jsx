@@ -9,6 +9,8 @@ export default function CheckoutPage() {
   const [saveAddress, setSaveAddress] = useState(true);
   const [savedAddress, setSavedAddress] = useState(null);
   const [useSavedAddress, setUseSavedAddress] = useState(true);
+  const [deliverySlot, setDeliverySlot] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState("");
 
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
@@ -113,9 +115,17 @@ export default function CheckoutPage() {
     try {
       setLoading(true);
 
+        if (!deliverySlot || !deliveryDate) {
+        alert("Please select a delivery date and time slot");
+        return;
+}
+
+
       await api.post("/checkout", {
         shippingAddress: addressToUse,
         saveAddress,
+        deliverySlot,
+        deliveryDate,
       });
 
       alert("Order placed successfully!");
@@ -255,6 +265,31 @@ export default function CheckoutPage() {
               />
             </div>
           )}
+
+
+           <h3>Delivery Options</h3>
+
+        <label>Delivery Date</label>
+        <input
+          type="date"
+          value={deliveryDate}
+          onChange={(e) => setDeliveryDate(e.target.value)}
+          required
+        />
+
+        <label>Delivery Slot</label>
+        <select
+          value={deliverySlot}
+          onChange={(e) => setDeliverySlot(e.target.value)}
+          required
+        >
+          <option value="">Select Delivery Slot</option>
+          <option value="Morning">Morning (8am–12pm)</option>
+          <option value="Afternoon">Afternoon (12pm–4pm)</option>
+          <option value="Evening">Evening (4pm–8pm)</option>
+        </select>
+        
+
 
           <label>
             <input

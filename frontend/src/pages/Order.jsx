@@ -68,6 +68,9 @@ export default function OrdersPage() {
             <p>Subtotal: £{Number(order.subtotal || 0).toFixed(2)}</p>
             <p>Delivery: £{Number(order.deliveryTotal || 0).toFixed(2)}</p>
             <h3>Total: £{Number(order.total).toFixed(2)}</h3>
+            <p>Delivery Slot: {order.deliverySlot}</p>
+            <p>Delivery Status: {order.deliveryStatus}</p>
+
           </div>
 
         </div>

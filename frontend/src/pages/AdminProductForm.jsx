@@ -15,6 +15,11 @@ export default function AdminProductForm() {
   const [colour, setColour] = useState("");
   const [condition, setCondition] = useState("");
   const [image, setImage] = useState(null);
+  const [dimensions, setDimensions] = useState("");
+  const [material, setMaterial] = useState("");
+  const [age, setAge] = useState("");
+  const [sustainabilityScore, setSustainabilityScore] = useState("");
+
 
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -73,6 +78,11 @@ export default function AdminProductForm() {
     formData.append("condition", condition);
     formData.append("categoryId", categoryId);
     formData.append("subCategoryId", subCategoryId);
+    formData.append("dimensions", dimensions);
+    formData.append("material", material);
+    formData.append("age", age);
+    formData.append("sustainabilityScore", sustainabilityScore);
+
     formData.append("stock", stock);
 
     if (image) formData.append("image", image);
@@ -155,6 +165,35 @@ export default function AdminProductForm() {
           onChange={(e) => setDeliveryPrice(e.target.value)}
           required
         />
+            <input
+  placeholder="Dimensions (e.g., 120cm x 60cm)"
+  value={dimensions}
+  onChange={(e) => setDimensions(e.target.value)}
+  required
+/>
+
+<input
+  placeholder="Material (e.g., Oak, Metal, Fabric)"
+  value={material}
+  onChange={(e) => setMaterial(e.target.value)}
+  required
+/>
+
+<input
+  type="number"
+  placeholder="Age (years)"
+  value={age}
+  onChange={(e) => setAge(e.target.value)}
+  required
+/>
+
+<input
+  type="number"
+  placeholder="Sustainability Score (1–10)"
+  value={sustainabilityScore}
+  onChange={(e) => setSustainabilityScore(e.target.value)}
+  required
+/>
 
 
         <input
