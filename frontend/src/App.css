@@ -323,6 +323,21 @@ button:hover {
   margin-bottom: 20px;
 }
 
+
+.free-delivery-banner {
+  background: #fff3cd;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  color: #856404;
+  font-weight: 500;
+}
+
+.free-delivery-banner.success {
+  background: #d4edda;
+  color: #155724;
+}
+
 /* ========================= */
 /* ORDER HISTORY PAGE */
 

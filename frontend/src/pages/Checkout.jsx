@@ -1,110 +1,310 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth.context";
 import api from "../services/api";
 
 export default function CheckoutPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
+  const [saveAddress, setSaveAddress] = useState(true);
+  const [savedAddress, setSavedAddress] = useState(null);
+  const [useSavedAddress, setUseSavedAddress] = useState(true);
 
-  // Address fields
-  const [address, setAddress] = useState("");
-  const [line1, setLine1] = useState("");
-  const [city, setCity] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [country, setCountry] = useState("");
+  const [shippingAddress, setShippingAddress] = useState({
+    address: "",
+    line1: "",
+    line2: "",
+    city: "",
+    postcode: "",
+    country: "",
+  });
 
- 
+  const [cart, setCart] = useState({
+    items: [],
+    subtotal: 0,
+    deliveryPrice: 0,
+    total: 0,
+  });
 
-
+  // -----------------------------
+  // Fetch signed-in user + saved address
+  // -----------------------------
   useEffect(() => {
-  if (user) {
-    setAddress(user.address || "");
-    setLine1(user.line1 || "");
-    setCity(user.city || "");
-    setPostcode(user.postcode || "");
-    setCountry(user.country || "");
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/user/me");
+        const user = res.data;
+
+        const addr = user.address?.[0] || {};
+
+        const formattedAddress = {
+          address: addr.address || "",
+          line1: addr.line1 || "",
+          line2: addr.line2 || "",
+          city: addr.city || "",
+          postcode: addr.postcode || "",
+          country: addr.country || "",
+};
+
+
+        setSavedAddress(formattedAddress);
+
+        // Auto-fill only if using saved address
+        if (useSavedAddress) {
+          setShippingAddress(formattedAddress);
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setSavedAddress(null);
+      }
+    };
+
+    fetchUser();
+  }, [useSavedAddress]);
+
+  // -----------------------------
+  // Fetch cart with backend totals
+  // -----------------------------
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const res = await api.get("/cart");
+        setCart(res.data);
+      } catch (err) {
+        console.error("Error fetching cart:", err);
+        setCart({ items: [], subtotal: 0, deliveryPrice: 0, total: 0 });
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  // -----------------------------
+  // Address validation
+  // -----------------------------
+  function validateAddress(addr) {
+    const errors = {};
+
+    if (!addr.address?.trim()) errors.address = "House/Flat is required";
+    if (!addr.line1?.trim()) errors.line1 = "Street is required";
+    if (!addr.city?.trim()) errors.city = "City is required";
+    if (!addr.postcode?.trim()) errors.postcode = "Postcode is required";
+    if (!addr.country?.trim()) errors.country = "Country is required";
+
+    return errors;
   }
-}, [user]);
 
-
-
-
+  // -----------------------------
+  // Checkout handler
+  // -----------------------------
   const handleCheckout = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!address || !line1 || !city || !postcode || !country) {
-      return alert("Please fill in all address fields");
+    const addressToUse = useSavedAddress
+      ? savedAddress || shippingAddress
+      : shippingAddress;
+
+    const errors = validateAddress(addressToUse);
+    if (Object.keys(errors).length > 0) {
+      alert("Please complete all required address fields");
+      return;
     }
 
     try {
       setLoading(true);
 
       await api.post("/checkout", {
-        shippingAddress: { address, line1, city, postcode, country },
+        shippingAddress: addressToUse,
+        saveAddress,
       });
 
-      alert("Order placed successfully! (Demo)");
+      alert("Order placed successfully!");
       navigate("/orders");
     } catch (err) {
+      console.error("Checkout error:", err);
       alert(err.response?.data?.message || "Checkout failed");
     } finally {
       setLoading(false);
     }
   };
 
+  // -----------------------------
+  // Group cart items by productId
+  // -----------------------------
+  const groupedItems = cart.items.reduce((acc, item) => {
+    if (!acc[item.productId]) {
+      acc[item.productId] = { ...item };
+    } else {
+      acc[item.productId].quantity += item.quantity;
+    }
+    return acc;
+  }, {});
+
+  const summaryItems = Object.values(groupedItems);
+
+  // -----------------------------
+  // Rendering
+  // -----------------------------
   return (
-    <div className="page checkout-page">
+    <div className="checkout-page">
       <h2>Checkout</h2>
 
-      <form onSubmit={handleCheckout} className="checkout-form">
+      <div className="checkout-container">
+        {/* LEFT SIDE: Delivery Address */}
+        <form className="checkout-form" onSubmit={handleCheckout}>
+          <h3>Delivery Address</h3>
 
-        <input
-          type="text"
-          placeholder="House Name/Number"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          required
-        />
+          {savedAddress && (
+            <div className="saved-address-box">
+              <label>
+                <input
+                  type="radio"
+                  checked={useSavedAddress}
+                  onChange={() => setUseSavedAddress(true)}
+                />
+                Use saved address
+              </label>
 
-        <input
-          type="text"
-          placeholder="Street/Road"
-          value={line1}
-          onChange={(e) => setLine1(e.target.value)}
-          required
-        />
+              <div className="saved-address">
+                {savedAddress.address && <>{savedAddress.address}, </>}
+                {savedAddress.line1}
+                {savedAddress.line2 && <>, {savedAddress.line2}</>}
+                <br />
+                {savedAddress.city}, {savedAddress.postcode}
+                <br />
+                {savedAddress.country}
+              </div>
 
-        <input
-          type="text"
-          placeholder="City"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          required
-        />
+              <label>
+                <input
+                  type="radio"
+                  checked={!useSavedAddress}
+                  onChange={() => setUseSavedAddress(false)}
+                />
+                Use a different address
+              </label>
+            </div>
+          )}
 
-        <input
-          type="text"
-          placeholder="Postcode"
-          value={postcode}
-          onChange={(e) => setPostcode(e.target.value)}
-          required
-        />
+          {!useSavedAddress && (
+            <div className="new-address">
+              <input
+                placeholder="House / Flat"
+                value={shippingAddress.address}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    address: e.target.value,
+                  })
+                }
+              />
 
-        <input
-          type="text"
-          placeholder="Country"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          required
-        />
+              <input
+                placeholder="Street"
+                value={shippingAddress.line1}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    line1: e.target.value,
+                  })
+                }
+              />
 
-        <button className="primary-btn" disabled={loading}>
-          {loading ? "Processing..." : "Confirm & Pay (Demo)"}
-        </button>
-      </form>
+              <input
+                placeholder="Address line 2 (optional)"
+                value={shippingAddress.line2}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    line2: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="City"
+                value={shippingAddress.city}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    city: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Postcode"
+                value={shippingAddress.postcode}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    postcode: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                placeholder="Country"
+                value={shippingAddress.country}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    country: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
+
+          <label>
+            <input
+              type="checkbox"
+              checked={saveAddress}
+              onChange={() => setSaveAddress(!saveAddress)}
+            />
+            Save this address for future orders
+          </label>
+
+          <button disabled={loading} className="checkout-btn">
+            {loading ? "Processing..." : "Place Order"}
+          </button>
+        </form>
+
+        {/* RIGHT SIDE: Order Summary */}
+        <div className="order-summary">
+          <h3>Order Summary</h3>
+
+          {summaryItems.map((item) => (
+            <div key={item.productId} className="summary-item">
+              <span>
+                {item.product?.name || `Product #${item.productId}`} ×{" "}
+                {item.quantity}
+              </span>
+              <span>
+               £{((item.product?.price ?? 0) * item.quantity).toFixed(2)}
+
+              </span>
+            </div>
+          ))}
+
+          <hr />
+
+          <div className="summary-row">
+            <span>Subtotal</span>
+            <span>£{(cart.subtotal || 0).toFixed(2)}</span>
+          </div>
+
+          <div className="summary-row">
+            <span>Delivery</span>
+            <span>£{(cart.deliveryPrice || 0).toFixed(2)}</span>
+          </div>
+
+          <div className="summary-total">
+            <strong>Total</strong>
+            <strong>£{(cart.total || 0).toFixed(2)}</strong>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

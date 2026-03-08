@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-
 export default function CartPage() {
   const [items, setItems] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -10,8 +9,12 @@ export default function CartPage() {
   const [itemToRemove, setItemToRemove] = useState(null);
   const navigate = useNavigate();
 
+  // -----------------------------
+  // Load cart on mount
+  // -----------------------------
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (token) {
       setIsLoggedIn(true);
       fetchUserCart();
@@ -89,6 +92,9 @@ export default function CartPage() {
     setItemToRemove(null);
   };
 
+  // -----------------------------
+  // Empty cart UI
+  // -----------------------------
   if (!items.length)
     return (
       <div className="page">
@@ -96,96 +102,120 @@ export default function CartPage() {
       </div>
     );
 
+  // -----------------------------
+  // Totals (MATCH checkout logic)
+  // -----------------------------
+  const subtotal = items.reduce((sum, item) => {
+    return sum + (item.product?.price || 0) * item.quantity;
+  }, 0);
 
-const subtotal = items.reduce((sum, item) => {
-  return sum + (item.product?.price || 0) * item.quantity;
-}, 0);
+  const freeDeliveryThreshold = 50;
+  const amountLeft = Math.max(0, freeDeliveryThreshold - subtotal);
 
-const deliveryTotal = items.reduce((sum, item) => {
-  return sum + (item.product?.deliveryPrice || 0) * item.quantity;
-}, 0);
+  const highestDelivery = Math.max(
+    ...items.map((item) => item.product?.deliveryPrice || 0)
+  );
 
-const grandTotal = subtotal + deliveryTotal;
+  const deliveryTotal = subtotal >= freeDeliveryThreshold ? 0 : highestDelivery;
 
+  const grandTotal = subtotal + deliveryTotal;
 
+  // -----------------------------
+  // Rendering
+  // -----------------------------
   return (
     <div className="page cart-page">
       <h2>Your Cart</h2>
 
+      {/* Free delivery banner */}
+      {amountLeft > 0 && (
+        <p className="free-delivery-banner">
+          Spend £{amountLeft.toFixed(2)} more to get FREE delivery!
+        </p>
+      )}
 
+      {subtotal >= freeDeliveryThreshold && (
+        <p className="free-delivery-banner success">
+           You qualify for FREE delivery!
+        </p>
+      )}
 
+      {/* Cart items */}
+      {items.map((item) => (
+        <div key={item.productId} className="cart-item">
+          {item.product?.imageUrl && (
+            <img
+              src={`http://localhost:5000${item.product.imageUrl}`}
+              alt={item.product.name}
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                borderRadius: "6px",
+              }}
+            />
+          )}
 
-{items.map((item) => (
-  <div key={item.productId} className="cart-item">
-    
-    {item.product?.imageUrl && (
-      <img
-        src={`http://localhost:5000${item.product.imageUrl}`}
-        alt={item.product.name}
-        style={{
-          width: "80px",
-          height: "80px",
-          objectFit: "cover",
-          borderRadius: "6px"
-        }}
-      />
-    )}
+          <div className="cart-info">
+            <h4>{item.product?.name || `Product #${item.productId}`}</h4>
+            <p>Price: £{item.product?.price || 0}</p>
+            <p>Delivery: £{item.product?.deliveryPrice || 0}</p>
+            <p>
+              Item Total: £
+              {(
+                (item.product?.price || 0) * item.quantity +
+                (item.product?.deliveryPrice || 0) * item.quantity
+              ).toFixed(2)}
+            </p>
+          </div>
 
-    <div className="cart-info">
-      <h4>{item.product?.name || `Product #${item.productId}`}</h4>
-      <p>Price: £{item.product?.price || 0}</p>
-      <p>Delivery: £{item.product?.deliveryPrice || 0}</p>
-      <p>
-        Item Total: £
-        {(
-          (item.product?.price || 0) * item.quantity +
-          (item.product?.deliveryPrice || 0) * item.quantity
-        ).toFixed(2)}
-      </p>
-    </div>
+          <div className="cart-controls">
+            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
+              -
+            </button>
+            <span>{item.quantity}</span>
+            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
+              +
+            </button>
+          </div>
 
-    <div className="cart-controls">
-      <button onClick={() => updateQuantity(item.productId, item.quantity - 1)}>-</button>
-      <span>{item.quantity}</span>
-      <button onClick={() => updateQuantity(item.productId, item.quantity + 1)}>+</button>
-    </div>
+          <button className="remove-btn" onClick={() => confirmRemove(item.productId)}>
+            Remove
+          </button>
+        </div>
+      ))}
 
-    <button
-      className="remove-btn"
-      onClick={() => confirmRemove(item.productId)}
-    >
-      Remove
-    </button>
-  </div>
-))}
-
-
+      {/* Summary */}
       <div className="cart-summary">
-  <h3>Subtotal: £{subtotal.toFixed(2)}</h3>
-  <h3>Delivery: £{deliveryTotal.toFixed(2)}</h3>
-  <h2>Total: £{grandTotal.toFixed(2)}</h2>
+        <h3>Subtotal: £{subtotal.toFixed(2)}</h3>
+        <h3>Delivery: £{deliveryTotal.toFixed(2)}</h3>
+        <h2>Total: £{grandTotal.toFixed(2)}</h2>
 
-  <button
-    className="primary-btn"
-    onClick={() => {
-  if (!isLoggedIn) {
-    navigate("/signin");
-  } else {
-    navigate("/checkout");
-  }
-}}
-  >
-    Proceed to Checkout
-  </button>
-</div>
+        <button
+          className="primary-btn"
+          onClick={() => {
+            if (!isLoggedIn) {
+              navigate("/signin");
+            } else {
+              navigate("/checkout");
+            }
+          }}
+        >
+          Proceed to Checkout
+        </button>
+      </div>
 
       {/* Modal */}
       {modalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <p>Are you sure you want to remove this item?</p>
-            <button onClick={handleRemove} className="primary-btn">Yes</button>
-            <button onClick={() => setModalOpen(false)} className="secondary-btn">Cancel</button>
+            <button onClick={handleRemove} className="primary-btn">
+              Yes
+            </button>
+            <button onClick={() => setModalOpen(false)} className="secondary-btn">
+              Cancel
+            </button>
           </div>
         </div>
       )}
