@@ -105,20 +105,20 @@ export default function CartPage() {
   // -----------------------------
   // Totals (MATCH checkout logic)
   // -----------------------------
-  const subtotal = items.reduce((sum, item) => {
-    return sum + (item.product?.price || 0) * item.quantity;
-  }, 0);
+    const subtotal = items.reduce((sum, item) => {
+      return sum + (item.product?.price || 0) * item.quantity;
+    }, 0);
 
-  const freeDeliveryThreshold = 50;
-  const amountLeft = Math.max(0, freeDeliveryThreshold - subtotal);
+    const freeDeliveryThreshold = 50;
+    const amountLeft = Math.max(0, freeDeliveryThreshold - subtotal);
 
-  const highestDelivery = Math.max(
-    ...items.map((item) => item.product?.deliveryPrice || 0)
-  );
+    const highestDelivery = Math.max(
+      ...items.map((item) => item.product?.deliveryPrice || 0)
+    );
 
-  const deliveryTotal = subtotal >= freeDeliveryThreshold ? 0 : highestDelivery;
+    const deliveryTotal = subtotal >= freeDeliveryThreshold ? 0 : highestDelivery;
 
-  const grandTotal = subtotal + deliveryTotal;
+    const grandTotal = subtotal + deliveryTotal;
 
   // -----------------------------
   // Rendering

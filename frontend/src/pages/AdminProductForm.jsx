@@ -165,35 +165,35 @@ export default function AdminProductForm() {
           onChange={(e) => setDeliveryPrice(e.target.value)}
           required
         />
-            <input
-  placeholder="Dimensions (e.g., 120cm x 60cm)"
-  value={dimensions}
-  onChange={(e) => setDimensions(e.target.value)}
-  required
-/>
+          <input
+            placeholder="Dimensions (e.g., 120cm x 60cm)"
+            value={dimensions}
+            onChange={(e) => setDimensions(e.target.value)}
+            required
+          />
 
-<input
-  placeholder="Material (e.g., Oak, Metal, Fabric)"
-  value={material}
-  onChange={(e) => setMaterial(e.target.value)}
-  required
-/>
+          <input
+            placeholder="Material (e.g., Oak, Metal, Fabric)"
+            value={material}
+            onChange={(e) => setMaterial(e.target.value)}
+            required
+          />
 
-<input
-  type="number"
-  placeholder="Age (years)"
-  value={age}
-  onChange={(e) => setAge(e.target.value)}
-  required
-/>
+          <input
+            type="number"
+            placeholder="Age (years)"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            required
+          />
 
-<input
-  type="number"
-  placeholder="Sustainability Score (1–10)"
-  value={sustainabilityScore}
-  onChange={(e) => setSustainabilityScore(e.target.value)}
-  required
-/>
+          <input
+            type="number"
+            placeholder="Sustainability Score (1–10)"
+            value={sustainabilityScore}
+            onChange={(e) => setSustainabilityScore(e.target.value)}
+            required
+          />
 
 
         <input

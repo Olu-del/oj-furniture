@@ -37,108 +37,108 @@ const [filters, setFilters] = useState(getInitialFilters);
 
  
 
-  const fetchProducts = useCallback(async () => {
-  const res = await getProducts(filters);
-  setProducts(res.data);
-}, [filters]);
-
-  const fetchCategories = async () => {
-    const res = await api.get("/category");
-    setCategories(res.data);
-  };
-
-  // Handle search button click
-  const handleSearch = async () => {
-    if (!query) return fetchProducts();
-    const res = await searchProducts(query);
+    const fetchProducts = useCallback(async () => {
+    const res = await getProducts(filters);
     setProducts(res.data);
+  }, [filters]);
+
+    const fetchCategories = async () => {
+      const res = await api.get("/category");
+      setCategories(res.data);
+    };
+
+    // Handle search button click
+    const handleSearch = async () => {
+      if (!query) return fetchProducts();
+      const res = await searchProducts(query);
+      setProducts(res.data);
+    };
+
+
+    const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+
+    setFilters({ ...filters, categoryId, subCategoryId: "" });
+
+    const selected = categories.find(c => c.id === Number(categoryId));
+    setSubCategories(selected ? selected.subCategories : []);
   };
 
 
-  const handleCategoryChange = (e) => {
-  const categoryId = e.target.value;
+    // Fetch products when filters change
+    useEffect(() => {
+      fetchProducts();
+    }, [fetchProducts]);
 
-  setFilters({ ...filters, categoryId, subCategoryId: "" });
+    useEffect(() => {
+      fetchCategories();
+    }, []);
 
-  const selected = categories.find(c => c.id === Number(categoryId));
-  setSubCategories(selected ? selected.subCategories : []);
-};
+    
 
+    useEffect(() => {
+    if (!filters.subCategoryId || !categories.length) return;
 
-  // Fetch products when filters change
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    const selectedCategory = categories.find(cat =>
+      cat.subCategories.some(sc => sc.id === Number(filters.subCategoryId))
+    );
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (selectedCategory) {
+      setSubCategories(selectedCategory.subCategories);
+      setFilters(prev => ({
+        ...prev,
+        categoryId: selectedCategory.id
+      }));
+    }
+  }, [filters.subCategoryId, categories]);
+    // Add product to cart (signed-in or guest)
+    const addToCart = async (productId) => {
+      const token = localStorage.getItem("token");
 
-  
-
-  useEffect(() => {
-  if (!filters.subCategoryId || !categories.length) return;
-
-  const selectedCategory = categories.find(cat =>
-    cat.subCategories.some(sc => sc.id === Number(filters.subCategoryId))
-  );
-
-  if (selectedCategory) {
-    setSubCategories(selectedCategory.subCategories);
-    setFilters(prev => ({
-      ...prev,
-      categoryId: selectedCategory.id
-    }));
-  }
-}, [filters.subCategoryId, categories]);
-  // Add product to cart (signed-in or guest)
-  const addToCart = async (productId) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      if (token) {
-        // Signed-in user → DB cart
-        await api.post("/cart/add", {
-          productId,
-          quantity: 1,
-        });
-      } else {
-        // Guest → localStorage cart
-        const guestCart =
-          JSON.parse(localStorage.getItem("guestCart")) || [];
-
-        const existing = guestCart.find(
-          (item) => item.productId === productId
-        );
-
-        if (existing) {
-          existing.quantity += 1;
+      try {
+        if (token) {
+          // Signed-in user → DB cart
+          await api.post("/cart/add", {
+            productId,
+            quantity: 1,
+          });
         } else {
-          guestCart.push({ productId, quantity: 1 });
+          // Guest → localStorage cart
+          const guestCart =
+            JSON.parse(localStorage.getItem("guestCart")) || [];
+
+          const existing = guestCart.find(
+            (item) => item.productId === productId
+          );
+
+          if (existing) {
+            existing.quantity += 1;
+          } else {
+            guestCart.push({ productId, quantity: 1 });
+          }
+
+          localStorage.setItem(
+            "guestCart",
+            JSON.stringify(guestCart)
+          );
         }
 
-        localStorage.setItem(
-          "guestCart",
-          JSON.stringify(guestCart)
+        const goToCart = window.confirm(
+          "Product added to cart.\n\nGo to cart?"
         );
+
+        if (goToCart) {
+          navigate("/cart");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to add to cart");
       }
+    };
 
-      const goToCart = window.confirm(
-        "Product added to cart.\n\nGo to cart?"
-      );
-
-      if (goToCart) {
-        navigate("/cart");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add to cart");
-    }
-  };
-
-  // When category changes, reset subcategory filter
-  return (
-    <div className="page">
+    // When category changes, reset subcategory filter
+    return (
+      <div className="page">
       <h2>Products</h2>
  
 
