@@ -12,6 +12,7 @@ exports.getCart = async (req, res) => {
     }
   });
 
+
   if (!cart) {
     return res.json({
       items: [],
@@ -20,6 +21,7 @@ exports.getCart = async (req, res) => {
       total: 0
     });
   }
+
 
   // Convert Decimal → Number
   cart.items = cart.items.map((item) => ({
@@ -31,6 +33,7 @@ exports.getCart = async (req, res) => {
     }
   }));
 
+  
   const items = cart.items;
 
   // Subtotal

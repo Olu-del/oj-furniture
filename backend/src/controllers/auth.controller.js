@@ -3,8 +3,10 @@ const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 const { signToken } = require('../utils/jwt');
 
+
 // Initialise Prisma Client
 const prisma = new PrismaClient();
+
 
 // For sending emails (e.g. welcome email after registration)
 const { sendEmail } = require("../utils/email");
@@ -160,14 +162,12 @@ if (user.accountLocked)
     }
   });
 
+
 // create JWT with user id and role
 const token = signToken({
   id: user.id,
   role: user.role
 });
-
-  
-
 
 
 
@@ -211,6 +211,7 @@ exports.requestPasswordReset = async (req, res) => {
       resetCodeExpiry: expiry
     }
   });
+
 // Send reset code email
   await sendEmail({
     to: user.email,

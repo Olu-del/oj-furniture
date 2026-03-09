@@ -27,45 +27,45 @@ exports.createProduct = async (req, res) => {
     condition = condition.toUpperCase();
   }
 
-  // AUTO-GENERATED DESCRIPTION
-  const generatedDescription = `
-${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
-Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
-Dimensions: ${dimensions || "not provided"}.
-${description}
-  `.trim();
+    // AUTO-GENERATED DESCRIPTION
+    const generatedDescription = `
+      ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
+      Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
+      Dimensions: ${dimensions || "not provided"}.
+      ${description}
+        `.trim();
 
-  try {
-    const product = await prisma.product.create({
-      data: {
-        name,
-        description: generatedDescription,
-        price: parseFloat(price),
-        deliveryPrice: parseFloat(deliveryPrice),
-        colour,
-        condition,
-        stock: stock ? Number(stock) : 0,
-        categoryId: Number(categoryId),
-        subCategoryId: Number(subCategoryId),
+      try {
+        const product = await prisma.product.create({
+          data: {
+            name,
+            description: generatedDescription,
+            price: parseFloat(price),
+            deliveryPrice: parseFloat(deliveryPrice),
+            colour,
+            condition,
+            stock: stock ? Number(stock) : 0,
+            categoryId: Number(categoryId),
+            subCategoryId: Number(subCategoryId),
 
-        // NEW FIELDS
-        dimensions: dimensions || null,
-        material: material || null,
-        age: age ? Number(age) : null,
-        sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
+            // NEW FIELDS
+            dimensions: dimensions || null,
+            material: material || null,
+            age: age ? Number(age) : null,
+            sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
-        imageUrl: req.file
-          ? `/uploads/${req.file.filename}`
-          : "https://via.placeholder.com/300x300?text=No+Image"
+            imageUrl: req.file
+              ? `/uploads/${req.file.filename}`
+              : "https://via.placeholder.com/300x300?text=No+Image"
+          }
+        });
+
+        res.status(201).json(product);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", details: err.message });
       }
-    });
-
-    res.status(201).json(product);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", details: err.message });
-  }
-};
+    };
 
       exports.getProducts = async (req, res) => {
         const { categoryId, subCategoryId, colour, sort } = req.query;
@@ -158,64 +158,64 @@ ${description}
 
 
         exports.updateProduct = async (req, res) => {
-  const id = Number(req.params.id);
+        const id = Number(req.params.id);
 
-  let {
-    name,
-    description,
-    price,
-    deliveryPrice,
-    colour,
-    condition,
-    categoryId,
-    subCategoryId,
-    stock,
-    dimensions,
-    material,
-    age,
-    sustainabilityScore
-  } = req.body;
+        let {
+          name,
+          description,
+          price,
+          deliveryPrice,
+          colour,
+          condition,
+          categoryId,
+          subCategoryId,
+          stock,
+          dimensions,
+          material,
+          age,
+          sustainabilityScore
+        } = req.body;
 
-  if (condition) {
-    condition = condition.toUpperCase();
-  }
+        if (condition) {
+          condition = condition.toUpperCase();
+        }
 
-  const updatedDescription = `
-${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
-Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
-Dimensions: ${dimensions || "not provided"}.
-${description}
-  `.trim();
+        const updatedDescription = `
+      ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
+      Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
+      Dimensions: ${dimensions || "not provided"}.
+      ${description}
+        `.trim();
 
-  try {
-    const updated = await prisma.product.update({
-      where: { id },
-      data: {
-        name,
-        description: updatedDescription,
-        price: parseFloat(price),
-        deliveryPrice: parseFloat(deliveryPrice),
-        colour,
-        condition,
-        stock: stock ? Number(stock) : 0,
+        try {
+          const updated = await prisma.product.update({
+            where: { id },
+            data: {
+              name,
+              description: updatedDescription,
+              price: parseFloat(price),
+              deliveryPrice: parseFloat(deliveryPrice),
+              colour,
+              condition,
+              stock: stock ? Number(stock) : 0,
 
-        dimensions: dimensions || null,
-        material: material || null,
-        age: age ? Number(age) : null,
-        sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
+              dimensions: dimensions || null,
+              material: material || null,
+              age: age ? Number(age) : null,
+              sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
-        category: { connect: { id: Number(categoryId) } },
-        subCategory: { connect: { id: Number(subCategoryId) } },
+              category: { connect: { id: Number(categoryId) } },
+              subCategory: { connect: { id: Number(subCategoryId) } },
 
-        ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
-      }
-    });
+              ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
+            }
+          });
 
-    res.json(updated);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to update product" });
-  }
+          res.json(updated);
+        } catch (err) {
+          console.error(err);
+          res.status(500).json({ message: "Failed to update product" });
+        }
 };
 
 

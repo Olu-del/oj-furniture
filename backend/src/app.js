@@ -72,60 +72,60 @@ app.use(
 
 
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use("/api/contact", contactRoutes);
-app.use('/api/product', productRoutes);
-app.use("/api/category", categoryRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/checkout', checkoutRoutes);
-app.use('/api/order', orderRoutes);
-app.use("/api/admin", adminRoutes);
+  // API routes
+  app.use('/api/auth', authRoutes);
+  app.use("/api/contact", contactRoutes);
+  app.use('/api/product', productRoutes);
+  app.use("/api/category", categoryRoutes);
+  app.use('/api/cart', cartRoutes);
+  app.use('/api/checkout', checkoutRoutes);
+  app.use('/api/order', orderRoutes);
+  app.use("/api/admin", adminRoutes);
 
 
 
 
 
-// Protected route to get current user info
-app.get('/api/user/me', auth, async (req, res) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.userId },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,  
-        role: true,
-        address: {
-          select: {
-            id: true,
-            line1: true,
-            city: true,
-            postcode: true,
-            country: true
+  // Protected route to get current user info
+  app.get('/api/user/me', auth, async (req, res) => {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: req.userId },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,  
+          role: true,
+          address: {
+            select: {
+              id: true,
+              line1: true,
+              city: true,
+              postcode: true,
+              country: true
+            }
           }
         }
-      }
-    });
-// If user not found, return 404
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+      });
+      // If user not found, return 404
+          if (!user) {
+            return res.status(404).json({ message: "User not found" });
+          }
 
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
+          res.json(user);
+        } catch (err) {
+          console.error(err);
+          res.status(500).json({ message: "Server error" });
+        }
+      });
 
 
-// Health check route
-app.get('/api/health', (req, res) => {
-res.json({ status: 'API running' });
-});
+
+      // Health check route
+      app.get('/api/health', (req, res) => {
+      res.json({ status: 'API running' });
+      });
 
 
-module.exports = app;
+  module.exports = app;

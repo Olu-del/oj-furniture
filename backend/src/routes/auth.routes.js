@@ -2,8 +2,6 @@
 const express = require('express');
 const { signin, signout, register, requestPasswordReset, resetPassword} = require('../controllers/auth.controller');
 
-
-
 //Router for authentication-related endpoints
 const router = express.Router();
 
