@@ -17,8 +17,11 @@ console.log({
   removeCartItem,
   mergeCart
 });
+
+//Router for authentication-related endpoints
 const router = express.Router();
 
+//Routes for authentication
 router.get("/", auth, getCart);
 router.post("/add", auth, addToCart);
 router.put("/update", auth, updateCartItem);

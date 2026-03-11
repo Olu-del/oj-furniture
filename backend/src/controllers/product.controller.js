@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 // create a new product - admin only
 exports.createProduct = async (req, res) => {
+   // log who is creating the product (useful for debugging/admin checks)
   console.log('createProduct called by', req.userId, req.role);
 
   let {
@@ -23,11 +24,13 @@ exports.createProduct = async (req, res) => {
     sustainabilityScore
   } = req.body;
 
+  // convert condition to uppercase for consistency
   if (condition) {
     condition = condition.toUpperCase();
   }
 
     // AUTO-GENERATED DESCRIPTION
+    // automatically generate a more detailed description
     const generatedDescription = `
       ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
       Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
@@ -40,20 +43,22 @@ exports.createProduct = async (req, res) => {
           data: {
             name,
             description: generatedDescription,
-            price: parseFloat(price),
+            price: parseFloat(price), // convert price to number
             deliveryPrice: parseFloat(deliveryPrice),
             colour,
             condition,
-            stock: stock ? Number(stock) : 0,
+            stock: stock ? Number(stock) : 0, // default stock = 0
+
             categoryId: Number(categoryId),
             subCategoryId: Number(subCategoryId),
 
-            // NEW FIELDS
+              // more product details
             dimensions: dimensions || null,
             material: material || null,
             age: age ? Number(age) : null,
             sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
+             // if image uploaded use it, otherwise use placeholder
             imageUrl: req.file
               ? `/uploads/${req.file.filename}`
               : "https://via.placeholder.com/300x300?text=No+Image"
@@ -67,10 +72,11 @@ exports.createProduct = async (req, res) => {
       }
     };
 
+    // returns product list with optional filters and sorting
       exports.getProducts = async (req, res) => {
         const { categoryId, subCategoryId, colour, sort } = req.query;
 
-        // build filters based on query params
+    // object used to build dynamic filters
         const where = {}; 
 
         if (categoryId) {
@@ -86,6 +92,7 @@ exports.createProduct = async (req, res) => {
               where.colour = colour;
          }
 
+           // sorting options
           const orderBy = {};
 
           if (sort === "priceLow") {
@@ -96,7 +103,7 @@ exports.createProduct = async (req, res) => {
                   orderBy.price = "desc";
             }
 
-
+             // fetch products with their categories 
           const products = await prisma.product.findMany({
             where,
             orderBy,
@@ -109,10 +116,11 @@ exports.createProduct = async (req, res) => {
           res.json(products);
 };
 
-
+// for fetching multiple products (e.g. for cart/local storage)
         exports.getProductsByIds = async (req, res) => {
           const { ids } = req.body;
 
+          // check if ids is a valid array
           if (!ids || !Array.isArray(ids)) {
             return res.status(400).json({ message: "Invalid IDs array" });
           }
@@ -120,7 +128,7 @@ exports.createProduct = async (req, res) => {
           try {
             const products = await prisma.product.findMany({
               where: {
-                id: { in: ids.map(Number) },
+                id: { in: ids.map(Number) }, // convert ids to numbers
               },
             });
 
@@ -156,7 +164,8 @@ exports.createProduct = async (req, res) => {
           }
         };
 
-
+        //  UPDATE PRODUCT 
+        // admin can update existing product details
         exports.updateProduct = async (req, res) => {
         const id = Number(req.params.id);
 
@@ -175,12 +184,12 @@ exports.createProduct = async (req, res) => {
           age,
           sustainabilityScore
         } = req.body;
-
+           // keep condition consistent
         if (condition) {
           condition = condition.toUpperCase();
         }
-
-        const updatedDescription = `
+        // regenerate description after update
+      const updatedDescription = `
       ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
       Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
       Dimensions: ${dimensions || "not provided"}.
@@ -204,6 +213,7 @@ exports.createProduct = async (req, res) => {
               age: age ? Number(age) : null,
               sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
+            // reconnect category 
               category: { connect: { id: Number(categoryId) } },
               subCategory: { connect: { id: Number(subCategoryId) } },
 
@@ -220,7 +230,8 @@ exports.createProduct = async (req, res) => {
 
 
 
-
+          //  DELETE PRODUCT 
+          // admin deletes a product
           exports.deleteProduct = async (req, res) => {
             const id = Number(req.params.id);
 
@@ -240,7 +251,8 @@ exports.createProduct = async (req, res) => {
           };
 
 
-
+          //  SEARCH PRODUCTS 
+          // simple search based on product name
           exports.searchProducts = async (req, res) => {
             const { q } = req.query;
 

@@ -9,7 +9,7 @@ const {
 } = require("../controllers/order.controller");
 
 const router = express.Router();
-
+//Routes for authentication
 router.get("/my", auth, getUserOrders);
 router.get("/", auth, admin, getAllOrders);
 router.put("/:id/status", auth, admin, updateOrderStatus);

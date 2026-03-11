@@ -50,6 +50,8 @@ function baseTemplate(content) {
   `;
 }
 
+// ---------------- REGISTRATION EMAIL ----------------
+// shows a welcome message and a link to the store
 function registrationTemplate(firstName) {
   return `
     <h2>Welcome ${firstName} 🎉</h2>
@@ -70,6 +72,9 @@ function registrationTemplate(firstName) {
   `;
 }
 
+
+// ---------------- CONTACT RESPONSE EMAIL ----------------
+// sends a confirmation that the user's message was received
 function contactTemplate(name) {
   return `
     <h2>Hello ${name},</h2>
@@ -81,6 +86,8 @@ function contactTemplate(name) {
 }
 
 
+// ---------------- ORDER CONFIRMATION EMAIL ----------------
+// shows order details including items, quantities, prices, and totals
 function orderTemplate(firstName, order) {
 
   const itemsHtml = order.orderItems.map(item => `
@@ -140,6 +147,8 @@ function orderTemplate(firstName, order) {
   `);
 }
 
+
+// ---------------- EXPORT TEMPLATES ----------------
 module.exports = {
   baseTemplate,
   registrationTemplate,
