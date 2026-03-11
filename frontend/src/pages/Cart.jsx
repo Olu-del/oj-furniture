@@ -2,36 +2,41 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
+// CartPage – displays the user's cart, allows quantity updates, removal, and checkout
 export default function CartPage() {
-  const [items, setItems] = useState([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [itemToRemove, setItemToRemove] = useState(null);
+  // --- State variables ---
+  const [items, setItems] = useState([]); // cart items
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // user authentication status
+  const [modalOpen, setModalOpen] = useState(false); // remove item confirmation modal
+  const [itemToRemove, setItemToRemove] = useState(null); // currently selected item to remove
   const navigate = useNavigate();
 
-  // -----------------------------
-  // Load cart on mount
-  // -----------------------------
+   
+  // Load cart on component mount
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      setIsLoggedIn(true);
-      fetchUserCart();
+      setIsLoggedIn(true); // user is logged in
+      fetchUserCart(); // fetch cart from server
     } else {
-      loadGuestCart();
+      loadGuestCart(); // fetch cart from local storage
     }
   }, []);
 
+  
+  // Load guest cart from localStorage
   const loadGuestCart = async () => {
     const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
     if (!guestCart.length) return setItems([]);
 
     try {
+      // Fetch product details from server using IDs in guest cart
       const productIds = guestCart.map((i) => i.productId);
       const res = await api.post("/product/by-ids", { ids: productIds });
       const products = res.data;
 
+      // Merge product details with guest cart quantities
       const merged = guestCart.map((item) => ({
         ...item,
         product: products.find((p) => p.id === item.productId),
@@ -43,6 +48,8 @@ export default function CartPage() {
     }
   };
 
+   
+  // Load logged-in user cart from API 
   const fetchUserCart = async () => {
     try {
       const res = await api.get("/cart");
@@ -52,13 +59,17 @@ export default function CartPage() {
     }
   };
 
+  
+  // Update item quantity 
   const updateQuantity = async (productId, quantity) => {
-    if (quantity < 1) return;
+    if (quantity < 1) return; // prevent quantity less than 1
 
     if (isLoggedIn) {
+      // Update cart on server
       await api.put("/cart/update", { productId, quantity });
-      fetchUserCart();
+      fetchUserCart(); // refresh cart
     } else {
+      // Update guest cart in localStorage
       const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
       const updatedCart = guestCart.map((item) =>
         item.productId === productId ? { ...item, quantity } : item
@@ -68,33 +79,33 @@ export default function CartPage() {
     }
   };
 
-  // -----------------------------
+  
   // Modal removal logic
-  // -----------------------------
   const confirmRemove = (productId) => {
-    setItemToRemove(productId);
-    setModalOpen(true);
+    setItemToRemove(productId); // set selected item
+    setModalOpen(true); // open confirmation modal
   };
 
   const handleRemove = async () => {
     if (itemToRemove !== null) {
       if (isLoggedIn) {
+        // Remove from server cart
         await api.delete(`/cart/remove/${itemToRemove}`);
-        fetchUserCart();
+        fetchUserCart(); // refresh cart
       } else {
+        // Remove from guest cart in localStorage
         const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
         const updatedCart = guestCart.filter((i) => i.productId !== itemToRemove);
         localStorage.setItem("guestCart", JSON.stringify(updatedCart));
         setItems(updatedCart);
       }
     }
-    setModalOpen(false);
-    setItemToRemove(null);
+    setModalOpen(false); // close modal
+    setItemToRemove(null); // reset selected item
   };
 
-  // -----------------------------
-  // Empty cart UI
-  // -----------------------------
+   
+  // Empty cart UI 
   if (!items.length)
     return (
       <div className="page">
@@ -102,27 +113,23 @@ export default function CartPage() {
       </div>
     );
 
-  // -----------------------------
-  // Totals (MATCH checkout logic)
-  // -----------------------------
-    const subtotal = items.reduce((sum, item) => {
-      return sum + (item.product?.price || 0) * item.quantity;
-    }, 0);
+   
+  // Calculate totals
+  const subtotal = items.reduce((sum, item) => {
+    return sum + (item.product?.price || 0) * item.quantity;
+  }, 0);
 
-    const freeDeliveryThreshold = 50;
-    const amountLeft = Math.max(0, freeDeliveryThreshold - subtotal);
+  const freeDeliveryThreshold = 50; // threshold for free delivery
+  const amountLeft = Math.max(0, freeDeliveryThreshold - subtotal); // amount left to qualify
 
-    const highestDelivery = Math.max(
-      ...items.map((item) => item.product?.deliveryPrice || 0)
-    );
+  const highestDelivery = Math.max(
+    ...items.map((item) => item.product?.deliveryPrice || 0)
+  );
 
-    const deliveryTotal = subtotal >= freeDeliveryThreshold ? 0 : highestDelivery;
-
-    const grandTotal = subtotal + deliveryTotal;
-
-  // -----------------------------
-  // Rendering
-  // -----------------------------
+  const deliveryTotal = subtotal >= freeDeliveryThreshold ? 0 : highestDelivery; // delivery charge
+  const grandTotal = subtotal + deliveryTotal;
+ 
+  // Render cart page
   return (
     <div className="page cart-page">
       <h2>Your Cart</h2>
@@ -143,6 +150,7 @@ export default function CartPage() {
       {/* Cart items */}
       {items.map((item) => (
         <div key={item.productId} className="cart-item">
+          {/* Product image */}
           {item.product?.imageUrl && (
             <img
               src={`http://localhost:5000${item.product.imageUrl}`}
@@ -156,6 +164,7 @@ export default function CartPage() {
             />
           )}
 
+          {/* Product details */}
           <div className="cart-info">
             <h4>{item.product?.name || `Product #${item.productId}`}</h4>
             <p>Price: £{item.product?.price || 0}</p>
@@ -169,6 +178,7 @@ export default function CartPage() {
             </p>
           </div>
 
+          {/* Quantity controls */}
           <div className="cart-controls">
             <button onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
               -
@@ -179,25 +189,27 @@ export default function CartPage() {
             </button>
           </div>
 
+          {/* Remove button */}
           <button className="remove-btn" onClick={() => confirmRemove(item.productId)}>
             Remove
           </button>
         </div>
       ))}
 
-      {/* Summary */}
+      {/* Cart summary */}
       <div className="cart-summary">
         <h3>Subtotal: £{subtotal.toFixed(2)}</h3>
         <h3>Delivery: £{deliveryTotal.toFixed(2)}</h3>
         <h2>Total: £{grandTotal.toFixed(2)}</h2>
 
+        {/* Checkout button */}
         <button
           className="primary-btn"
           onClick={() => {
             if (!isLoggedIn) {
-              navigate("/signin");
+              navigate("/signin"); // redirect guest to sign in
             } else {
-              navigate("/checkout");
+              navigate("/checkout"); // proceed to checkout
             }
           }}
         >
@@ -205,7 +217,7 @@ export default function CartPage() {
         </button>
       </div>
 
-      {/* Modal */}
+      {/* Confirmation Modal */}
       {modalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">

@@ -1,6 +1,6 @@
 //React imports
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar"; 
 import { AuthProvider } from "./context/auth.context";
 
 // Importing page components
@@ -19,12 +19,15 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 
 
+// Admin-specific pages and routes
 import AdminOrders from "./pages/AdminOrder";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "./pages/AdminRoute";
 import AdminProducts from "./pages/AdminProduct";
 import AdminProductForm from "./pages/AdminProductForm";
+import AdminComplaintsForm from "./pages/AdminComplaintsForm";
 import ProductDetails from "./pages/ProductDetails";
+import ComplaintForm from "./pages/ComplaintForm";
 
 
 
@@ -37,7 +40,8 @@ export default function App() {
      <AuthProvider>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Welcome />} />
+        {/* <Route path="/" element={<Welcome />} /> */}
+        <Route path="/" element={<Navigate to="/Home" />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/register" element={<Register />} />
@@ -52,8 +56,12 @@ export default function App() {
         <Route path="/orders" element={<Order />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/admin/complaints/form" element={<AdminComplaintsForm />} />
+        <Route path="/complaints/new" element={<ComplaintForm />} />
 
+        
 
+    
       <Route
         path="/admin/product"
         element={
@@ -87,6 +95,8 @@ export default function App() {
         }
       /> 
 
+
+          
 
       </Routes>
       </AuthProvider>

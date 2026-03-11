@@ -5,12 +5,14 @@ import api from "../services/api";
 export default function CheckoutPage() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-  const [saveAddress, setSaveAddress] = useState(true);
-  const [savedAddress, setSavedAddress] = useState(null);
-  const [useSavedAddress, setUseSavedAddress] = useState(true);
-  const [deliverySlot, setDeliverySlot] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState("");
+  
+  // Local state variables
+  const [loading, setLoading] = useState(false); // To show processing state during checkout
+  const [saveAddress, setSaveAddress] = useState(true); // Whether to save new address
+  const [savedAddress, setSavedAddress] = useState(null); // User's saved address
+  const [useSavedAddress, setUseSavedAddress] = useState(true); // Toggle between saved or new address
+  const [deliverySlot, setDeliverySlot] = useState(""); // Selected time slot
+  const [deliveryDate, setDeliveryDate] = useState(""); // Selected delivery date
 
   const [shippingAddress, setShippingAddress] = useState({
     address: "",
@@ -28,9 +30,8 @@ export default function CheckoutPage() {
     total: 0,
   });
 
-  // -----------------------------
-  // Fetch signed-in user + saved address
-  // -----------------------------
+  
+  // Fetch signed-in user and saved address
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -46,12 +47,11 @@ export default function CheckoutPage() {
           city: addr.city || "",
           postcode: addr.postcode || "",
           country: addr.country || "",
-};
-
+        };
 
         setSavedAddress(formattedAddress);
 
-        // Auto-fill only if using saved address
+        // Auto-fill shipping address if using saved address
         if (useSavedAddress) {
           setShippingAddress(formattedAddress);
         }
@@ -64,9 +64,8 @@ export default function CheckoutPage() {
     fetchUser();
   }, [useSavedAddress]);
 
-  // -----------------------------
-  // Fetch cart with backend totals
-  // -----------------------------
+  
+  // Fetch cart from backend
   useEffect(() => {
     const fetchCart = async () => {
       try {
@@ -81,9 +80,8 @@ export default function CheckoutPage() {
     fetchCart();
   }, []);
 
-  // -----------------------------
-  // Address validation
-  // -----------------------------
+  
+  // Validate address fields before checkout
   function validateAddress(addr) {
     const errors = {};
 
@@ -96,12 +94,12 @@ export default function CheckoutPage() {
     return errors;
   }
 
-  // -----------------------------
-  // Checkout handler
-  // -----------------------------
+  
+  // Handle checkout form submission
   const handleCheckout = async (e) => {
     e.preventDefault();
 
+    // Decide which address to use
     const addressToUse = useSavedAddress
       ? savedAddress || shippingAddress
       : shippingAddress;
@@ -112,15 +110,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    if (!deliverySlot || !deliveryDate) {
+      alert("Please select a delivery date and time slot");
+      return;
+    }
+
     try {
       setLoading(true);
 
-        if (!deliverySlot || !deliveryDate) {
-        alert("Please select a delivery date and time slot");
-        return;
-}
-
-
+      // Submit checkout request
       await api.post("/checkout", {
         shippingAddress: addressToUse,
         saveAddress,
@@ -129,7 +127,7 @@ export default function CheckoutPage() {
       });
 
       alert("Order placed successfully!");
-      navigate("/orders");
+      navigate("/orders"); // Redirect to orders page
     } catch (err) {
       console.error("Checkout error:", err);
       alert(err.response?.data?.message || "Checkout failed");
@@ -138,9 +136,8 @@ export default function CheckoutPage() {
     }
   };
 
-  // -----------------------------
-  // Group cart items by productId
-  // -----------------------------
+  
+  // Group cart items by productId for summary
   const groupedItems = cart.items.reduce((acc, item) => {
     if (!acc[item.productId]) {
       acc[item.productId] = { ...item };
@@ -152,18 +149,18 @@ export default function CheckoutPage() {
 
   const summaryItems = Object.values(groupedItems);
 
-  // -----------------------------
-  // Rendering
-  // -----------------------------
+  
+  // Render checkout page
   return (
     <div className="checkout-page">
       <h2>Checkout</h2>
 
       <div className="checkout-container">
-        {/* LEFT SIDE: Delivery Address */}
+        {/* LEFT SIDE: Delivery Address Form */}
         <form className="checkout-form" onSubmit={handleCheckout}>
           <h3>Delivery Address</h3>
 
+          {/* Option to use saved address */}
           {savedAddress && (
             <div className="saved-address-box">
               <label>
@@ -196,6 +193,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
+          {/* New address form if not using saved address */}
           {!useSavedAddress && (
             <div className="new-address">
               <input
@@ -208,7 +206,6 @@ export default function CheckoutPage() {
                   })
                 }
               />
-
               <input
                 placeholder="Street"
                 value={shippingAddress.line1}
@@ -219,7 +216,6 @@ export default function CheckoutPage() {
                   })
                 }
               />
-
               <input
                 placeholder="Address line 2 (optional)"
                 value={shippingAddress.line2}
@@ -230,7 +226,6 @@ export default function CheckoutPage() {
                   })
                 }
               />
-
               <input
                 placeholder="City"
                 value={shippingAddress.city}
@@ -241,7 +236,6 @@ export default function CheckoutPage() {
                   })
                 }
               />
-
               <input
                 placeholder="Postcode"
                 value={shippingAddress.postcode}
@@ -252,7 +246,6 @@ export default function CheckoutPage() {
                   })
                 }
               />
-
               <input
                 placeholder="Country"
                 value={shippingAddress.country}
@@ -266,31 +259,29 @@ export default function CheckoutPage() {
             </div>
           )}
 
+          {/* Delivery options */}
+          <h3>Delivery Options</h3>
+          <label>Delivery Date</label>
+          <input
+            type="date"
+            value={deliveryDate}
+            onChange={(e) => setDeliveryDate(e.target.value)}
+            required
+          />
 
-           <h3>Delivery Options</h3>
+          <label>Delivery Slot</label>
+          <select
+            value={deliverySlot}
+            onChange={(e) => setDeliverySlot(e.target.value)}
+            required
+          >
+            <option value="">Select Delivery Slot</option>
+            <option value="Morning">Morning (8am–12pm)</option>
+            <option value="Afternoon">Afternoon (12pm–4pm)</option>
+            <option value="Evening">Evening (4pm–8pm)</option>
+          </select>
 
-        <label>Delivery Date</label>
-        <input
-          type="date"
-          value={deliveryDate}
-          onChange={(e) => setDeliveryDate(e.target.value)}
-          required
-        />
-
-        <label>Delivery Slot</label>
-        <select
-          value={deliverySlot}
-          onChange={(e) => setDeliverySlot(e.target.value)}
-          required
-        >
-          <option value="">Select Delivery Slot</option>
-          <option value="Morning">Morning (8am–12pm)</option>
-          <option value="Afternoon">Afternoon (12pm–4pm)</option>
-          <option value="Evening">Evening (4pm–8pm)</option>
-        </select>
-        
-
-
+          {/* Save address checkbox */}
           <label>
             <input
               type="checkbox"
@@ -316,8 +307,7 @@ export default function CheckoutPage() {
                 {item.quantity}
               </span>
               <span>
-               £{((item.product?.price ?? 0) * item.quantity).toFixed(2)}
-
+                £{((item.product?.price ?? 0) * item.quantity).toFixed(2)}
               </span>
             </div>
           ))}

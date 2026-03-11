@@ -24,11 +24,13 @@ export default function Navbar() {
       )}
 
       {user && (
-        <>
+        <div className="user-links">
           <span>Hello, {user.firstName}</span>
+          <Link to="/orders">Order History</Link>
           <Link to="/signout">Sign out</Link>
-        </>
-      )}
+        </div>
+)}
+
     </nav>
   );
 }

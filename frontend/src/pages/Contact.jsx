@@ -1,32 +1,49 @@
- import { useState } from "react";
- import api from "../services/api";
+import { useState } from "react";
+import api from "../services/api";
 
-
+// Contact component – allows users to send messages to site admins
 export default function Contact() {
+  
+  // Form state
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    message: ""
+    name: "",    // user's name
+    email: "",   // user's email
+    message: ""  // message content
   });
 
+  // Status message after submission (success or error)
   const [status, setStatus] = useState("");
 
+   
+  // Handle input changes
   const handleChange = (e) => {
+    // Update form state dynamically based on input name
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // prevent page reload
+
     try {
+      // Send form data to backend
       const res = await api.post("/contact", form);
-      setStatus(res.data.message); // use backend message
+
+      // Show backend success message
+      setStatus(res.data.message);
+
+      // Clear form fields
       setForm({ name: "", email: "", message: "" });
     } catch (err) {
+      // Show error message if request fails
       setStatus("Something went wrong.");
     }
   };
 
-  // If status exists, show ONLY the message
+  
+  // If a status message exists, show it instead of the form
+  
   if (status) {
     return (
       <div className="auth-container">
@@ -37,12 +54,15 @@ export default function Contact() {
     );
   }
 
+  
+  // Render contact form
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Contact Us</h2>
 
         <form onSubmit={handleSubmit} className="form">
+          {/* Name input */}
           <input
             name="name"
             placeholder="Your Name"
@@ -51,6 +71,7 @@ export default function Contact() {
             required
           />
 
+          {/* Email input */}
           <input
             name="email"
             type="email"
@@ -60,6 +81,7 @@ export default function Contact() {
             required
           />
 
+          {/* Message textarea */}
           <textarea
             name="message"
             placeholder="Your Message"
@@ -68,6 +90,7 @@ export default function Contact() {
             required
           />
 
+          {/* Submit button */}
           <button type="submit">Send Message</button>
         </form>
       </div>

@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
+// OrdersPage – displays logged-in user's past orders
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([]); // state to store user's orders
+  const navigate = useNavigate();
 
+  
+  // Fetch user's orders on mount
   useEffect(() => {
-    api.get("/order/my").then((res) => {
-      setOrders(res.data);
-    });
+    api.get("/order/my")
+      .then((res) => setOrders(res.data))
+      .catch((err) => console.error("Failed to fetch orders", err));
   }, []);
 
+  
+  // Handle empty orders 
   if (!orders.length)
     return (
       <div className="page">
@@ -17,6 +24,8 @@ export default function OrdersPage() {
       </div>
     );
 
+  
+  // Render orders list 
   return (
     <div className="page orders-page">
       <h2>My Orders</h2>
@@ -24,6 +33,7 @@ export default function OrdersPage() {
       {orders.map((order) => (
         <div key={order.id} className="order-card">
 
+          {/* Header – order ID and status */}
           <div className="order-header">
             <span>Order #{order.id}</span>
             <span className={`status ${order.status.toLowerCase()}`}>
@@ -31,7 +41,7 @@ export default function OrdersPage() {
             </span>
           </div>
 
-          {/* Order Items */}
+          {/* Order Items – loop through each item in the order */}
           {order.orderItems.map((item) => (
             <div key={item.id} className="order-item" style={{
               display: "flex",
@@ -40,6 +50,7 @@ export default function OrdersPage() {
               marginBottom: "15px"
             }}>
 
+              {/* Product image */}
               {item.imageUrl && (
                 <img
                   src={`http://localhost:5000${item.imageUrl}`}
@@ -53,6 +64,7 @@ export default function OrdersPage() {
                 />
               )}
 
+              {/* Product details */}
               <div style={{ flex: 1 }}>
                 <h4>{item.name}</h4>
                 <p>Quantity: {item.quantity}</p>
@@ -70,8 +82,15 @@ export default function OrdersPage() {
             <h3>Total: £{Number(order.total).toFixed(2)}</h3>
             <p>Delivery Slot: {order.deliverySlot}</p>
             <p>Delivery Status: {order.deliveryStatus}</p>
-
           </div>
+
+          {/* Button to report issues or request return */}
+          <button
+            onClick={() => navigate(`/complaints/new?orderId=${order.id}`)}
+            className="btn"
+          >
+            Report an Issue / Request Return
+          </button>
 
         </div>
       ))}

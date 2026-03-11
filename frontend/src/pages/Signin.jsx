@@ -1,76 +1,85 @@
-import { useState} from "react";
+import { useState } from "react"; 
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 
 export default function Signin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [locked, setLocked] = useState(false);
-  const [error, setError] = useState("");
+  // Local state for form inputs
+  
+  const [email, setEmail] = useState("");          // User email
+  const [password, setPassword] = useState("");    // User password
+  const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
+  const [locked, setLocked] = useState(false);     // Account lock status
+  const [error, setError] = useState("");          // Error messages
+
+  // Auth context provides signin function
   const { signin } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useNavigate();                  // For page navigation
 
+  
+  // Form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");   // Clear previous errors
+    setLocked(false);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLocked(false);
+    try {
+      // Sign in through AuthContext
+      await signin(email, password);
 
-  try {
-    // Sign in through AuthContext
-    await signin(email, password);
+      
+      // Merge guest cart if exists
+      const guestCart =
+        JSON.parse(localStorage.getItem("guestCart")) || [];
 
-    const guestCart =
-  JSON.parse(localStorage.getItem("guestCart")) || [];
+      if (Array.isArray(guestCart) && guestCart.length > 0) {
+        try {
+          await api.post("/cart/merge", { items: guestCart });
+          localStorage.removeItem("guestCart"); // Clear local cart
+        } catch (err) {
+          console.error("Cart merge failed:", err);
+        }
+      }
 
-if (Array.isArray(guestCart) && guestCart.length > 0) {
-  try {
-    await api.post("/cart/merge", { items: guestCart });
-    localStorage.removeItem("guestCart");
-  } catch (err) {
-    console.error("Cart merge failed:", err);
-  }
-}
+      // Redirect to welcome/dashboard page
+      navigate("/welcome");
 
+    } catch (err) {
+      const status = err.response?.status;
+      const message = err.response?.data?.message;
 
-    navigate("/welcome");
+      
+      // Handle account locked
+      if (status === 403) {
+        setError(message);
+        setLocked(true);
+        return;
+      }
 
-  } catch (err) {
-    const status = err.response?.status;
-    const message = err.response?.data?.message;
+      // Invalid credentials
+      if (status === 401) {
+        setError("Invalid email or password");
+        return;
+      }
 
-    if (status === 403) {
-      setError(message);
-      setLocked(true);
-      return;
+      // Generic error fallback
+      setError("Something went wrong. Try again.");
     }
+  };
 
-    if (status === 401) {
-      setError("Invalid email or password");
-      return;
-    }
-
-    setError("Something went wrong. Try again.");
-  }
-};
-
-   // -------------------------------
+  
   // ACCOUNT LOCKED SCREEN
-  // -------------------------------
   if (locked) {
     return (
       <div className="page locked-screen">
         <h2>Account Locked</h2>
         <p>{error}</p>
         <p>
-        You have entered an incorrect password 3 times. Your account is now locked. Please reset your password.
-      </p>
-        
+          You have entered an incorrect password 3 times. Your account is now locked. 
+          Please reset your password.
+        </p>
 
-        
-
+        {/* Button to navigate to password reset */}
         <button
           onClick={() => navigate("/request-reset", { state: { email } })}
           className="primary-btn"
@@ -82,13 +91,15 @@ if (Array.isArray(guestCart) && guestCart.length > 0) {
     );
   }
 
-  //Normal signin form
+  
+  // NORMAL SIGN-IN FORM
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Sign in</h2>
 
         <form onSubmit={handleSubmit}>
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
@@ -97,6 +108,7 @@ if (Array.isArray(guestCart) && guestCart.length > 0) {
             required
           />
 
+          {/* Password Input with show/hide toggle */}
           <div className="password-wrapper">
             <input
               type={showPassword ? "text" : "password"}
@@ -115,25 +127,25 @@ if (Array.isArray(guestCart) && guestCart.length > 0) {
 
           <button type="submit">Sign in</button>
 
+          {/* Forgot password link */}
           <p
-        style={{
-          marginTop: "10px",
-          textDecoration: "underline",
-          cursor: "pointer",
-          color: "#0077cc"
-        }}
-        onClick={() => navigate("/request-reset")}
-      >
-        Forgot password?
-      </p>
+            style={{
+              marginTop: "10px",
+              textDecoration: "underline",
+              cursor: "pointer",
+              color: "#0077cc"
+            }}
+            onClick={() => navigate("/request-reset")}
+          >
+            Forgot password?
+          </p>
         </form>
 
+        {/* Footer link to registration */}
         <div className="auth-footer">
           Don’t have an account? <a href="/register">Register</a>
         </div>
       </div>
     </div>
-
-    
   );
 }

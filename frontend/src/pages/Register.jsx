@@ -2,41 +2,45 @@ import { useState } from "react";
 import api from "../services/api";
 
 export default function Register() {
+
+  // State variables for form fields
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [address, setAddress] = useState("");
-  const [line1, setLine1] = useState("");
+  const [address, setAddress] = useState(""); // House name/number
+  const [line1, setLine1] = useState("");     // Street/road
   const [city, setCity] = useState("");
   const [postcode, setPostcode] = useState("");
   const [country, setCountry] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
 
-  
+ 
+  // Form submission handler
   const submit = async (e) => {
-  e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
 
-  try {
-    await api.post("/auth/register", {
-      firstName,
-      lastName,
-      email,
-      password,
-      address,
-      line1,
-      city,
-      postcode,
-      country
-    });
+    try {
+      // Send registration data to backend
+      await api.post("/auth/register", {
+        firstName,
+        lastName,
+        email,
+        password,
+        address,
+        line1,
+        city,
+        postcode,
+        country
+      });
 
-
-    // Registration successful → redirect
+      // Registration successful → redirect to homepage
       window.location.href = "/";
 
     } catch (err) {
+      // Show error message from backend if available
       if (err.response && err.response.data && err.response.data.message) {
-        alert(err.response.data.message); // show backend message
+        alert(err.response.data.message);
       } else {
         alert("Something went wrong.");
       }
@@ -44,12 +48,14 @@ export default function Register() {
   };
 
 
+  // Render registration form
   return (
     <div className="auth-container">
       <div className="auth-card">
         <h2>Register</h2>
 
         <form onSubmit={submit}>
+          {/* First Name Input */}
           <input
             type="text"
             placeholder="First Name"
@@ -58,6 +64,7 @@ export default function Register() {
             required
           />
 
+          {/* Last Name Input */}
           <input
             type="text"
             placeholder="Last Name"
@@ -66,6 +73,7 @@ export default function Register() {
             required
           />
 
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Email"
@@ -74,7 +82,7 @@ export default function Register() {
             required
           />
 
-
+          {/* Password Input with toggle visibility */}
           <div className="password-wrapper">
             <input
               type={showPassword ? "text" : "password"}
@@ -91,6 +99,7 @@ export default function Register() {
             </button>
           </div>
 
+          {/* Address Inputs */}
           <input
             type="text"
             placeholder="House Name/Number"
@@ -131,11 +140,11 @@ export default function Register() {
             required
           />
 
-          
-
+          {/* Submit Button */}
           <button type="submit">Register</button>
         </form>
 
+        {/* Footer with link to Sign In page */}
         <div className="auth-footer">
           Already have an account? <a href="/signin">Sign in</a>
         </div>

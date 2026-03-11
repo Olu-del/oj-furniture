@@ -3,52 +3,62 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function ProductDetails() {
-  const { id } = useParams();
+  const { id } = useParams(); // Get product ID from URL
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState(null);
-  const [related, setRelated] = useState([]);
+ 
+  // State variables
+  const [product, setProduct] = useState(null); // The main product details
+  const [related, setRelated] = useState([]);   // Related products (same subcategory)
 
-  // Format price
+  
+  // Helper function to format price in GBP
+ 
   const formatGBP = (amount) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP"
     }).format(Number(amount));
 
+ 
+  // Fetch product details and related products on mount or when `id` changes
   useEffect(() => {
     const fetchProduct = async () => {
       const res = await api.get(`/product/${id}`);
       setProduct(res.data);
 
-      // Fetch related products (same subcategory)
+      // If product has a subcategory, fetch related products
       if (res.data.subCategoryId) {
         const relatedRes = await api.get(
           `/product?subCategoryId=${res.data.subCategoryId}`
         );
 
-        // Exclude current product
+        // Exclude the current product from related list
         const filtered = relatedRes.data.filter(
           (p) => p.id !== res.data.id
         );
 
-        setRelated(filtered.slice(0, 4)); // max 4 related
+        setRelated(filtered.slice(0, 4)); // Limit to 4 related products
       }
     };
 
     fetchProduct();
   }, [id]);
 
+  
+  // Add product to cart (handles signed-in users and guests)
   const addToCart = async (productId) => {
     const token = localStorage.getItem("token");
 
     try {
       if (token) {
+        // Signed-in user → add to server-side cart
         await api.post("/cart/add", {
           productId,
           quantity: 1
         });
       } else {
+        // Guest user → add to localStorage cart
         const guestCart =
           JSON.parse(localStorage.getItem("guestCart")) || [];
 
@@ -57,15 +67,12 @@ export default function ProductDetails() {
         );
 
         if (existing) {
-          existing.quantity += 1;
+          existing.quantity += 1; // Increment if already in cart
         } else {
-          guestCart.push({ productId, quantity: 1 });
+          guestCart.push({ productId, quantity: 1 }); // Add new item
         }
 
-        localStorage.setItem(
-          "guestCart",
-          JSON.stringify(guestCart)
-        );
+        localStorage.setItem("guestCart", JSON.stringify(guestCart));
       }
 
       alert("Product added to cart");
@@ -74,10 +81,15 @@ export default function ProductDetails() {
     }
   };
 
+  
+  // Loading state
   if (!product) return <p>Loading...</p>;
 
+  
+  // Render
   return (
     <div className="page">
+      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
         style={{ marginBottom: "20px" }}
@@ -85,8 +97,10 @@ export default function ProductDetails() {
         ← Back to Products
       </button>
 
+      {/* Product Name */}
       <h2>{product.name}</h2>
 
+      {/* Product Image */}
       {product.imageUrl && (
         <img
           src={`http://localhost:5000${product.imageUrl}`}
@@ -99,7 +113,7 @@ export default function ProductDetails() {
         />
       )}
 
-      {/* MULTI-LINE DESCRIPTION */}
+      {/* Multi-line Description */}
       <p
         style={{
           whiteSpace: "pre-line",
@@ -107,14 +121,14 @@ export default function ProductDetails() {
           maxWidth: "600px"
         }}
       >
-        <strong>Description:</strong>{" "}
-        {product.description}
+        <strong>Description:</strong> {product.description}
       </p>
 
+      {/* Price & Delivery */}
       <p><strong>Price:</strong> {formatGBP(product.price)}</p>
       <p><strong>Delivery:</strong> {formatGBP(product.deliveryPrice)}</p>
 
-      {/* ADD TO CART + OUT OF STOCK */}
+      {/* Add to Cart Button / Out of Stock */}
       <button
         disabled={product.stock === 0}
         onClick={() => addToCart(product.id)}
@@ -127,7 +141,7 @@ export default function ProductDetails() {
         {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
       </button>
 
-      {/* RELATED PRODUCTS */}
+      {/* Related Products Section */}
       {related.length > 0 && (
         <>
           <h3 style={{ marginTop: "40px" }}>
@@ -137,8 +151,7 @@ export default function ProductDetails() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fill, minmax(180px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
               gap: "20px",
               marginTop: "20px"
             }}
@@ -167,9 +180,7 @@ export default function ProductDetails() {
                     }}
                   />
                 )}
-                <p style={{ marginTop: "10px" }}>
-                  {r.name}
-                </p>
+                <p style={{ marginTop: "10px" }}>{r.name}</p>
               </div>
             ))}
           </div>
