@@ -1,5 +1,5 @@
 -- AlterTable
-ALTER TABLE `user` ADD COLUMN `accountLocked` BOOLEAN NOT NULL DEFAULT false,
+ALTER TABLE `User` ADD COLUMN `accountLocked` BOOLEAN NOT NULL DEFAULT false,
     ADD COLUMN `failedLoginAttempts` INTEGER NOT NULL DEFAULT 0,
     ADD COLUMN `resetCode` VARCHAR(191) NULL,
     ADD COLUMN `resetCodeExpiry` DATETIME(3) NULL;

@@ -7,7 +7,7 @@
 
 */
 -- AlterTable
-ALTER TABLE `product` ADD COLUMN `categoryId` INTEGER NOT NULL,
+ALTER TABLE `Product` ADD COLUMN `categoryId` INTEGER NOT NULL,
     ADD COLUMN `colour` VARCHAR(191) NOT NULL,
     ADD COLUMN `subCategoryId` INTEGER NOT NULL,
     MODIFY `description` TEXT NOT NULL;

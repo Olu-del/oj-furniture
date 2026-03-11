@@ -6,5 +6,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `product` ADD COLUMN `deliveryPrice` INTEGER NOT NULL,
+ALTER TABLE `Product` ADD COLUMN `deliveryPrice` INTEGER NOT NULL,
     ADD COLUMN `updatedAt` DATETIME(3) NOT NULL;

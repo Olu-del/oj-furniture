@@ -7,16 +7,16 @@
 
 */
 -- AlterTable
-ALTER TABLE `order` ADD COLUMN `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
+ALTER TABLE `Order` ADD COLUMN `status` VARCHAR(191) NOT NULL DEFAULT 'pending',
     MODIFY `total` DECIMAL(10, 2) NOT NULL;
 
 -- AlterTable
-ALTER TABLE `product` ADD COLUMN `stock` INTEGER NOT NULL DEFAULT 0,
+ALTER TABLE `Product` ADD COLUMN `stock` INTEGER NOT NULL DEFAULT 0,
     MODIFY `price` DECIMAL(10, 2) NOT NULL,
     MODIFY `deliveryPrice` DECIMAL(10, 2) NOT NULL;
 
 -- AlterTable
-ALTER TABLE `user` ADD COLUMN `role` VARCHAR(191) NOT NULL DEFAULT 'user';
+ALTER TABLE `User` ADD COLUMN `role` VARCHAR(191) NOT NULL DEFAULT 'user';
 
 -- CreateTable
 CREATE TABLE `OrderItem` (

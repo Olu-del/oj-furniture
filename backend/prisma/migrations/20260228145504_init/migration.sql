@@ -9,14 +9,14 @@
 
 */
 -- AlterTable
-ALTER TABLE `order` ADD COLUMN `shippingAddress` TEXT NOT NULL,
+ALTER TABLE `Order` ADD COLUMN `shippingAddress` TEXT NOT NULL,
     MODIFY `status` ENUM('PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED') NOT NULL DEFAULT 'PENDING';
 
 -- AlterTable
-ALTER TABLE `product` ADD COLUMN `condition` ENUM('NEW', 'USED') NOT NULL;
+ALTER TABLE `Product` ADD COLUMN `condition` ENUM('NEW', 'USED') NOT NULL;
 
 -- AlterTable
-ALTER TABLE `user` DROP COLUMN `isAdmin`,
+ALTER TABLE `User` DROP COLUMN `isAdmin`,
     MODIFY `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER';
 
 -- CreateTable

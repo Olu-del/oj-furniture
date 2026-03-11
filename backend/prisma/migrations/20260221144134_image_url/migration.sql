@@ -6,5 +6,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `product` DROP COLUMN `image`,
+ALTER TABLE `Product` DROP COLUMN `image`,
     ADD COLUMN `imageUrl` VARCHAR(191) NOT NULL;
