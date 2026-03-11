@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
@@ -5,7 +7,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   // ---------- CREATE ADMIN ----------
-  const hashedPassword = await bcrypt.hash("Admin123!", 10);
+  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
   await prisma.user.upsert({
     where: { email: "admin@yourdomain.com" },
