@@ -1,93 +1,223 @@
-# E-Commerce Website
+# Project Setup
+Before running the project, make sure you have the following installed:
+Node.js
+The project requires Node.js (version 16 or later).
+Download from: https://nodejs.org
+Installing Node.js automatically installs npm (Node Package Manager).
+
+
+# Installation & Setup
+Follow these steps to run the project locally.
+
+# 1. Install Backend Dependencies
+1. Open your terminal.
+2. Navigate to the folder where you want to store the project.
+3. Run the following command:
+cd backend
+npm install
+
+# 2.Configure Environment Variables
+Inside the backend folder: Rename .env.example file to .env
+DATABASE_URL="mysql://user:password@localhost:3306/ojfurniture"
+JWT_SECRET="your_jwt_secret"
+EMAIL_USER="yourgmail@gmail.com"
+EMAIL_PASS="your_app_password"
+Note: Gmail requires an App Password if 2FA is enabled.
+
+# 3. Set Up the Database
+Run Prisma migrations:
+npx prisma migrate dev
+Seed the database:
+npm run seed
+
+# 4. Start the Backend Server
+npm run dev
+Backend runs on:
+http://localhost:5000
+
+# 5. Install Frontend Dependencies
+Navigate to the frontend folder
+cd frontend
+npm install
+This installs all required React packages:
+
+# 6. Start the Frontend
+npm start
+This will:
+•	Start React on http://localhost:3000
+•	Automatically open the browser
+•	Hot reload changes instantly
+
+
+## Note: Backend Must Be Running Too
+Your React app communicates with the backend API.
+cd backend
+npm install
+npm run dev
+And ensure the .env file is created.
+
+Project Purpose
+This project was built to explore:
+Sustainable UX design
+Trust and transparency in e‑commerce
+Secure authentication workflows
+Delivery logistics
+Accountability through complaints/returns
+Environmental impact awareness
+It demonstrates full‑stack engineering skills, user‑centred design, and real‑world e‑commerce patterns.
 
 
 
-## Getting started
+# Testing the Project
+This section explains how to manually test all major features of the OJ Furniture website.
+The project does not require automated tests; instead, you can verify functionality through the UI and API.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+# 1. Authentication & User Accounts
+Register a new user
+•	Go to register
+•	Fill in the form
+•	Submit
+You should receive a welcome email (if email is configured)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+# Sign in
+•	Go to sign in
+•	Enter valid credentials
+You should be redirected to the homepage
 
-## Add your files
+# Invalid sign in
+•	Enter wrong password
+You should see an error message
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+# +Password reset
+•	Go to forgot password
+•	Enter your email
+You should receive a reset code
+•	Enter the code + new password
+You should be able to sign in with the new password
 
-```
-cd existing_repo
-git remote add origin https://gitlab.doc.gold.ac.uk/cc-finalproject/e-commerce-website.git
-git branch -M main
-git push -uf origin main
-```
+# 2. Products & Browsing
+View product list
+•	Click product
+Products should load with images, price, and description
 
-## Integrate with your tools
+# View product details
+•	Click a product image
+You should see full details, the sustainability score, and the image
 
-- [ ] [Set up project integrations](https://gitlab.doc.gold.ac.uk/cc-finalproject/e-commerce-website/-/settings/integrations)
+# Admin product management
+•	Sign in as admin
+•	Visit /admin/products 
+You should see the product grid
 
-## Collaborate with your team
+# Add a product
+•	Go to /admin/products/new
+•	Fill in details + upload image
+The product should appear in the list
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+# Edit a product
+•	Click “Edit” on any product
+Changes should save
 
-## Test and Deploy
+# Delete a product
+•	Click “Delete”
+The product should be removed
 
-Use the built-in continuous integration in GitLab.
+# 3. Cart & Checkout
+Add to cart
+•	Open a product
+•	Click “Add to Cart”
+Cart count should update
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+# View cart
+•	Go to basket 
+Items should appear with quantity controls
 
-***
+# Update quantity
+•	Increase/decrease quantity
+Totals should update
 
-# Editing this README
+# Remove item
+•	Click “Remove”
+The item should disappear
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Checkout
+•	Go to checkout
+•	Select delivery date + slot
+The order should be created
+Cart should clear
+You should receive an order confirmation email
 
-## Suggestions for a good README
+# 4. Orders & Delivery Tracking
+View order history
+•	Sign in
+•	Go to orders 
+All past orders should appear
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+# Order details
+•	Each order should show: 
+o	Items
+o	Prices
+o	Delivery slot
+o	Delivery status
 
-## Name
-Choose a self-explaining name for your project.
+# Admin updates delivery status
+•	Go to /admin/orders
+•	Change status (PENDING → SHIPPED → DELIVERED)
+User should see updated status in /orders
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+# 5. Complaints & Returns
+Submit a complaint
+•	Sign in
+•	Go to orders
+•	Click Report an Issue / Request Return
+•	Fill in the form
+The complaint should be saved
+The should see a success message
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+# Admin complaint management
+•	Go to /admin/complaints
+•	Filter by status
+Complaints should appear
+Update complaint status
+•	Change status (OPEN → IN_REVIEW → RESOLVED → REJECTED)
+User should see the updated status in their account (if implemented)
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+# 6. Sustainability Analytics (Admin)
+View sustainability dashboard
+•	Go to /admin/sustainability 
+You should see: 
+o	Total CO₂ saved
+o	Total waste saved
+o	Average sustainability score
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+# 7. Email Notifications
+If email is configured for Gmail test:
+Welcome email
+Sent for registration
+Password reset email
+Sent when requesting reset code
+Order confirmation email
+Sent after checkout
+Contact form email
+Sent when the user submits the contact form
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+# 8. Security Checks
+Protected routes
+Try accessing admin pages as a normal user:
+You should be blocked
+Try to checkout without signing in:
+You should be redirected to sign in
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+# 9. Database Checks (Optional)
+Using Prisma Studio:
+npx prisma studio
+Verify:
+•	Users table
+•	Products table
+•	Orders + OrderItems
+•	Complaints
+•	Categories
+•	Addresses
+Data should match your actions in the UI
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
