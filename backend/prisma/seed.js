@@ -10,7 +10,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
   await prisma.user.upsert({
-    where: { email: "admin@yourdomain.com" },
+    where: { email: "ojfurniture2026@gmail.com" },
     update: {},
     create: {
       firstName: "System",
@@ -84,7 +84,8 @@ async function main() {
     }
   });
 
-  console.log(" Database seeded successfully");
+    console.log("Database seeded successfully");
+
 }
 
 main()
