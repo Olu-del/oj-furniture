@@ -15,7 +15,8 @@ exports.checkout = async (req, res) => {
   // basic validation to make sure address fields are filled
   if (
     !shippingAddress ||
-    !shippingAddress.address?.trim() ||
+    // !shippingAddress.address?.trim() ||
+    !shippingAddress ||
     !shippingAddress.line1?.trim() ||
     !shippingAddress.city?.trim() ||
     !shippingAddress.postcode?.trim() ||
@@ -25,6 +26,20 @@ exports.checkout = async (req, res) => {
   }
 
   try {
+
+
+    const chosenDate = new Date(req.body.deliveryDate);
+    const today = new Date();
+
+    today.setHours(0,0,0,0);
+    chosenDate.setHours(0,0,0,0);
+
+    if (chosenDate < today) {
+      return res.status(400).json({
+        message: "Delivery date cannot be in the past."
+      });
+    }
+
 
     // run checkout logic inside a database transaction
     // this ensures all steps succeed together or none at all
@@ -85,7 +100,10 @@ exports.checkout = async (req, res) => {
 
         // check if enough stock is available
         if (product.stock < item.quantity)
-          throw new Error(`Not enough stock for ${product.name}`);
+            throw new Error(`Sorry, we only have ${product.stock} left for ${product.name}.`);
+
+        
+
 
         // add item price to subtotal
         subtotal += Number(product.price) * item.quantity;
@@ -112,42 +130,45 @@ exports.checkout = async (req, res) => {
         });
       }
 
+
+
       // create the order record
-      const createdOrder = await tx.order.create({
-        data: {
-          userId: req.userId,
-          subtotal,
-          deliveryTotal,
-          total,
-          status: "PAID",
+     const createdOrder = await tx.order.create({
 
-          // combine address fields into a single string
-          shippingAddress: `${shippingAddress.address},
-            ${shippingAddress.line1},
-            ${shippingAddress.line2 || ""}, 
-            ${shippingAddress.city},
-            ${shippingAddress.postcode},
-            ${shippingAddress.country}`,
+      data: {
+        userId: req.userId,
+        subtotal,
+        deliveryTotal,
+        total,
+        status: "PAID",
 
-          // create order items based on cart items
-          orderItems: {
-            create: cart.items.map((item) => {
+        deliverySlot: req.body.deliverySlot,
+        deliveryDate: new Date(req.body.deliveryDate),
 
-              const product = productMap.get(item.productId);
+    shippingAddress: `${shippingAddress.address},
+      ${shippingAddress.line1},
+      ${shippingAddress.line2 || ""}, 
+      ${shippingAddress.city},
+      ${shippingAddress.postcode},
+      ${shippingAddress.country}`,
 
-              return {
-                productId: item.productId,
-                name: product.name,
-                imageUrl: product.imageUrl,
-                quantity: item.quantity,
-                price: product.price,
-                deliveryPrice: product.deliveryPrice
-              };
-            })
-          }
-        },
-        include: { orderItems: true }
-      });
+    orderItems: {
+      create: cart.items.map((item) => {
+        const product = productMap.get(item.productId);
+        return {
+          productId: item.productId,
+          name: product.name,
+          imageUrl: product.imageUrl,
+          quantity: item.quantity,
+          price: product.price,
+          deliveryPrice: product.deliveryPrice
+        };
+      })
+    }
+  },
+  include: { orderItems: true }
+});
+
 
       // clear the cart after order is created
       await tx.cartItem.deleteMany({
@@ -163,13 +184,15 @@ exports.checkout = async (req, res) => {
       where: { id: req.userId }
     });
 
-    if (user?.email) {
-      await sendEmail({
-        to: user.email,
-        subject: `Order #${order.id} Confirmation`,
-        html: orderTemplate(user.firstName, order)
-      });
-    }
+      // const firstItemName = order.orderItems[0]?.name || `Order #${order.id}`;
+      const firstItemName = order.orderItems[0]?.name || "Your Purchase";
+
+
+        await sendEmail({
+          to: user.email,
+          subject: `${firstItemName} - Order Confirmation`,
+          html: orderTemplate(user.firstName, order)
+        });
 
     // send response back to frontend
     res.json({
@@ -180,7 +203,8 @@ exports.checkout = async (req, res) => {
   } catch (err) {
 
     // log checkout errors for debugging
-    console.error("Checkout error:", err);
+       console.warn(err.message);
+
 
     res.status(400).json({ message: err.message });
   }

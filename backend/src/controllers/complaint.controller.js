@@ -1,35 +1,57 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { sendEmail } = require("../utils/email");
+const { complaintReceivedTemplate } = require("../utils/email.template");
 
-// USER: Submit a complaint
+// Controller for handling user complaints about orders
 exports.submitComplaint = async (req, res) => {
-  const { orderId, type, message } = req.body;
+  const { orderId, message } = req.body;
 
   try {
-    // Ensure user owns the order
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: { id: orderId },
+      include: { user: true }
     });
 
     if (!order || order.userId !== req.userId) {
       return res.status(403).json({ message: "You cannot complain about this order." });
     }
 
+    if (order.deliveryDate && order.deliveryDate > new Date()) {
+      return res.status(400).json({
+        message: "You cannot report an issue before your order is delivered."
+      });
+    }
+
+    if (order.deliveryStatus !== "DELIVERED") {
+      return res.status(400).json({
+        message: "Complaints cannot be allowed before delivery."
+      });
+    }
+
     const complaint = await prisma.complaint.create({
       data: {
         userId: req.userId,
         orderId,
-        type,
         message
       }
     });
 
+    // Send email BEFORE response
+    await sendEmail({
+      to: order.user.email,
+      subject: "Complaint Received",
+      html: complaintReceivedTemplate(order.user.firstName, orderId)
+    });
+
     res.json({ message: "Complaint submitted successfully", complaint });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to submit complaint" });
+    console.error(err.message);
+    res.status(400).json({ message: err.message });
   }
 };
+
 
 // ADMIN: Get all complaints
 exports.getAllComplaints = async (req, res) => {

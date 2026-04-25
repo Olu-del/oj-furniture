@@ -1,40 +1,130 @@
-// email HTML templates used across the app
+// // email HTML templates used across the app
 function baseTemplate(content) {
   return `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="UTF-8" />
+
+    <style>
+      /* ---------- GLOBAL STYLES ---------- */
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        width: 600px;
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .header {
+        background: #2c3e50;
+        padding: 25px;
+        color: #ffffff;
+        text-align: center;
+      }
+
+      .body {
+        padding: 30px;
+      }
+
+      .footer {
+        background: #ecf0f1;
+        padding: 15px;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      /* ---------- ORDER TABLE ---------- */
+      .order-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .order-table th {
+        background: #f4f4f4;
+        padding: 10px;
+        text-align: left;
+      }
+
+      .order-table td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: top;
+      }
+
+      .product-img {
+        width: 80px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      /* ---------- DELIVERY SUMMARY BOX ---------- */
+      .delivery-box {
+        background: #f9fafc;
+        border-left: 4px solid #2c3e50;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 4px;
+      }
+
+      /* ---------- TRACK ORDER BUTTON ---------- */
+      .track-btn {
+        display: inline-block;
+        padding: 12px 20px;
+        background: #2c3e50;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 20px;
+      }
+
+      /* ---------- RESPONSIVE MOBILE ---------- */
+      @media only screen and (max-width: 600px) {
+        .container {
+          width: 100% !important;
+        }
+        .product-img {
+          width: 60px;
+        }
+      }
+    </style>
+
   </head>
-  <body style="margin:0; padding:0; background:#f4f4f4; font-family: Arial, sans-serif;">
-    
+  <body>
+
     <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px;">
       <tr>
         <td align="center">
 
-          <table width="600" cellpadding="0" cellspacing="0" 
-            style="background:#ffffff; border-radius:8px; overflow:hidden;">
+          <table class="container" cellpadding="0" cellspacing="0">
 
-            <!-- Header -->
             <tr>
-              <td align="center" 
-                style="background:#2c3e50; padding:25px; color:#ffffff;">
-                <h1 style="margin:0;">OJ Furniture</h1>
-                <p style="margin:5px 0 0;">Premium Used Furniture</p>
+              <td class="header">
+                <h1 style="margin:0; font-size:32px; font-weight:900; letter-spacing:1px;">
+                  OJ FURNITURE
+                </h1>
+                <p style="margin:5px 0 0; font-size:14px; font-weight:600;">
+                  Premium Used Furniture
+                </p>
               </td>
+
             </tr>
 
-            <!-- Body -->
             <tr>
-              <td style="padding:30px;">
+              <td class="body">
                 ${content}
               </td>
             </tr>
 
-            <!-- Footer -->
             <tr>
-              <td align="center" 
-                style="background:#ecf0f1; padding:15px; font-size:12px;">
+              <td class="footer">
                 © ${new Date().getFullYear()} OJ Furniture. All rights reserved.
               </td>
             </tr>
@@ -49,6 +139,8 @@ function baseTemplate(content) {
   </html>
   `;
 }
+
+
 
 // ---------------- REGISTRATION EMAIL ----------------
 // shows a welcome message and a link to the store
@@ -87,36 +179,26 @@ function contactTemplate(name) {
 
 
 // ---------------- ORDER CONFIRMATION EMAIL ----------------
-// shows order details including items, quantities, prices, and totals
 function orderTemplate(firstName, order) {
 
   const itemsHtml = order.orderItems.map(item => `
-    <tr style="border-bottom:1px solid #eee;">
-      
-      <td style="padding:10px;">
+    <tr>
+      <td>
         ${item.imageUrl ? `
-        <img 
-          src="http://localhost:5000${item.imageUrl}" 
-          alt="${item.name}" 
-          width="80"
-          style="border-radius:6px; display:block; margin-bottom:8px;"
-        />
+          <img 
+            src="http://localhost:5000${item.imageUrl}" 
+            alt="${item.name}" 
+            class="product-img"
+          />
         ` : ""}
         <strong>${item.name}</strong>
       </td>
 
-      <td style="padding:10px; text-align:center;">
-        ${item.quantity}
-      </td>
+      <td align="center">${item.quantity}</td>
 
-      <td style="padding:10px; text-align:right;">
-        £${Number(item.price).toFixed(2)}
-      </td>
+      <td align="right">£${Number(item.price).toFixed(2)}</td>
 
-      <td style="padding:10px; text-align:right;">
-        £${Number(item.deliveryPrice || 0).toFixed(2)}
-      </td>
-
+      <td align="right">£${Number(item.deliveryPrice || 0).toFixed(2)}</td>
     </tr>
   `).join("");
 
@@ -125,27 +207,137 @@ function orderTemplate(firstName, order) {
     <p>Hi ${firstName},</p>
     <p>Your order has been successfully placed.</p>
 
-    <table width="100%" cellpadding="0" cellspacing="0" 
-      style="border-collapse:collapse; width:100%;">
-
-      <tr style="background:#f4f4f4;">
-        <th align="left" style="padding:10px;">Product</th>
-        <th align="center" style="padding:10px;">Qty</th>
-        <th align="right" style="padding:10px;">Price</th>
-        <th align="right" style="padding:10px;">Delivery</th>
+    <table class="order-table">
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Delivery</th>
       </tr>
-
       ${itemsHtml}
-
     </table>
+
+    <p><strong>Subtotal:</strong> £${Number(order.subtotal).toFixed(2)}</p>
+    <p><strong>Delivery:</strong> £${Number(order.deliveryTotal).toFixed(2)}</p>
+    <h3><strong>Total:</strong> £${Number(order.total).toFixed(2)}</h3>
+
+    <div class="delivery-box">
+      <p><strong>Delivery Slot:</strong> ${order.deliverySlot || "Not selected"}</p>
+      <p><strong>Delivery Date:</strong> ${
+        order.deliveryDate
+          ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
+          : "Not selected"
+      }</p>
+    </div>
+
+    <a href="http://localhost:3000/orders/${order.id}" class="track-btn">
+      Track My Order
+    </a>
+
+    <br/><br/>
+
+    <h3>Returns Policy</h3>
+    <p>
+      If you experience any issues with your order, you can submit a complaint 
+      or return request within 14 days of delivery.  
+      Visit your account page for more details.
+    </p>
+  `);
+}
+
+
+function orderOutForDeliveryTemplate(firstName, order) {
+  return baseTemplate(`
+    <h2>Your Order is Out for Delivery 🚚</h2>
+
+    <p>Hi ${firstName},</p>
+    <p>Your order <strong>number: ${order.id}</strong> is now on its way.</p>
+
+    <div class="delivery-box">
+      <p><strong>Delivery Slot:</strong> ${order.deliverySlot}</p>
+      <p><strong>Delivery Date:</strong> ${
+        order.deliveryDate
+          ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
+          : "Not selected"
+      }</p>
+    </div>
+
+    <a href="http://localhost:3000/orders/${order.id}" class="track-btn">
+      Track My Order
+    </a>
+
+    <br/><br/>
+
+    <p>If you won’t be home, please ensure someone is available to receive the delivery.</p>
+  `);
+}
+
+
+
+function orderDeliveredTemplate(firstName, order) {
+  return baseTemplate(`
+    <h2>Your Order Has Been Delivered 📦</h2>
+
+    <p>Hi ${firstName},</p>
+    <p>Your order <strong>number: ${order.id}</strong> has now been delivered.</p>
+
+    <div class="delivery-box">
+      <p><strong>Delivered On:</strong> ${
+        order.deliveryDate
+          ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
+          : "Today"
+      }</p>
+    </div>
+
+    <p>We hope you enjoy your purchase.</p>
+
+    <h3>Need help?</h3>
+    <p>You can report an issue or request a return within 14 days.</p>
+
+    <a href="http://localhost:3000/complaint?orderId=${order.id}" class="track-btn">
+      Report an Issue
+    </a>
+  `);
+}
+
+
+
+function complaintReceivedTemplate(firstName, orderId) {
+  return baseTemplate(`
+    <h2>Complaint Received 📝</h2>
+
+    <p>Hi ${firstName},</p>
+    <p>We have received your complaint regarding order <strong>number: ${orderId}</strong>.</p>
+
+    <p>Our support team will review your message and respond shortly.</p>
+
+    <div class="delivery-box">
+      <p><strong>Status:</strong> OPEN</p>
+      <p><strong>Response Time:</strong> Within 24–48 hours</p>
+    </div>
 
     <br/>
 
-    <p><strong>Subtotal:</strong> £${Number(order.subtotal || 0).toFixed(2)}</p>
-    <p><strong>Delivery:</strong> £${Number(order.deliveryTotal || 0).toFixed(2)}</p>
-    <h3><strong>Total:</strong> £${Number(order.total).toFixed(2)}</h3>
+    <p>Thank you for your patience.</p>
   `);
 }
+
+
 
 
 // ---------------- EXPORT TEMPLATES ----------------
@@ -153,5 +345,8 @@ module.exports = {
   baseTemplate,
   registrationTemplate,
   contactTemplate,
-  orderTemplate
+  orderTemplate,
+  orderOutForDeliveryTemplate,
+  orderDeliveredTemplate,
+  complaintReceivedTemplate
 };
