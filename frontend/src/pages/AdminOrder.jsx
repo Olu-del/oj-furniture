@@ -39,12 +39,37 @@ export default function AdminOrdersPage() {
           
           {/* Order header showing order number and customer email */}
           <div className="order-header">
-            <span>Order #{order.id}</span>
+            <span>Order number: {order.id}</span>
             <span>{order.user.email}</span>
           </div>
 
           {/* Total amount for the order */}
           <p>Total: £{order.total}</p>
+
+
+          {/* Order Items */}
+            <div className="order-items">
+              {order.orderItems.map((item) => (
+                <div key={item.id} className="order-item" style={{ display: "flex", marginBottom: "10px" }}>
+                  
+                  {item.imageUrl && (
+                    <img
+                      src={`http://localhost:5000${item.imageUrl}`}
+                      alt={item.name}
+                      style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "6px", marginRight: "10px" }}
+                    />
+                  )}
+
+                  <div>
+                    <p><strong>{item.name}</strong></p>
+                    <p>Qty: {item.quantity}</p>
+                    <p>£{item.price}</p>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+
 
           {/* Dropdown to update order status */}
           <label><strong>Order Status:</strong></label>
@@ -67,13 +92,14 @@ export default function AdminOrdersPage() {
           {/* Dropdown to update delivery status */}
           <label><strong>Delivery Status:</strong></label>
           <select
-            value={order.deliveryStatus || "Scheduled"}
+            value={order.deliveryStatus || "SCHEDULED"}
             onChange={(e) => updateDeliveryStatus(order.id, e.target.value)}
           >
-            <option value="Scheduled">Scheduled</option>
-            <option value="Out for Delivery">Out for Delivery</option>
-            <option value="Delivered">Delivered</option>
+            <option value="SCHEDULED">Scheduled</option>
+            <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+            <option value="DELIVERED">Delivered</option>
           </select>
+
 
         </div>
       ))}

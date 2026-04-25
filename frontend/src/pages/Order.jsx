@@ -35,7 +35,7 @@ export default function OrdersPage() {
 
           {/* Header – order ID and status */}
           <div className="order-header">
-            <span>Order #{order.id}</span>
+            <span>Order number: {order.id}</span>
             <span className={`status ${order.status.toLowerCase()}`}>
               {order.status}
             </span>

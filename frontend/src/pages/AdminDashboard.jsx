@@ -19,28 +19,28 @@ export default function AdminDashboard() {
       <h2>Admin Dashboard</h2>
 
       {/* Grid container for admin cards */}
-      <div className="admin-grid">
+      <div className="admin-product-grid">
 
         {/* Card linking to Product Management */}
-        <Link to="/admin/product" className="admin-card">
+        <Link to="/admin/product" className="admin-product-card">
           <h3>Manage Products</h3>
           <p>Add, edit, and delete products.</p>
         </Link>
 
         {/* Card linking to Order Management */}
-        <Link to="/admin/orders" className="admin-card">
+        <Link to="/admin/orders" className="admin-product-card">
           <h3>Manage Orders</h3>
           <p>View and update customer orders.</p>
         </Link>
 
         {/* Card linking to Complaints & Returns Management */}
-        <Link to="/admin/complaints" className="admin-card">
+        <Link to="/admin/complaints/form" className="admin-product-card">
           <h3>Complaints & Returns</h3>
           <p>Review and resolve customer issues.</p>
         </Link>
 
         {/* Sustainability Overview Card – shows stats fetched from backend */}
-        <div className="admin-card sustainability-card">
+        <div className="admin-product-card sustainability-card">
           <h3>Sustainability Overview</h3>
 
           {/* Show loading message until stats are fetched */}

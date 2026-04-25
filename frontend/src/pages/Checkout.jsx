@@ -82,17 +82,18 @@ export default function CheckoutPage() {
 
   
   // Validate address fields before checkout
+
   function validateAddress(addr) {
-    const errors = {};
+  const errors = {};
 
-    if (!addr.address?.trim()) errors.address = "House/Flat is required";
-    if (!addr.line1?.trim()) errors.line1 = "Street is required";
-    if (!addr.city?.trim()) errors.city = "City is required";
-    if (!addr.postcode?.trim()) errors.postcode = "Postcode is required";
-    if (!addr.country?.trim()) errors.country = "Country is required";
+  if (!addr.line1?.trim()) errors.line1 = "Street is required";
+  if (!addr.city?.trim()) errors.city = "City is required";
+  if (!addr.postcode?.trim()) errors.postcode = "Postcode is required";
+  if (!addr.country?.trim()) errors.country = "Country is required";
 
-    return errors;
-  }
+  return errors;
+}
+
 
   
   // Handle checkout form submission
@@ -303,7 +304,9 @@ export default function CheckoutPage() {
           {summaryItems.map((item) => (
             <div key={item.productId} className="summary-item">
               <span>
-                {item.product?.name || `Product #${item.productId}`} ×{" "}
+                {/* {item.product?.name || `Product #${item.productId}`} ×{" "} */}
+                {item.product?.name || "Your Purchase"}
+
                 {item.quantity}
               </span>
               <span>

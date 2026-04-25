@@ -1,5 +1,6 @@
 //React imports
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar"; 
 import { AuthProvider } from "./context/auth.context";
 
@@ -40,7 +41,11 @@ export default function App() {
      <AuthProvider>
       <Navbar />
       <Routes>
+        
         {/* <Route path="/" element={<Welcome />} /> */}
+        {/* <Route path="/" element={<Navigate to="/Home" />} />
+        <Route path="/Home" element={<Home />} /> */}
+        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/" element={<Navigate to="/Home" />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/welcome" element={<Welcome />} />

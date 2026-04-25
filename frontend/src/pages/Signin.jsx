@@ -13,7 +13,7 @@ export default function Signin() {
   const [error, setError] = useState("");          // Error messages
 
   // Auth context provides signin function
-  const { signin } = useAuth();
+   const { signin } = useAuth();
   const navigate = useNavigate();                  // For page navigation
 
   
@@ -26,7 +26,7 @@ export default function Signin() {
     try {
       // Sign in through AuthContext
       await signin(email, password);
-
+      
       
       // Merge guest cart if exists
       const guestCart =
@@ -42,7 +42,9 @@ export default function Signin() {
       }
 
       // Redirect to welcome/dashboard page
-      navigate("/welcome");
+       navigate("/welcome");
+      
+
 
     } catch (err) {
       const status = err.response?.status;

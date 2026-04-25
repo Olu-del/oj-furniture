@@ -13,10 +13,15 @@ export default function ComplaintForm() {
 
   
   // Form state
+  // const [form, setForm] = useState({
+  //   type: "Damaged Item", // default complaint type
+  //   message: "" // user's message
+  // });
+
   const [form, setForm] = useState({
-    type: "Damaged Item", // default complaint type
-    message: "" // user's message
-  });
+    message: ""
+});
+
 
   // Status message after submission
   const [status, setStatus] = useState("");
@@ -44,7 +49,10 @@ export default function ComplaintForm() {
       // Redirect to /orders after 1.5 seconds
       setTimeout(() => navigate("/orders"), 1500);
     } catch (err) {
-      setStatus("Failed to submit complaint."); // show error message if request fails
+      // setStatus("Failed to submit complaint."); 
+      // // show error message if request fails
+      setStatus(err.response?.data?.message || "Failed to submit complaint.");
+
     }
   };
 
@@ -59,14 +67,14 @@ export default function ComplaintForm() {
 
       {/* Complaint submission form */}
       <form onSubmit={handleSubmit} className="form">
-        <label>Issue Type</label>
+        {/* <label>Issue Type</label>
         <select name="type" value={form.type} onChange={handleChange}>
           <option>Damaged Item</option>
           <option>Wrong Item Delivered</option>
           <option>Not as Described</option>
           <option>Request Return</option>
           <option>Other</option>
-        </select>
+        </select> */}
 
         <label>Message</label>
         <textarea
