@@ -1,6 +1,7 @@
 // import axios client for API calls
 import axios from "axios";
 
+// Axios instance configured for backend API calls with cookies
 const api = axios.create({
   baseURL: "http://localhost:5000/api",
   withCredentials: true

@@ -22,20 +22,26 @@ export function AuthProvider({ children }) {
 };
 
 
-//useEffect to check auth status on app load
+// useEffect to load current user from the backend on app start
 useEffect(() => {
   fetchUser();
 }, []);
 
+  // Signin function to authenticate user and store token
   const signin = async (email, password) => {
-    const res = await api.post("/auth/signin", { email, password });
-    // Store token from response
-    if (res.data.token) {
-      localStorage.setItem("token", res.data.token);
-    }
-    await fetchUser();
-    return res;
-  };
+  const res = await api.post("/auth/signin", { email, password });
+
+  if (res.data.token) {
+    localStorage.setItem("token", res.data.token);
+  }
+
+  // Update context user
+  setUser(res.data);
+
+  //  Return the user object directly
+  return res.data;
+};
+
 
   const signout = async () => {
     await api.post("/auth/signout");

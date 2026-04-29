@@ -8,7 +8,7 @@ export default function OrdersPage() {
   const navigate = useNavigate();
 
   
-  // Fetch user's orders on mount
+  // Fetch user's orders on component mount
   useEffect(() => {
     api.get("/order/my")
       .then((res) => setOrders(res.data))

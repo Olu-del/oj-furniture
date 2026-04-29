@@ -6,7 +6,6 @@ import api from "../services/api";
 export default function Home() {
   
   // State to hold subcategory cards for the homepage
-  // Each card contains: id, name, imageUrl
   const [subCategoryCards, setSubCategoryCards] = useState([]);
   const navigate = useNavigate();
 

@@ -14,7 +14,7 @@ export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  
+        
   // Initialise filters from URL query parameters
   const getInitialFilters = () => {
     const params = new URLSearchParams(location.search);
@@ -102,10 +102,10 @@ export default function Products() {
 
     try {
       if (token) {
-        // Signed-in user → add to server-side cart
+        // Signed-in user and add to server-side cart
         await api.post("/cart/add", { productId, quantity: 1 });
       } else {
-        // Guest user → store in localStorage
+        // Guest user, store in localStorage
         const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
 
         const existing = guestCart.find(item => item.productId === productId);
@@ -193,40 +193,61 @@ export default function Products() {
       <div className="product-list">
         {products.map((p) => (
           <div key={p.id} className="product-card">
-            {/* Product Image */}
-            {p.imageUrl && (
-              <img
-                src={`http://localhost:5000${p.imageUrl}`}
-                alt={p.name}
-                className="product-image"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/product/${p.id}`)}
-              />
-            )}
 
-            {/* Product Info */}
-            <h3>{p.name}</h3>
-            <p className="product-description">
-              <strong>Description:</strong> {p.description}
-            </p>
-            <p>
-              <strong>Condition:</strong>{" "}
-              {p.condition.replaceAll("_", " ")
-                .toLowerCase()
-                .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
-            </p>
-            <p><strong>Price:</strong> {formatGBP(p.price)}</p>
-            <p><strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}</p>
+  {/* Product Image */}
+  {p.imageUrl && (
+    <img
+      src={`http://localhost:5000${p.imageUrl}`}
+      alt={p.name}
+      className="product-image"
+      style={{ cursor: "pointer" }}
+      onClick={() => navigate(`/product/${p.id}`)}
+    />
+  )}
 
-            {/* Add to Cart Button */}
-            <button
-              className="primary-btn"
-              disabled={p.stock === 0}
-              onClick={() => addToCart(p.id)}
-            >
-              {p.stock === 0 ? "Out of Stock" : "Add to Cart"}
-            </button>
-          </div>
+  {/* Product Info */}
+  <h3>{p.name}</h3>
+
+  <p className="product-description">
+    <strong>Description:</strong> {p.description}
+  </p>
+
+  <p>
+    <strong>Condition:</strong>{" "}
+    {p.condition.replaceAll("_", " ")
+      .toLowerCase()
+      .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase())}
+  </p>
+
+  {/*  Extra Details */}
+  {p.dimensions && (
+    <p><strong>Dimensions:</strong> {p.dimensions}</p>
+  )}
+
+  {p.material && (
+    <p><strong>Material:</strong> {p.material}</p>
+  )}
+
+  {p.age && (
+    <p><strong>Age:</strong> {p.age} years old</p>
+  )}
+
+  {p.sustainabilityScore && (
+    <p><strong>Sustainability Score:</strong> {p.sustainabilityScore}/10</p>
+  )}
+
+  <p><strong>Price:</strong> {formatGBP(p.price)}</p>
+  <p><strong>Delivery:</strong> {formatGBP(p.deliveryPrice)}</p>
+
+  <button
+    className="primary-btn"
+    disabled={p.stock === 0}
+    onClick={() => addToCart(p.id)}
+  >
+    {p.stock === 0 ? "Out of Stock" : "Add to Cart"}
+  </button>
+</div>
+
         ))}
       </div>
     </div>

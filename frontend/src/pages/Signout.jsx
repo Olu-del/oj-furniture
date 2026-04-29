@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth.context";
 
+// Signout page automatically logs the user out and redirects
 export default function Signout() {
   
   // Get signout function from AuthContext

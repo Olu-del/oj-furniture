@@ -1,6 +1,5 @@
 //React imports
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar"; 
 import { AuthProvider } from "./context/auth.context";
 
@@ -20,6 +19,13 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 
 
+import Help from "./pages/Help";
+import FAQ from "./pages/FAQ";
+import AboutUs from "./pages/AboutUs";
+import HelpCentre from "./pages/HelpCentre";
+import Footer from "./components/Footer";
+
+
 // Admin-specific pages and routes
 import AdminOrders from "./pages/AdminOrder";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -33,19 +39,15 @@ import ComplaintForm from "./pages/ComplaintForm";
 
 
 
-
 // Main App component with routing and auth context
 export default function App() {
   return (
     <BrowserRouter>
      <AuthProvider>
       <Navbar />
+      <div className="main-content">
+      {/* Main app routes */}
       <Routes>
-        
-        {/* <Route path="/" element={<Welcome />} /> */}
-        {/* <Route path="/" element={<Navigate to="/Home" />} />
-        <Route path="/Home" element={<Home />} /> */}
-        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/" element={<Navigate to="/Home" />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/welcome" element={<Welcome />} />
@@ -63,10 +65,15 @@ export default function App() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/admin/complaints/form" element={<AdminComplaintsForm />} />
         <Route path="/complaints/new" element={<ComplaintForm />} />
-
+        <Route path="/help" element={<Help />} />
+        <Route path="/help/faq" element={<FAQ />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/help-centre" element={<HelpCentre />} />
         
-
+        
+ 
     
+      {/* Protected admin routes */}
       <Route
         path="/admin/product"
         element={
@@ -100,13 +107,17 @@ export default function App() {
         }
       /> 
 
+</Routes>
+       </div>   
 
-          
-
-      </Routes>
+    <Footer />   
       </AuthProvider>
     </BrowserRouter>
   );
 }
+
+
+
+
 
 

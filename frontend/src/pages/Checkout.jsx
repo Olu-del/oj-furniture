@@ -30,6 +30,13 @@ export default function CheckoutPage() {
     total: 0,
   });
 
+  const slotTimes = {
+    Morning: 8,      // 8 AM
+    Afternoon: 12,   // 12 AM
+    Evening: 16      // 4 PM
+  };
+
+
   
   // Fetch signed-in user and saved address
   useEffect(() => {
@@ -81,74 +88,92 @@ export default function CheckoutPage() {
   }, []);
 
   
-  // Validate address fields before checkout
+    // Validate address fields before checkout
+    function validateAddress(addr) {
+    const errors = {};
 
-  function validateAddress(addr) {
-  const errors = {};
+    if (!addr.line1?.trim()) errors.line1 = "Street is required";
+    if (!addr.city?.trim()) errors.city = "City is required";
+    if (!addr.postcode?.trim()) errors.postcode = "Postcode is required";
+    if (!addr.country?.trim()) errors.country = "Country is required";
 
-  if (!addr.line1?.trim()) errors.line1 = "Street is required";
-  if (!addr.city?.trim()) errors.city = "City is required";
-  if (!addr.postcode?.trim()) errors.postcode = "Postcode is required";
-  if (!addr.country?.trim()) errors.country = "Country is required";
+    return errors;
+  }
 
-  return errors;
-}
+  function isSlotValid(slot) {
+    if (!deliveryDate) return true;
+
+    const today = new Date();
+    const selected = new Date(deliveryDate);
+
+    today.setHours(0,0,0,0);
+    selected.setHours(0,0,0,0);
+
+    // If delivery date is not today, all slots valid
+    if (today.getTime() !== selected.getTime()) return true;
+
+    // If today, check time
+    const nowHour = new Date().getHours();
+    const slotHour = slotTimes[slot];
+
+    return nowHour < slotHour;
+  }
 
 
-  
-  // Handle checkout form submission
-  const handleCheckout = async (e) => {
-    e.preventDefault();
+    
+    // Handle checkout form submission
+    const handleCheckout = async (e) => {
+      e.preventDefault();
 
-    // Decide which address to use
-    const addressToUse = useSavedAddress
-      ? savedAddress || shippingAddress
-      : shippingAddress;
+      // Decide which address to use
+      const addressToUse = useSavedAddress
+        ? savedAddress || shippingAddress
+        : shippingAddress;
 
-    const errors = validateAddress(addressToUse);
-    if (Object.keys(errors).length > 0) {
-      alert("Please complete all required address fields");
-      return;
-    }
+      const errors = validateAddress(addressToUse);
+      if (Object.keys(errors).length > 0) {
+        alert("Please complete all required address fields");
+        return;
+      }
 
-    if (!deliverySlot || !deliveryDate) {
-      alert("Please select a delivery date and time slot");
-      return;
-    }
+      if (!deliverySlot || !deliveryDate) {
+        alert("Please select a delivery date and time slot");
+        return;
+      }
 
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      // Submit checkout request
-      await api.post("/checkout", {
-        shippingAddress: addressToUse,
-        saveAddress,
-        deliverySlot,
-        deliveryDate,
-      });
+        // Submit checkout request
+        await api.post("/checkout", {
+          shippingAddress: addressToUse,
+          saveAddress,
+          deliverySlot,
+          deliveryDate,
+        });
 
-      alert("Order placed successfully!");
-      navigate("/orders"); // Redirect to orders page
-    } catch (err) {
-      console.error("Checkout error:", err);
-      alert(err.response?.data?.message || "Checkout failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+        alert("Order placed successfully!");
+        navigate("/orders"); // Redirect to orders page
+      } catch (err) {
+        console.error("Checkout error:", err);
+        alert(err.response?.data?.message || "Checkout failed");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  
-  // Group cart items by productId for summary
-  const groupedItems = cart.items.reduce((acc, item) => {
-    if (!acc[item.productId]) {
-      acc[item.productId] = { ...item };
-    } else {
-      acc[item.productId].quantity += item.quantity;
-    }
-    return acc;
-  }, {});
+    
+    // Group cart items by productId for summary
+    const groupedItems = cart.items.reduce((acc, item) => {
+      if (!acc[item.productId]) {
+        acc[item.productId] = { ...item };
+      } else {
+        acc[item.productId].quantity += item.quantity;
+      }
+      return acc;
+    }, {});
 
-  const summaryItems = Object.values(groupedItems);
+    const summaryItems = Object.values(groupedItems);
 
   
   // Render checkout page
@@ -277,9 +302,18 @@ export default function CheckoutPage() {
             required
           >
             <option value="">Select Delivery Slot</option>
-            <option value="Morning">Morning (8am–12pm)</option>
-            <option value="Afternoon">Afternoon (12pm–4pm)</option>
-            <option value="Evening">Evening (4pm–8pm)</option>
+
+            <option value="Morning" disabled={!isSlotValid("Morning")}>
+              Morning (8am–12pm)
+            </option>
+
+            <option value="Afternoon" disabled={!isSlotValid("Afternoon")}>
+              Afternoon (12pm–4pm)
+            </option>
+
+            <option value="Evening" disabled={!isSlotValid("Evening")}>
+              Evening (4pm–8pm)
+            </option>
           </select>
 
           {/* Save address checkbox */}
@@ -304,7 +338,6 @@ export default function CheckoutPage() {
           {summaryItems.map((item) => (
             <div key={item.productId} className="summary-item">
               <span>
-                {/* {item.product?.name || `Product #${item.productId}`} ×{" "} */}
                 {item.product?.name || "Your Purchase"}
 
                 {item.quantity}

@@ -7,9 +7,9 @@ export default function AdminProductForm() {
   // Get the product ID from route params (if editing)
   const { id } = useParams();
   const navigate = useNavigate();
-  const isEditing = Boolean(id); // determines if the form is in edit mode
+  const isEditing = Boolean(id); 
 
-  // --- State variables for product fields ---
+  // State variables for product fields 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -23,7 +23,7 @@ export default function AdminProductForm() {
   const [sustainabilityScore, setSustainabilityScore] = useState("");
   const [stock, setStock] = useState("");
 
-  // --- Category and Subcategory state ---
+  //  Category and Subcategory state
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");

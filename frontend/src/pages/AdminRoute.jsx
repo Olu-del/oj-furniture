@@ -4,7 +4,7 @@ import { useAuth } from "../context/auth.context";
 export default function AdminRoute({ children }) {
   const { user } = useAuth();
 
-  // Still loading user (undefined)
+  // Check if user data is still loading
   if (user === undefined) {
     return <div>Loading...</div>;
   }

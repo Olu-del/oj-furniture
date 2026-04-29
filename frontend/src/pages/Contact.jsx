@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
 
-// Contact component – allows users to send messages to site admins
+// Contact component – allows users to send messages to  admins
 export default function Contact() {
   
   // Form state
@@ -43,7 +43,6 @@ export default function Contact() {
 
   
   // If a status message exists, show it instead of the form
-  
   if (status) {
     return (
       <div className="auth-container">

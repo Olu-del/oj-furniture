@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
-// AdminComplaints component – view and manage customer complaints/returns
+// Admin page for viewing and managing customer complaints
 export default function AdminComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [filter, setFilter] = useState("ALL");
@@ -22,30 +22,26 @@ export default function AdminComplaints() {
     fetchComplaints();
   }, []);
 
-  // Update complaint status in backend and refresh list
   const updateStatus = async (id, status) => {
     try {
       await api.put(`/complaints/${id}`, { status });
-      fetchComplaints(); // refresh the list after update
+      fetchComplaints();
     } catch (err) {
       console.error("Failed to update complaint status", err);
     }
   };
 
-   // Filter complaints based on selected filter
   const filteredComplaints =
     filter === "ALL"
       ? complaints
       : complaints.filter((c) => c.status === filter);
 
-// Show loading message if still fetching
   if (loading) return <p>Loading complaints...</p>;
 
   return (
     <div className="page admin-dashboard">
       <h2>Customer Complaints & Returns</h2>
 
-      {/* FILTERS */}
       <div className="filters">
         {["ALL", "OPEN", "IN_REVIEW", "RESOLVED", "REJECTED"].map((f) => (
           <button
@@ -58,7 +54,6 @@ export default function AdminComplaints() {
         ))}
       </div>
 
-         {/* COMPLAINTS TABLE */}
       <table className="admin-table">
         <thead>
           <tr>
@@ -75,7 +70,6 @@ export default function AdminComplaints() {
 
         <tbody>
           {filteredComplaints.length === 0 ? (
-            // Show message if no complaints match the filter
             <tr>
               <td colSpan="8">No complaints found.</td>
             </tr>
@@ -88,7 +82,6 @@ export default function AdminComplaints() {
                 <td>{c.type}</td>
                 <td>{c.message}</td>
                 <td>
-                  {/* Status badge with different colors based on status */}
                   <span className={`status-badge status-${c.status.toLowerCase()}`}>
                     {c.status}
                   </span>
@@ -96,7 +89,6 @@ export default function AdminComplaints() {
                 <td>{new Date(c.createdAt).toLocaleDateString()}</td>
 
                 <td>
-                  {/* Dropdown to update complaint status */}
                   <select
                     value={c.status}
                     onChange={(e) => updateStatus(c.id, e.target.value)}

@@ -34,7 +34,7 @@ export default function Register() {
         country
       });
 
-      // Registration successful → redirect to homepage
+      // Registration successful and redirect to homepage
       window.location.href = "/";
 
     } catch (err) {

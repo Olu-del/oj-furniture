@@ -2,79 +2,62 @@ import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-// ComplaintForm – allows users to submit a complaint or return request for a specific order
+// Form for submitting order complaints and return requests
 export default function ComplaintForm() {
-  
-  // Get orderId from URL query parameter
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
 
-  const navigate = useNavigate(); // for programmatic navigation after submission
-
-  
-  // Form state
-  // const [form, setForm] = useState({
-  //   type: "Damaged Item", // default complaint type
-  //   message: "" // user's message
-  // });
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    type: "Wrong Item Delivered",
     message: ""
-});
+  });
 
-
-  // Status message after submission
   const [status, setStatus] = useState("");
 
-  
-  // Handle form input changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  
-  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // prevent default form submission
+    e.preventDefault();
 
     try {
-      // Send POST request to create a complaint
       const res = await api.post("/complaints", {
-        orderId: parseInt(orderId), // ensure orderId is a number
-        ...form // spread type and message
+        orderId: parseInt(orderId),
+        ...form
       });
 
-      setStatus(res.data.message); // show server response message
+      setStatus(res.data.message);
 
-      // Redirect to /orders after 1.5 seconds
       setTimeout(() => navigate("/orders"), 1500);
     } catch (err) {
-      // setStatus("Failed to submit complaint."); 
-      // // show error message if request fails
       setStatus(err.response?.data?.message || "Failed to submit complaint.");
-
     }
   };
 
-  
-  // Render form
   return (
     <div className="page">
       <h2>Report an Issue</h2>
 
-      {/* Display the order ID */}
       <p>Order ID: {orderId}</p>
 
-      {/* Complaint submission form */}
       <form onSubmit={handleSubmit} className="form">
-        {/* <label>Issue Type</label>
-        <select name="type" value={form.type} onChange={handleChange}>
-          <option>Damaged Item</option>
-          <option>Wrong Item Delivered</option>
-          <option>Not as Described</option>
-          <option>Request Return</option>
-          <option>Other</option>
-        </select> */}
+
+        <label>Issue</label>
+        <select
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+          required
+        >
+          <option value="Wrong Item Delivered">Wrong Item Delivered</option>
+          <option value="Not as Described">Not as Described</option>
+          <option value="Request Return">Request Return</option>
+          <option value="Damaged Item">Damaged Item</option>
+          <option value="Other">Other</option>
+        </select>
 
         <label>Message</label>
         <textarea
@@ -87,7 +70,6 @@ export default function ComplaintForm() {
         <button type="submit">Submit Complaint</button>
       </form>
 
-      {/* Show status message if present */}
       {status && <p>{status}</p>}
     </div>
   );

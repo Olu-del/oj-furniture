@@ -13,7 +13,6 @@ export default function ProductDetails() {
 
   
   // Helper function to format price in GBP
- 
   const formatGBP = (amount) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",
@@ -52,13 +51,13 @@ export default function ProductDetails() {
 
     try {
       if (token) {
-        // Signed-in user → add to server-side cart
+        // Signed-in user and add to server-side cart
         await api.post("/cart/add", {
           productId,
           quantity: 1
         });
       } else {
-        // Guest user → add to localStorage cart
+        // Guest user, store in localStorage
         const guestCart =
           JSON.parse(localStorage.getItem("guestCart")) || [];
 
