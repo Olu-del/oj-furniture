@@ -1,4 +1,5 @@
-// // email HTML templates used across the app
+// Email HTML templates used across the app
+// Shared HTML wrapper used for all sent emails
 function baseTemplate(content) {
   return `
   <!DOCTYPE html>
@@ -7,7 +8,7 @@ function baseTemplate(content) {
     <meta charset="UTF-8" />
 
     <style>
-      /* ---------- GLOBAL STYLES ---------- */
+      /*  GLOBAL STYLES  */
       body {
         margin: 0;
         padding: 0;
@@ -40,7 +41,7 @@ function baseTemplate(content) {
         text-align: center;
       }
 
-      /* ---------- ORDER TABLE ---------- */
+      /*  ORDER TABLE  */
       .order-table {
         width: 100%;
         border-collapse: collapse;
@@ -65,7 +66,7 @@ function baseTemplate(content) {
         display: block;
       }
 
-      /* ---------- DELIVERY SUMMARY BOX ---------- */
+      /*  DELIVERY SUMMARY BOX  */
       .delivery-box {
         background: #f9fafc;
         border-left: 4px solid #2c3e50;
@@ -74,7 +75,7 @@ function baseTemplate(content) {
         border-radius: 4px;
       }
 
-      /* ---------- TRACK ORDER BUTTON ---------- */
+      /*  TRACK ORDER BUTTON  */
       .track-btn {
         display: inline-block;
         padding: 12px 20px;
@@ -85,7 +86,7 @@ function baseTemplate(content) {
         margin-top: 20px;
       }
 
-      /* ---------- RESPONSIVE MOBILE ---------- */
+      /*  RESPONSIVE MOBILE  */
       @media only screen and (max-width: 600px) {
         .container {
           width: 100% !important;
@@ -142,7 +143,7 @@ function baseTemplate(content) {
 
 
 
-// ---------------- REGISTRATION EMAIL ----------------
+//  REGISTRATION EMAIL 
 // shows a welcome message and a link to the store
 function registrationTemplate(firstName) {
   return `
@@ -165,7 +166,7 @@ function registrationTemplate(firstName) {
 }
 
 
-// ---------------- CONTACT RESPONSE EMAIL ----------------
+//  CONTACT RESPONSE EMAIL 
 // sends a confirmation that the user's message was received
 function contactTemplate(name) {
   return `
@@ -178,7 +179,7 @@ function contactTemplate(name) {
 }
 
 
-// ---------------- ORDER CONFIRMATION EMAIL ----------------
+//  ORDER CONFIRMATION EMAIL 
 function orderTemplate(firstName, order) {
 
   const itemsHtml = order.orderItems.map(item => `
@@ -251,6 +252,8 @@ function orderTemplate(firstName, order) {
 }
 
 
+//  ORDER UPDATES AND COMPLAINT STATUS EMAILS
+//Order out for delivery email
 function orderOutForDeliveryTemplate(firstName, order) {
   return baseTemplate(`
     <h2>Your Order is Out for Delivery 🚚</h2>
@@ -283,7 +286,7 @@ function orderOutForDeliveryTemplate(firstName, order) {
 }
 
 
-
+// Delivery confirmation email with order details 
 function orderDeliveredTemplate(firstName, order) {
   return baseTemplate(`
     <h2>Your Order Has Been Delivered 📦</h2>
@@ -316,7 +319,7 @@ function orderDeliveredTemplate(firstName, order) {
 }
 
 
-
+// Complaint received email confirming the complaint submission and next steps
 function complaintReceivedTemplate(firstName, orderId) {
   return baseTemplate(`
     <h2>Complaint Received 📝</h2>
@@ -337,10 +340,65 @@ function complaintReceivedTemplate(firstName, orderId) {
   `);
 }
 
+// Complaint status update email with dynamic content based on the current status of the complaint
+function complaintStatusTemplate(firstName, complaint) {
+  let title = "";
+  let message = "";
+
+  switch (complaint.status) {
+    case "IN_REVIEW":
+      title = "Your Complaint is Being Reviewed 🔍";
+      message = `
+        <p>Hi ${firstName},</p>
+        <p>Your complaint regarding order <strong>${complaint.orderId}</strong> is now being reviewed by our support team.</p>
+        <p>We will update you as soon as we have more information.</p>
+      `;
+      break;
+
+    case "RESOLVED":
+      title = "Your Complaint Has Been Resolved ✅";
+      message = `
+        <p>Hi ${firstName},</p>
+        <p>Good news — your complaint for order <strong>${complaint.orderId}</strong> has now been resolved.</p>
+        <p>If you have any further questions or concerns, feel free to reply to this email.</p>
+      `;
+      break;
+
+    case "REJECTED":
+      title = "Your Complaint Has Been Rejected ⚠️";
+      message = `
+        <p>Hi ${firstName},</p>
+        <p>We’ve reviewed your complaint for order <strong>${complaint.orderId}</strong>, and unfortunately it has been rejected.</p>
+        <p>If you believe this decision was made in error, you can reply to this email for further clarification.</p>
+      `;
+      break;
+
+    default:
+      title = "Complaint Update";
+      message = `
+        <p>Hi ${firstName},</p>
+        <p>There has been an update to your complaint for order <strong>${complaint.orderId}</strong>.</p>
+      `;
+  }
+
+  return baseTemplate(`
+    <h2>${title}</h2>
+    ${message}
+
+    <div class="delivery-box">
+      <p><strong>Current Status:</strong> ${complaint.status}</p>
+      <p><strong>Submitted:</strong> ${new Date(complaint.createdAt).toLocaleDateString()}</p>
+    </div>
+
+    <br/>
+
+    <p>Thank you for your patience.</p>
+  `);
+}
 
 
 
-// ---------------- EXPORT TEMPLATES ----------------
+//  EXPORT TEMPLATES 
 module.exports = {
   baseTemplate,
   registrationTemplate,
@@ -348,5 +406,6 @@ module.exports = {
   orderTemplate,
   orderOutForDeliveryTemplate,
   orderDeliveredTemplate,
-  complaintReceivedTemplate
+  complaintReceivedTemplate,
+  complaintStatusTemplate 
 };

@@ -16,6 +16,7 @@ const adminRoutes = require("./routes/admin.routes");
 const complaintRoutes = require("./routes/complaint.routes");
 
 const { PrismaClient } = require('@prisma/client');
+// Prisma client used for database access in route handlers
 const prisma = new PrismaClient();
 
 
@@ -36,7 +37,7 @@ app.use(
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002'];
 app.use(cors({
   origin: function(origin, callback) {
-    // allow requests with no origin (e.g. mobile apps, curl)
+    // allow requests with no origin 
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
@@ -55,7 +56,7 @@ app.use(express.json());
 // Parse cookies from requests
 app.use(cookieParser());
 
-//uploads folder for product images
+// Serve uploaded images with proper CORS headers
 app.use(
   "/uploads",
   express.static("uploads", {
@@ -115,6 +116,7 @@ app.use(
             return res.status(404).json({ message: "User not found" });
           }
 
+          // Send back the authenticated user's profile data
           res.json(user);
         } catch (err) {
           console.error(err);
@@ -126,6 +128,7 @@ app.use(
 
       // Health check route
       app.get('/api/health', (req, res) => {
+      // Simple service health check
       res.json({ status: 'API running' });
       });
 

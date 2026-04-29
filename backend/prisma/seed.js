@@ -6,7 +6,7 @@ const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
 async function main() {
-  // ---------- CREATE ADMIN ----------
+  //  CREATE ADMIN 
   const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
 
   await prisma.user.upsert({
@@ -21,7 +21,7 @@ async function main() {
     }
   });
 
-  // ---------- CATEGORIES ----------
+  //  CATEGORIES 
   await prisma.category.upsert({
     where: { name: "Bedroom furniture" },
     update: {},

@@ -114,7 +114,7 @@ exports.register = async (req, res) => {
 
 
 
-//  SIGN IN 
+//  Sign In 
 exports.signin = async (req, res) => {
 
   const { email, password } = req.body;
@@ -207,7 +207,7 @@ function generateResetCode() {
 
 
 
-//  REQUEST PASSWORD RESET 
+//  Request password reset - generates a reset code and emails it to the user 
 exports.requestPasswordReset = async (req, res) => {
 
   const { email } = req.body;
@@ -287,7 +287,7 @@ exports.resetPassword = async (req, res) => {
 
 
 
-//  SIGN OUT 
+//  Sign out - clears the JWT cookie 
 exports.signout = (req, res) => {
 
   // remove JWT cookie

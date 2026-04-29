@@ -1,16 +1,15 @@
 // Authentication middleware – checks JWT and attaches user info to the request
-
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
 
-  // check Authorization header first (Bearer token)
+  // check Authorisation header first (Bearer token)
   // if not present, fall back to cookie-based token
   let token = null;
   
   const authHeader = req.headers.authorization;
 
-  // example header format: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // extract token from "Bearer <token>" format if header is present
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.slice(7); // remove "Bearer " from the start
   } else {

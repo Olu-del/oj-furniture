@@ -67,7 +67,7 @@ exports.getAllOrders = async (req, res) => {
 
 
 //  UPDATE ORDER STATUS 
-// allows admin to update order state (e.g. PAID, CANCELLED, etc.)
+// allows admin to update order status
 exports.updateOrderStatus = async (req, res) => {
 
   const { status } = req.body;
@@ -98,11 +98,10 @@ exports.updateDeliveryStatus = async (req, res) => {
     });
 
     // Get first product name for email subject
-    // const firstItemName = order.orderItems[0]?.name || `Order #${order.id}`;
       const firstItemName = order.orderItems[0]?.name || "Your Purchase";
 
 
-    // Send email BEFORE sending response
+    // Send delivery status email
     if (deliveryStatus === "OUT_FOR_DELIVERY") {
       await sendEmail({
         to: order.user.email,
@@ -128,38 +127,3 @@ exports.updateDeliveryStatus = async (req, res) => {
   }
 };
 
-// exports.updateDeliveryStatus = async (req, res) => {
-//   const { deliveryStatus } = req.body;
-
-//   try {
-//     const order = await prisma.order.update({
-//       where: { id: parseInt(req.params.id) },
-//       data: { deliveryStatus },
-//       include: { user: true } // IMPORTANT
-//     });
-
-//     // Send email BEFORE sending response
-//     if (deliveryStatus === "OUT_FOR_DELIVERY") {
-//       await sendEmail({
-//         to: order.user.email,
-//         subject: `Order #${order.id} is Out for Delivery`,
-//         html: orderOutForDeliveryTemplate(order.user.firstName, order)
-//       });
-//     }
-
-//     if (deliveryStatus === "DELIVERED") {
-//       await sendEmail({
-//         to: order.user.email,
-//         subject: `Order #${order.id} Delivered`,
-//         html: orderDeliveredTemplate(order.user.firstName, order)
-//       });
-//     }
-
-//     // Now send response
-//     res.json(order);
-
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).json({ message: "Failed to update delivery status" });
-//   }
-// };

@@ -1,5 +1,4 @@
 // Middleware to check if the current user has ADMIN permissions
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient(); // prisma instance for database queries
 

@@ -4,6 +4,7 @@ const { checkout } = require("../controllers/checkout.controller");
 
 const router = express.Router();
 
+// Checkout endpoint requires the user to be authenticated
 router.post("/", auth, checkout);
 
 

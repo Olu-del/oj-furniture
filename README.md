@@ -1,223 +1,217 @@
-# Project Setup
-Before running the project, make sure you have the following installed:
-Node.js
-The project requires Node.js (version 16 or later).
-Download from: https://nodejs.org
-Installing Node.js automatically installs npm (Node Package Manager).
+# OJ Furniture
+
+A furniture shopping website with a simple frontend and a backend server.
+Built with React, Node.js, Express, MySQL, and Prisma.
+It lets users browse products, add items to a cart, checkout with delivery options, and send complaints.
 
 
-# Installation & Setup
-Follow these steps to run the project locally.
 
-# 1. Install Backend Dependencies
-1. Open your terminal.
-2. Navigate to the folder where you want to store the project.
-3. Run the following command:
-cd backend
-npm install
+## What this project is
 
-# 2.Configure Environment Variables
-Inside the backend folder: Rename .env.example file to .env
-DATABASE_URL="mysql://user:password@localhost:3306/ojfurniture"
-JWT_SECRET="your_jwt_secret"
-EMAIL_USER="yourgmail@gmail.com"
-EMAIL_PASS="your_app_password"
-Note: Gmail requires an App Password if 2FA is enabled.
+- A website for shopping used furniture
+- A backend server that stores products, users, and orders
+- A login system for users
+- A shopping cart and checkout flow
+- A way to report order issues
+- Admin pages for managing products, orders, and complaints
 
-# 3. Set Up the Database
-Run Prisma migrations:
-npx prisma migrate dev
-Seed the database:
-npm run seed
 
-# 4. Start the Backend Server
-npm run dev
-Backend runs on:
+## Tech Stack
+- Frontend: React, React Router, Context API
+- Backend: Node.js, Express.js
+- Database: MySQL + Prisma ORM
+- Auth: JWT Authentication
+- Email: Nodemailer (Gmail App Password)
+- Other: Sustainability scoring, admin dashboards, delivery - scheduling.
+
+
+## What you need to run it
+
+- Node.js installed on your computer
+- npm installed on your computer
+- A MySQL database or another database supported by Prisma
+
+
+
+
+
+## Backend setup
+## To install dependencies
+
+# Open the project folder:
+# 1. Open a terminal and split into two.
+2. First terminal run:
+   ```
+   cd backend
+   ```
+3. To install the backend packages, run:
+   ```
+   npm install
+   ```
+
+
+## 2. Configure environment variables
+1. Rename `.env.example` with `.env`
+
+2. Create a `.env` file with these values:
+
+   ```env
+   DATABASE_URL="mysql://user:password@localhost:3306/ojfurniture"
+   JWT_SECRET="your_jwt_secret"
+   EMAIL_USER="yourgmail@gmail.com"
+   EMAIL_PASS="your_app_password"
+   ```
+# Gmail requires an App Password if 2FA is enabled.
+
+# 3. Run database migrations
+1. To set up the database run:
+   ```
+   npx prisma migrate dev
+   ```
+
+# 4. Seed the database
+1. To load initial data run:
+   ```
+   npm run seed
+   ```
+
+# 5. Start the backend
+1. To start the backend server run:
+   ```
+   npm run dev
+   ```
+
+The backend server will run at:
+
+```text
 http://localhost:5000
-
-# 5. Install Frontend Dependencies
-Navigate to the frontend folder
-cd frontend
-npm install
-This installs all required React packages:
-
-# 6. Start the Frontend
-npm start
-This will:
-•	Start React on http://localhost:3000
-•	Automatically open the browser
-•	Hot reload changes instantly
-
-
-## Note: Backend Must Be Running Too
-Your React app communicates with the backend API.
-cd backend
-npm install
-npm run dev
-And ensure the .env file is created.
-
-Project Purpose
-This project was built to explore:
-Sustainable UX design
-Trust and transparency in e‑commerce
-Secure authentication workflows
-Delivery logistics
-Accountability through complaints/returns
-Environmental impact awareness
-It demonstrates full‑stack engineering skills, user‑centred design, and real‑world e‑commerce patterns.
+```
 
 
 
-# Testing the Project
-This section explains how to manually test all major features of the OJ Furniture website.
-The project does not require automated tests; instead, you can verify functionality through the UI and API.
+## Frontend setup
 
-# 1. Authentication & User Accounts
-Register a new user
-•	Go to register
-•	Fill in the form
-•	Submit
-You should receive a welcome email (if email is configured)
+1. Second terminal.
+2. Run:
+   ```
+   cd frontend
+   ```
+3. Install the frontend packages:
+   ```
+   npm install
+   ```
+4. Start the frontend website:
+   ```
+   npm start
+   ```
 
-# Sign in
-•	Go to sign in
-•	Enter valid credentials
-You should be redirected to the homepage
+The frontend website will run at:
 
-# Invalid sign in
-•	Enter wrong password
-You should see an error message
+```
+http://localhost:3000
+```
 
-# +Password reset
-•	Go to forgot password
-•	Enter your email
-You should receive a reset code
-•	Enter the code + new password
-You should be able to sign in with the new password
+> The backend must be running before the frontend works.
 
-# 2. Products & Browsing
-View product list
-•	Click product
-Products should load with images, price, and description
 
-# View product details
-•	Click a product image
-You should see full details, the sustainability score, and the image
 
-# Admin product management
-•	Sign in as admin
-•	Visit /admin/products 
-You should see the product grid
+## How to test the project
 
-# Add a product
-•	Go to /admin/products/new
-•	Fill in details + upload image
-The product should appear in the list
+### Register and login
 
-# Edit a product
-•	Click “Edit” on any product
-Changes should save
+- Create a new account.
+- Sign in using your email and password.
+- If you forget your password, request a reset code and enter it with a new password.
 
-# Delete a product
-•	Click “Delete”
-The product should be removed
+### Browse products
 
-# 3. Cart & Checkout
-Add to cart
-•	Open a product
-•	Click “Add to Cart”
-Cart count should update
+- Open the product list.
+- Click a product to see more details.
+- Add products to the cart.
 
-# View cart
-•	Go to basket 
-Items should appear with quantity controls
+### Use the cart and checkout
 
-# Update quantity
-•	Increase/decrease quantity
-Totals should update
+- Add products to the cart.
+- Change quantity or remove items.
+- Choose a delivery date and time slot.
+- Place the order.
 
-# Remove item
-•	Click “Remove”
-The item should disappear
+### View orders
 
-# Checkout
-•	Go to checkout
-•	Select delivery date + slot
-The order should be created
-Cart should clear
-You should receive an order confirmation email
+- Open the orders page to see past orders.
+- Each order shows items, prices, delivery slot, and status.
 
-# 4. Orders & Delivery Tracking
-View order history
-•	Sign in
-•	Go to orders 
-All past orders should appear
+### Send a complaint
 
-# Order details
-•	Each order should show: 
-o	Items
-o	Prices
-o	Delivery slot
-o	Delivery status
+- Report an issue for an order.
+- The admin can review and update the complaint.
 
-# Admin updates delivery status
-•	Go to /admin/orders
-•	Change status (PENDING → SHIPPED → DELIVERED)
-User should see updated status in /orders
 
-# 5. Complaints & Returns
-Submit a complaint
-•	Sign in
-•	Go to orders
-•	Click Report an Issue / Request Return
-•	Fill in the form
-The complaint should be saved
-The should see a success message
 
-# Admin complaint management
-•	Go to /admin/complaints
-•	Filter by status
-Complaints should appear
-Update complaint status
-•	Change status (OPEN → IN_REVIEW → RESOLVED → REJECTED)
-User should see the updated status in their account (if implemented)
+## Quick use guide
 
-# 6. Sustainability Analytics (Admin)
-View sustainability dashboard
-•	Go to /admin/sustainability 
-You should see: 
-o	Total CO₂ saved
-o	Total waste saved
-o	Average sustainability score
+- To start the backend:
+  ```
+  cd backend
+  npm install
+  npm run dev
+  ```
+- To start the frontend:
+  ```
+  cd frontend
+  npm install
+  npm start
+  ```
+- Open this page in your browser:
+  ```
+  http://localhost:3000
+  ```
+- Then:
+  1. Register or sign in
+  2. Browse products
+  3. Add items to the cart
+  4. Complete checkout
 
-# 7. Email Notifications
-If email is configured for Gmail test:
-Welcome email
-Sent for registration
-Password reset email
-Sent when requesting reset code
-Order confirmation email
-Sent after checkout
-Contact form email
-Sent when the user submits the contact form
 
-# 8. Security Checks
-Protected routes
-Try accessing admin pages as a normal user:
-You should be blocked
-Try to checkout without signing in:
-You should be redirected to sign in
+## Admin features
 
-# 9. Database Checks (Optional)
-Using Prisma Studio:
+Admins can use pages to:
+
+- Add, edit, and delete products
+- View and update orders
+- View and update complaints
+- See simple sustainability stats
+
+
+
+## Email features
+
+If email settings are configured, the app can send:
+
+- Welcome emails
+- Password reset emails
+- Order confirmation emails
+- Contact form emails
+
+
+
+## Helpful command
+
+To open the database interface, use:
+
+```
 npx prisma studio
-Verify:
-•	Users table
-•	Products table
-•	Orders + OrderItems
-•	Complaints
-•	Categories
-•	Addresses
-Data should match your actions in the UI
+```
+
+This helps you inspect data like users, products, orders, complaints, and address records.
+
+
+
+## Notes
+
+- Keep the backend running while the frontend is open.
+- Use a correct database URL in `.env`.
+- If you use Gmail, set up an app password if Two-Factor Authentication is on.
+
 
 

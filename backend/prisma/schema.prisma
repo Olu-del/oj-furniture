@@ -162,13 +162,14 @@ model CartItem {
 
 model Complaint {
   id        Int      @id @default(autoincrement())
+  type      String 
   message   String
   status    String   @default("OPEN")
   userId    Int
   orderId   Int
   createdAt DateTime @default(now())
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   
 }

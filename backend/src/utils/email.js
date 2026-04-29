@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// Function to send an email
+// prepare and send an email message
 async function sendEmail(options) {
   const mailOptions = {
     from: `"OJ Furniture" <£{process.env.EMAIL_USER}>`,

@@ -116,7 +116,7 @@ exports.createProduct = async (req, res) => {
           res.json(products);
 };
 
-// for fetching multiple products (e.g. for cart/local storage)
+    // for fetching multiple products (e.g. for cart/local storage)
         exports.getProductsByIds = async (req, res) => {
           const { ids } = req.body;
 
@@ -164,9 +164,10 @@ exports.createProduct = async (req, res) => {
           }
         };
 
-        //  UPDATE PRODUCT 
-        // admin can update existing product details
-        exports.updateProduct = async (req, res) => {
+        
+
+      // UPDATE PRODUCT
+      exports.updateProduct = async (req, res) => {
         const id = Number(req.params.id);
 
         let {
@@ -184,24 +185,17 @@ exports.createProduct = async (req, res) => {
           age,
           sustainabilityScore
         } = req.body;
-           // keep condition consistent
+
         if (condition) {
           condition = condition.toUpperCase();
         }
-        // regenerate description after update
-      const updatedDescription = `
-      ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
-      Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
-      Dimensions: ${dimensions || "not provided"}.
-      ${description}
-        `.trim();
 
         try {
           const updated = await prisma.product.update({
             where: { id },
             data: {
               name,
-              description: updatedDescription,
+              description, 
               price: parseFloat(price),
               deliveryPrice: parseFloat(deliveryPrice),
               colour,
@@ -213,7 +207,6 @@ exports.createProduct = async (req, res) => {
               age: age ? Number(age) : null,
               sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
-            // reconnect category 
               category: { connect: { id: Number(categoryId) } },
               subCategory: { connect: { id: Number(subCategoryId) } },
 
@@ -226,7 +219,7 @@ exports.createProduct = async (req, res) => {
           console.error(err);
           res.status(500).json({ message: "Failed to update product" });
         }
-};
+      };
 
 
 
@@ -236,7 +229,7 @@ exports.createProduct = async (req, res) => {
             const id = Number(req.params.id);
 
             try {
-              // remove any cart items referencing this product first
+              // remove product from any carts first to avoid foreign key issues
               await prisma.cartItem.deleteMany({ where: { productId: id } });
               // also clear order items if any exist
               await prisma.orderItem.deleteMany({ where: { productId: id } });

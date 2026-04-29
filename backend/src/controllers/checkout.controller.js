@@ -31,6 +31,7 @@ exports.checkout = async (req, res) => {
     const chosenDate = new Date(req.body.deliveryDate);
     const today = new Date();
 
+    // normalise dates to midnight for accurate day comparison
     today.setHours(0,0,0,0);
     chosenDate.setHours(0,0,0,0);
 
@@ -39,6 +40,32 @@ exports.checkout = async (req, res) => {
         message: "Delivery date cannot be in the past."
       });
     }
+
+
+    // Validate delivery slot time
+        const slotTimes = {
+          "Morning": 8,      // 8 AM
+          "Afternoon": 12,   // 12 AM
+          "Evening": 16      // 4 PM
+        };
+
+        const deliverySlot = req.body.deliverySlot;
+
+        if (!deliverySlot || !slotTimes[deliverySlot]) {
+          return res.status(400).json({ message: "Invalid delivery slot." });
+        }
+
+        // If delivery date is today, ensure slot time has not passed
+        const now = new Date();
+        if (chosenDate.getTime() === today.getTime()) {
+          const slotHour = slotTimes[deliverySlot];
+
+          if (now.getHours() >= slotHour) {
+            return res.status(400).json({
+              message: `The ${deliverySlot} delivery slot has already passed today.`
+            });
+          }
+        }
 
 
     // run checkout logic inside a database transaction
@@ -87,6 +114,7 @@ exports.checkout = async (req, res) => {
       products.forEach(p => productMap.set(p.id, p));
 
 
+      // compute order totals from cart items
       let subtotal = 0;
       let highestDelivery = 0;
 
@@ -101,8 +129,6 @@ exports.checkout = async (req, res) => {
         // check if enough stock is available
         if (product.stock < item.quantity)
             throw new Error(`Sorry, we only have ${product.stock} left for ${product.name}.`);
-
-        
 
 
         // add item price to subtotal
@@ -184,7 +210,7 @@ exports.checkout = async (req, res) => {
       where: { id: req.userId }
     });
 
-      // const firstItemName = order.orderItems[0]?.name || `Order #${order.id}`;
+      // Get first product name for email subject
       const firstItemName = order.orderItems[0]?.name || "Your Purchase";
 
 

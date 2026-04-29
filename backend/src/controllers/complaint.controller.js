@@ -1,11 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { sendEmail } = require("../utils/email");
-const { complaintReceivedTemplate } = require("../utils/email.template");
+const { complaintReceivedTemplate, complaintStatusTemplate } = require("../utils/email.template");
 
 // Controller for handling user complaints about orders
 exports.submitComplaint = async (req, res) => {
-  const { orderId, message } = req.body;
+  const { orderId, message, type } = req.body;  // ⭐ include type
 
   try {
     const order = await prisma.order.findUnique({
@@ -33,11 +33,11 @@ exports.submitComplaint = async (req, res) => {
       data: {
         userId: req.userId,
         orderId,
-        message
+        message,
+        type   //  save complaint reason
       }
     });
 
-    // Send email BEFORE response
     await sendEmail({
       to: order.user.email,
       subject: "Complaint Received",
@@ -51,6 +51,8 @@ exports.submitComplaint = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+
 
 
 // ADMIN: Get all complaints
@@ -76,14 +78,37 @@ exports.updateComplaintStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-    const updated = await prisma.complaint.update({
+    const complaint = await prisma.complaint.update({
       where: { id: parseInt(req.params.id) },
-      data: { status }
+      data: { status },
+      include: {
+        user: true,
+        order: true
+      }
     });
 
-    res.json(updated);
+    // Choose subject line
+    const subjects = {
+      OPEN: "Your Complaint Has Been Reopened",
+      IN_REVIEW: "Your Complaint is Being Reviewed",
+      RESOLVED: "Your Complaint Has Been Resolved",
+      REJECTED: "Your Complaint Has Been Rejected"
+    };
+
+    const subject = subjects[complaint.status] || "Complaint Update";
+
+    // Send email to user
+    await sendEmail({
+      to: complaint.user.email,
+      subject,
+      html: complaintStatusTemplate(complaint.user.firstName, complaint)
+    });
+
+    res.json(complaint);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to update complaint status" });
   }
 };
+

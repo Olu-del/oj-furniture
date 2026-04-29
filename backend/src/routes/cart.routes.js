@@ -9,19 +9,10 @@ const {
 } = require("../controllers/cart.controller");
 
 
-
-console.log({
-  getCart,
-  addToCart,
-  updateCartItem,
-  removeCartItem,
-  mergeCart
-});
-
-//Router for authentication-related endpoints
+// Cart endpoints for logged-in users
 const router = express.Router();
 
-//Routes for authentication
+// Cart operation routes
 router.get("/", auth, getCart);
 router.post("/add", auth, addToCart);
 router.put("/update", auth, updateCartItem);

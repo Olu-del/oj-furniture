@@ -1,5 +1,4 @@
 // User controller – handles user profile related endpoints
-
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient(); // create prisma instance for database access
 const jwt = require("jsonwebtoken"); // used to verify JWT authentication tokens
