@@ -8,7 +8,7 @@ const prisma = new PrismaClient(); // create prisma instance to talk to the data
 exports.getCart = async (req, res) => {
 
   // find the cart that belongs to the logged-in user
-  const cart = await prisma.cart.findUnique({
+  let cart = await prisma.cart.findUnique({
     where: { userId: req.userId },
     include: {
       items: {
@@ -96,7 +96,7 @@ exports.addToCart = async (req, res) => {
 
 
       // get the user's cart
-      const cart = await prisma.cart.findUnique({
+      let cart = await prisma.cart.findUnique({
         where: { userId: req.userId },
         include: {
           items: {

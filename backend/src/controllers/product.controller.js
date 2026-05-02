@@ -31,12 +31,16 @@ exports.createProduct = async (req, res) => {
 
     // AUTO-GENERATED DESCRIPTION
     // automatically generate a more detailed description
-    const generatedDescription = `
-      ${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.
-      Made from ${material || "unknown material"}, approximately ${age || "unknown"} years old.
-      Dimensions: ${dimensions || "not provided"}.
-      ${description}
-        `.trim();
+    const generatedDescription = [
+      `${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.`,
+        material && `Made from ${material}.`,
+        age && `Approximately ${age} years old.`,
+        dimensions && `Dimensions: ${dimensions}.`,
+        description && `Details: ${description}`
+    ]
+        .filter(Boolean)
+        .join(" ");
+
 
       try {
         const product = await prisma.product.create({
