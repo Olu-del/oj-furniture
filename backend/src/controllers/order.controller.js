@@ -4,8 +4,10 @@ const prisma = new PrismaClient(); // create prisma instance for database querie
 const { sendEmail } = require("../utils/email");
 const { 
   orderOutForDeliveryTemplate,
-  orderDeliveredTemplate
+  orderDeliveredTemplate,
+  surveyEmailTemplate   
 } = require("../utils/email.template");
+
 
 
 // GET USER ORDERS
@@ -46,6 +48,7 @@ exports.getAllOrders = async (req, res) => {
   const orders = await prisma.order.findMany({
     include: {
       user: true,
+      surveys: true,
       orderItems: {
         select: {
           id: true,
@@ -118,12 +121,22 @@ exports.updateDeliveryStatus = async (req, res) => {
       });
     }
 
-    // Now send response
-    res.json(order);
+    // After delivery, send survey email to collect feedback
+      if (deliveryStatus === "DELIVERED") {
+          await sendEmail({
+            to: order.user.email,
+            subject: "How was your experience?",
+           html: surveyEmailTemplate(order.user.firstName, order)
 
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ message: "Failed to update delivery status" });
-  }
-};
+          });
+}
+
+      // Now send response
+      res.json(order);
+
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ message: "Failed to update delivery status" });
+    }
+  };
 

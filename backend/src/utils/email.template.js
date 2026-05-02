@@ -256,7 +256,7 @@ function orderTemplate(firstName, order) {
 //Order out for delivery email
 function orderOutForDeliveryTemplate(firstName, order) {
   return baseTemplate(`
-    <h2>Your Order is Out for Delivery 🚚</h2>
+    <h2>Your Order is Out for Delivery</h2>
 
     <p>Hi ${firstName},</p>
     <p>Your order <strong>number: ${order.id}</strong> is now on its way.</p>
@@ -289,7 +289,7 @@ function orderOutForDeliveryTemplate(firstName, order) {
 // Delivery confirmation email with order details 
 function orderDeliveredTemplate(firstName, order) {
   return baseTemplate(`
-    <h2>Your Order Has Been Delivered 📦</h2>
+    <h2>Your Order Has Been Delivered</h2>
 
     <p>Hi ${firstName},</p>
     <p>Your order <strong>number: ${order.id}</strong> has now been delivered.</p>
@@ -322,7 +322,7 @@ function orderDeliveredTemplate(firstName, order) {
 // Complaint received email confirming the complaint submission and next steps
 function complaintReceivedTemplate(firstName, orderId) {
   return baseTemplate(`
-    <h2>Complaint Received 📝</h2>
+    <h2>Complaint Received</h2>
 
     <p>Hi ${firstName},</p>
     <p>We have received your complaint regarding order <strong>number: ${orderId}</strong>.</p>
@@ -347,7 +347,7 @@ function complaintStatusTemplate(firstName, complaint) {
 
   switch (complaint.status) {
     case "IN_REVIEW":
-      title = "Your Complaint is Being Reviewed 🔍";
+      title = "Your Complaint is Being Reviewed";
       message = `
         <p>Hi ${firstName},</p>
         <p>Your complaint regarding order <strong>${complaint.orderId}</strong> is now being reviewed by our support team.</p>
@@ -356,7 +356,7 @@ function complaintStatusTemplate(firstName, complaint) {
       break;
 
     case "RESOLVED":
-      title = "Your Complaint Has Been Resolved ✅";
+      title = "Your Complaint Has Been Resolved";
       message = `
         <p>Hi ${firstName},</p>
         <p>Good news — your complaint for order <strong>${complaint.orderId}</strong> has now been resolved.</p>
@@ -365,7 +365,7 @@ function complaintStatusTemplate(firstName, complaint) {
       break;
 
     case "REJECTED":
-      title = "Your Complaint Has Been Rejected ⚠️";
+      title = "Your Complaint Has Been Rejected";
       message = `
         <p>Hi ${firstName},</p>
         <p>We’ve reviewed your complaint for order <strong>${complaint.orderId}</strong>, and unfortunately it has been rejected.</p>
@@ -398,6 +398,34 @@ function complaintStatusTemplate(firstName, complaint) {
 
 
 
+// Customer satisfaction survey email sent after order delivery, with a link to the survey form
+function surveyEmailTemplate(firstName, orderId) {
+  return baseTemplate(`
+    <h2>Thank you for your order, ${firstName}!</h2>
+
+    <p>Your order has now been delivered.</p>
+    <p>We would love to hear your feedback about your experience using our website.</p>
+
+    <a href="${process.env.FRONTEND_URL}/survey/${orderId}"
+      style="
+        display:inline-block;
+        padding:12px 20px;
+        background:#4CAF50;
+        color:#ffffff;
+        text-decoration:none;
+        border-radius:4px;
+        margin-top:10px;
+      ">
+      Take Survey
+    </a>
+
+    <br/><br/>
+
+    <p>Thank you for helping us improve OJ Furniture.</p>
+  `);
+}
+
+
 //  EXPORT TEMPLATES 
 module.exports = {
   baseTemplate,
@@ -407,5 +435,6 @@ module.exports = {
   orderOutForDeliveryTemplate,
   orderDeliveredTemplate,
   complaintReceivedTemplate,
-  complaintStatusTemplate 
+  complaintStatusTemplate,
+  surveyEmailTemplate
 };

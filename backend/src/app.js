@@ -14,6 +14,7 @@ const checkoutRoutes = require('./routes/checkout.routes');
 const orderRoutes = require('./routes/order.routes');
 const adminRoutes = require("./routes/admin.routes");
 const complaintRoutes = require("./routes/complaint.routes");
+const surveyRoutes = require("./routes/survey.routes");
 
 const { PrismaClient } = require('@prisma/client');
 // Prisma client used for database access in route handlers
@@ -84,7 +85,7 @@ app.use(
   app.use('/api/order', orderRoutes);
   app.use("/api/admin", adminRoutes);
   app.use("/api/complaints", complaintRoutes);
-
+  app.use("/api/survey", surveyRoutes);
 
 
 
