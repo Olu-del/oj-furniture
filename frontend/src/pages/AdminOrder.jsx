@@ -54,7 +54,7 @@ export default function AdminOrdersPage() {
                   
                   {item.imageUrl && (
                     <img
-                      src={`http://localhost:5000${item.imageUrl}`}
+                      src={`${api.defaults.baseURL.replace("/api", "")}${item.imageUrl}`}
                       alt={item.name}
                       style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "6px", marginRight: "10px" }}
                     />

@@ -22,27 +22,32 @@ export default function ProductDetails() {
  
   // Fetch product details and related products on mount or when `id` changes
   useEffect(() => {
-    const fetchProduct = async () => {
+  const fetchProduct = async () => {
+    try {
       const res = await api.get(`/product/${id}`);
       setProduct(res.data);
 
-      // If product has a subcategory, fetch related products
+      // Fetch related products
       if (res.data.subCategoryId) {
         const relatedRes = await api.get(
           `/product?subCategoryId=${res.data.subCategoryId}`
         );
 
-        // Exclude the current product from related list
         const filtered = relatedRes.data.filter(
           (p) => p.id !== res.data.id
         );
 
-        setRelated(filtered.slice(0, 4)); // Limit to 4 related products
+        setRelated(filtered.slice(0, 4));
       }
-    };
+    } catch (err) {
+      // If product doesn't exist or backend errors → redirect
+      navigate("/product");
+    }
+  };
 
-    fetchProduct();
-  }, [id]);
+  fetchProduct();
+}, [id]);
+
 
   
   // Add product to cart (handles signed-in users and guests)
@@ -102,7 +107,7 @@ export default function ProductDetails() {
       {/* Product Image */}
       {product.imageUrl && (
         <img
-          src={`http://localhost:5000${product.imageUrl}`}
+          src={`${api.defaults.baseURL.replace("/api", "")}${product.imageUrl}`}
           alt={product.name}
           style={{
             width: "350px",
@@ -164,12 +169,12 @@ export default function ProductDetails() {
                   borderRadius: "6px",
                   cursor: "pointer",
                   textAlign: "center"
-                }}
+                }}           
                 onClick={() => navigate(`/product/${r.id}`)}
               >
                 {r.imageUrl && (
                   <img
-                    src={`http://localhost:5000${r.imageUrl}`}
+                    src={`${api.defaults.baseURL.replace("/api", "")}${r.imageUrl}`}
                     alt={r.name}
                     style={{
                       width: "100%",

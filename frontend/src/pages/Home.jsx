@@ -69,7 +69,7 @@ export default function Home() {
             {/* Display thumbnail image if available */}
             {card.imageUrl && (
               <img
-                src={`http://localhost:5000${card.imageUrl}`}
+                src={`${api.defaults.baseURL.replace("/api", "")}${card.imageUrl}`}
                 alt={card.name}
                 className="product-image"
                 style={{ cursor: "pointer" }}

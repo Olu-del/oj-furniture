@@ -197,7 +197,7 @@ export default function Products() {
   {/* Product Image */}
   {p.imageUrl && (
     <img
-      src={`http://localhost:5000${p.imageUrl}`}
+      src={`${api.defaults.baseURL.replace("/api", "")}${p.imageUrl}`}
       alt={p.name}
       className="product-image"
       style={{ cursor: "pointer" }}

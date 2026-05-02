@@ -3,9 +3,10 @@ import axios from "axios";
 
 // Axios instance configured for backend API calls with cookies
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
   withCredentials: true
 });
+
 
 // Attach token automatically
 api.interceptors.request.use((config) => {

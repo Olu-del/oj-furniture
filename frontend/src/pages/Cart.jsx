@@ -153,7 +153,7 @@ export default function CartPage() {
           {/* Product image */}
           {item.product?.imageUrl && (
             <img
-              src={`http://localhost:5000${item.product.imageUrl}`}
+              src={`${api.defaults.baseURL.replace("/api", "")}${item.product.imageUrl}`}
               alt={item.product.name}
               style={{
                 width: "80px",
