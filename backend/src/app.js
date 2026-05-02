@@ -135,14 +135,14 @@ app.use(
       res.json({ status: 'API running' });
       });
 
+  
       // Serve React frontend in production
-      const path = require("path");
-
       app.use(express.static(path.join(__dirname, "../../frontend/build")));
 
       app.get("*", (req, res) => {
         res.sendFile(path.join(__dirname, "../../frontend/build/index.html"));
       });
+
 
   // Export app for use in server.js
   module.exports = app;
