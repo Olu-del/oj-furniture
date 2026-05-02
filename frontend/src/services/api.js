@@ -18,4 +18,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+
 export default api;

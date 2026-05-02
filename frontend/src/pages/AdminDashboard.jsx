@@ -39,6 +39,21 @@ export default function AdminDashboard() {
           <p>Review and resolve customer issues.</p>
         </Link>
 
+        {/* Card linking to Customer Feedback */}
+        <Link to="/admin/surveys" className="admin-product-card">
+          <h3>Customer Feedback</h3>
+          <p>View ratings and customer reviews.</p>
+        </Link>
+
+        <div className="admin-product-card">
+          <h3>Customer Feedback</h3>
+
+        <p>⭐ Avg Rating: {stats?.avgRating || "..."}</p>
+        <p>📝 Total Reviews: {stats?.totalReviews || "..."}</p>
+
+        <Link to="/admin/surveys">View All Feedback</Link>
+    </div>
+
         {/* Sustainability Overview Card – shows stats fetched from backend */}
         <div className="admin-product-card sustainability-card">
           <h3>Sustainability Overview</h3>

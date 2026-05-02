@@ -92,6 +92,13 @@ export default function OrdersPage() {
             Report an Issue / Request Return
           </button>
 
+          <button
+            onClick={() => navigate(`/survey/${order.id}`)}
+            className="btn"
+          >
+          Leave Feedback
+        </button>
+
         </div>
       ))}
     </div>

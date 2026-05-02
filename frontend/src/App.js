@@ -17,6 +17,7 @@ import Product from "./pages/product";
 import Order from "./pages/Order";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Survey from "./pages/Survey";
 
 
 import Help from "./pages/Help";
@@ -35,7 +36,7 @@ import AdminProductForm from "./pages/AdminProductForm";
 import AdminComplaintsForm from "./pages/AdminComplaintsForm";
 import ProductDetails from "./pages/ProductDetails";
 import ComplaintForm from "./pages/ComplaintForm";
-
+import AdminSurvey from "./pages/AdminSurvey";
 
 
 
@@ -69,7 +70,10 @@ export default function App() {
         <Route path="/help/faq" element={<FAQ />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/help-centre" element={<HelpCentre />} />
-        
+        <Route path="/survey/:orderId" element={<Survey />} />
+        <Route path="/admin/surveys" element={<AdminSurvey />} />
+
+
         
  
     
