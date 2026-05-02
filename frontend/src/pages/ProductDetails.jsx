@@ -27,7 +27,6 @@ export default function ProductDetails() {
       const res = await api.get(`/product/${id}`);
       setProduct(res.data);
 
-      // Fetch related products
       if (res.data.subCategoryId) {
         const relatedRes = await api.get(
           `/product?subCategoryId=${res.data.subCategoryId}`
@@ -40,13 +39,12 @@ export default function ProductDetails() {
         setRelated(filtered.slice(0, 4));
       }
     } catch (err) {
-      // If product doesn't exist or backend errors → redirect
       navigate("/product");
     }
   };
 
   fetchProduct();
-}, [id]);
+}, [id, navigate]);
 
 
   
