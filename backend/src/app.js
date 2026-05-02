@@ -58,12 +58,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve uploaded images with proper CORS headers
+const path = require("path");
+
 app.use(
-  "/uploads",
-  express.static("uploads", {
+  "/images",
+  express.static(path.join(__dirname, "public/images"), {
     setHeaders: (res) => {
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-      // reflect origin if allowed
       const reqOrigin = res.req.headers.origin;
       if (allowedOrigins.includes(reqOrigin)) {
         res.setHeader("Access-Control-Allow-Origin", reqOrigin);
@@ -72,6 +73,7 @@ app.use(
     }
   })
 );
+
 
 
 

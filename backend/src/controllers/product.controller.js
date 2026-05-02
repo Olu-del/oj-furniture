@@ -64,7 +64,7 @@ exports.createProduct = async (req, res) => {
 
              // if image uploaded use it, otherwise use placeholder
             imageUrl: req.file
-              ? `/uploads/${req.file.filename}`
+              ? `/images/${req.file.filename}`
               : "https://via.placeholder.com/300x300?text=No+Image"
           }
         });
@@ -214,7 +214,7 @@ exports.createProduct = async (req, res) => {
               category: { connect: { id: Number(categoryId) } },
               subCategory: { connect: { id: Number(subCategoryId) } },
 
-              ...(req.file && { imageUrl: `/uploads/${req.file.filename}` })
+              ...(req.file && { imageUrl: `/images/${req.file.filename}` })
             }
           });
 

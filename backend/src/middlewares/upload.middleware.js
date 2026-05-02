@@ -4,7 +4,7 @@ const path = require("path");
 const fs = require("fs");
 
 // define the path where uploaded files will be stored
-const uploadPath = path.join(__dirname, "../uploads");
+const uploadPath = path.join(__dirname, "../public/images");
 
 // Ensure uploads folder exists
 if (!fs.existsSync(uploadPath)) {
