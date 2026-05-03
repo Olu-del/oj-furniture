@@ -3,9 +3,10 @@ import axios from "axios";
 
 // Axios instance configured for backend API calls with cookies
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://oj-furniture-production.up.railway.app/api",
   withCredentials: true
 });
+
 
 
 // Attach token automatically
