@@ -153,7 +153,7 @@ function registrationTemplate(firstName) {
 
     <br/>
 
-    <a href="${api.defaults.baseURL.replace("/api", "")}"
+    <a href="${process.env.FRONTEND_URL}"
       style="display:inline-block;
       padding:12px 20px;
       background:#2c3e50;
@@ -187,7 +187,7 @@ function orderTemplate(firstName, order) {
       <td>
         ${item.imageUrl ? `
           <img 
-            src="${api.defaults.baseURL.replace("/api", "")}${item.imageUrl}" 
+            src="${process.env.FRONTEND_URL}${item.imageUrl}"
             alt="${item.name}" 
             class="product-img"
           />
