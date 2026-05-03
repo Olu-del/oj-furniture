@@ -35,7 +35,7 @@ app.use(
 
 
 // Allow frontend to send cookies from either development port
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002', 'https://oj-furniture-production.up.railway.app'];
 app.use(cors({
   origin: function(origin, callback) {
     // allow requests with no origin 
