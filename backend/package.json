@@ -4,7 +4,7 @@
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo 'No build step needed for backend'",
+    "build": "cd ../frontend && npm install && npm run build",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node prisma/seed.js"
