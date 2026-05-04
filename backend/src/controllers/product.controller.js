@@ -28,25 +28,11 @@ exports.createProduct = async (req, res) => {
   if (condition) {
     condition = condition.toUpperCase();
   }
-
-    // AUTO-GENERATED DESCRIPTION
-    // automatically generate a more detailed description
-    const generatedDescription = [
-      `${name} in ${condition?.replace(/_/g, " ").toLowerCase()} condition.`,
-        material && `Made from ${material}.`,
-        age && `Approximately ${age} years old.`,
-        dimensions && `Dimensions: ${dimensions}.`,
-        description && `Details: ${description}`
-    ]
-        .filter(Boolean)
-        .join(" ");
-
-
       try {
         const product = await prisma.product.create({
           data: {
             name,
-            description: generatedDescription,
+            description: description || null,
             price: parseFloat(price), // convert price to number
             deliveryPrice: parseFloat(deliveryPrice),
             colour,

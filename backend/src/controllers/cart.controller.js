@@ -74,10 +74,8 @@ exports.getCart = async (req, res) => {
 // adds a product to the user's cart
 exports.addToCart = async (req, res) => {
   try {
-
     const { productId, quantity } = req.body;
 
-    // convert values to numbers
     const pid = Number(productId);
     const qty = Number(quantity) || 1;
 
@@ -85,25 +83,19 @@ exports.addToCart = async (req, res) => {
     // this makes sure all DB operations succeed together
     await prisma.$transaction(async (tx) => {
 
-      // check if the product exists
+    // check if the product exists
       const product = await tx.product.findUnique({
         where: { id: pid }
       });
 
-      if (!product) {
-        throw new Error("Product not found");
-      }
+      if (!product) throw new Error("Product not found");
 
-
+      
       // get the user's cart
-      let cart = await prisma.cart.findUnique({
+      let cart = await tx.cart.findUnique({
         where: { userId: req.userId },
         include: {
-          items: {
-            include: {
-              product: true
-            }
-          }
+          items: { include: { product: true } }
         }
       });
 
@@ -123,7 +115,7 @@ exports.addToCart = async (req, res) => {
           }
         },
         update: {
-          quantity: { increment: qty } // increase quantity if already in cart
+          quantity: { increment: qty }
         },
         create: {
           cartId: cart.id,
@@ -140,6 +132,7 @@ exports.addToCart = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
 
 
 
