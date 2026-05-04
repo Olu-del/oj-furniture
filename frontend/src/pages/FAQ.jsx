@@ -37,7 +37,7 @@ export default function FAQ() {
 
       <FAQItem
         question="What payment methods do you accept?"
-        answer="It is a school project, you don't have to worry about payment methods. Just click the checkout button and your order will be placed successfully."
+        answer="This is a school project, you don't have to worry about payment methods. Just click the checkout button and your order will be placed successfully."
       />
 
       <FAQItem
