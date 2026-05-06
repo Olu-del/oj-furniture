@@ -58,9 +58,10 @@ export default function Signin() {
 
             // Invalid credentials
             if (status === 401) {
-              setError("Invalid email or password");
+              setError(message || "Invalid email or password");
               return;
             }
+
 
             // Generic error fallbacks
             setError("Something went wrong. Try again.");
