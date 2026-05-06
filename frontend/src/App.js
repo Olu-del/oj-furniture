@@ -13,7 +13,7 @@ import Welcome from "./pages/Welcome";
 import Contact from "./pages/Contact";
 import RequestReset from "./pages/RequestReset";
 import ResetPassword from "./pages/ResetPassword";
-import Product from "./pages/product";
+import Product from "./pages/Product";
 import Order from "./pages/Order";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
