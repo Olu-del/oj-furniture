@@ -158,7 +158,9 @@ export default function CartPage() {
         <div key={item.productId} className="cart-item">
           {item.product?.imageUrl && (
             <img
-              src={`http://localhost:5000${item.product.imageUrl}`}
+              // src={`http://localhost:5000${item.product.imageUrl}`}
+              src={`${process.env.REACT_APP_API_URL}${item.product.imageUrl}`}
+
               alt={item.product.name}
               style={{
                 width: "80px",
