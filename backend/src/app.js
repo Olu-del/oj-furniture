@@ -23,13 +23,14 @@ const prisma = new PrismaClient();
 
 
 // Initialise express app
-const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
   "https://oj-furniture-1.onrender.com",   // backend
-  "https://oj-furniture.onrender.com",    // frontend (if separate)
+  "https://oj-furniture.onrender.com",    // old frontend
+  "https://oj-furniture-2.onrender.com"   // NEW frontend (Render)
 ];
+
 
 app.use(cors({
   origin: function (origin, callback) {
