@@ -79,34 +79,54 @@ exports.addToCart = async (req, res) => {
     const pid = Number(productId);
     const qty = Number(quantity) || 1;
 
-    // run everything inside a transaction
-    // this makes sure all DB operations succeed together
     await prisma.$transaction(async (tx) => {
 
-    // check if the product exists
+      // 1. Fetch product
       const product = await tx.product.findUnique({
         where: { id: pid }
       });
 
       if (!product) throw new Error("Product not found");
 
-      
-      // get the user's cart
+      // 2. Check stock availability
+      if (product.stock === 0) {
+        throw new Error(`${product.name} is out of stock`);
+      }
+
+      // 3. Get user's cart
       let cart = await tx.cart.findUnique({
         where: { userId: req.userId },
-        include: {
-          items: { include: { product: true } }
-        }
+        include: { items: true }
       });
 
-      // if user doesn't have a cart yet, create one
       if (!cart) {
         cart = await tx.cart.create({
           data: { userId: req.userId }
         });
       }
 
-      // upsert = update if item exists, otherwise create it
+      // 4. Check if item already exists in cart
+      const existingItem = await tx.cartItem.findUnique({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId: pid
+          }
+        }
+      });
+
+      const newQuantity = existingItem
+        ? existingItem.quantity + qty
+        : qty;
+
+      // 5. Prevent adding more than stock
+      if (newQuantity > product.stock) {
+        throw new Error(
+          `Only ${product.stock} left in stock for ${product.name}`
+        );
+      }
+
+      // 6. Upsert item
       await tx.cartItem.upsert({
         where: {
           cartId_productId: {
@@ -114,9 +134,7 @@ exports.addToCart = async (req, res) => {
             productId: pid
           }
         },
-        update: {
-          quantity: { increment: qty }
-        },
+        update: { quantity: newQuantity },
         create: {
           cartId: cart.id,
           productId: pid,
@@ -217,18 +235,30 @@ exports.mergeCart = async (req, res) => {
 //  UPDATE CART ITEM 
 // updates the quantity of a product already in the cart
 exports.updateCartItem = async (req, res) => {
-
   const { productId, quantity } = req.body;
 
   const pid = Number(productId);
   const qty = Number(quantity);
 
-  // find the user's cart
   const cart = await prisma.cart.findUnique({ where: { userId: req.userId } });
-
   if (!cart) return res.status(404).json({ error: "Cart not found" });
 
-  // update quantity
+  // Fetch product stock
+  const product = await prisma.product.findUnique({
+    where: { id: pid }
+  });
+
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  // Prevent exceeding stock
+  if (qty > product.stock) {
+    return res.status(400).json({
+      error: `Only ${product.stock} left in stock for ${product.name}`
+    });
+  }
+
   await prisma.cartItem.updateMany({
     where: { cartId: cart.id, productId: pid },
     data: { quantity: qty }
