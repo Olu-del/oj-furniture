@@ -6,7 +6,7 @@ import { getProducts, searchProducts } from "../services/productApi";
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);j
   const [query, setQuery] = useState("");
 
   const location = useLocation();
