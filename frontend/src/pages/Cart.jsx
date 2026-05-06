@@ -78,21 +78,32 @@ export default function CartPage() {
 
   // Update quantity
   const updateQuantity = async (productId, quantity) => {
-    if (quantity < 1) return;
+  if (quantity < 1) return;
 
-    if (isLoggedIn) {
+  if (isLoggedIn) {
+    try {
       await api.put("/cart/update", { productId, quantity });
-      fetchUserCart(); // refresh from backend
-    } else {
-      const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-      const updated = guestCart.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
-      );
+      fetchUserCart();
+    } catch (err) {
+      const message = err.response?.data?.error || "Failed to update quantity";
 
-      localStorage.setItem("guestCart", JSON.stringify(updated));
-      loadGuestCart(); // recalc totals
+      alert(message);
+
+      // Refresh cart so UI resets to valid quantity
+      fetchUserCart();
     }
-  };
+  } else {
+    const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+    const updated = guestCart.map((item) =>
+      item.productId === productId ? { ...item, quantity } : item
+    );
+
+    localStorage.setItem("guestCart", JSON.stringify(updated));
+    loadGuestCart();
+  }
+};
+
+  
 
   // Remove item modal
   const confirmRemove = (productId) => {
