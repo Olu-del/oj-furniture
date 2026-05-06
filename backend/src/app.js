@@ -24,6 +24,25 @@ const prisma = new PrismaClient();
 
 // Initialise express app
 const app = express();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3002",
+  "https://oj-furniture-1.onrender.com",   // backend
+  "https://oj-furniture.onrender.com",    // frontend (if separate)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow mobile apps, curl, Postman
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true
+}));
+
+
 
 
 // Use Helmet for security headers
@@ -35,20 +54,19 @@ app.use(
 
 
 // Allow frontend to send cookies from either development port
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002', 'https://oj-furniture-1.onrender.com'];
-app.use(cors({
-  origin: function(origin, callback) {
-    // allow requests with no origin 
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
-
+// const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002', 'https://oj-furniture-1.onrender.com'];
+// app.use(cors({
+//   origin: function(origin, callback) {
+//     // allow requests with no origin 
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true
+// }));
 
 // Parse JSON bodies
 app.use(express.json());
