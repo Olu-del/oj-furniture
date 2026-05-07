@@ -20,10 +20,10 @@ const surveyRoutes = require("./routes/survey.routes");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// ⭐ CREATE EXPRESS APP FIRST
+//  CREATE EXPRESS APP FIRST
 const app = express();
 
-// ⭐ CORS ORIGINS
+//  CORS ORIGINS
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
@@ -32,7 +32,7 @@ const allowedOrigins = [
   "https://oj-furniture-2.onrender.com"
 ];
 
-// ⭐ CORS MIDDLEWARE
+//  CORS MIDDLEWARE
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
