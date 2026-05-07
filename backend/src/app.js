@@ -122,4 +122,24 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'API running' });
 });
 
+app.get("/debug/db", async (req, res) => {
+  try {
+    const categories = await prisma.category.findMany({
+      include: { subCategories: true }
+    });
+
+    res.json({
+      status: "connected",
+      categoriesCount: categories.length,
+      sample: categories.slice(0, 3)
+    });
+  } catch (err) {
+    res.json({
+      status: "error",
+      message: err.message
+    });
+  }
+});
+
+
 module.exports = app;
