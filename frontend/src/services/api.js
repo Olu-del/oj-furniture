@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "https://oj-furniture.onrender.com/api",
+  baseURL: process.env.REACT_APP_API_URL || "https://oj-furniture-1.onrender.com/api",
   withCredentials: true,
 });
 
@@ -14,3 +14,4 @@ api.interceptors.request.use((config) => {
 });
 
 export default api;
+
