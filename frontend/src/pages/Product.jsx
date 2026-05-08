@@ -12,6 +12,10 @@ export default function Products() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Build API base for images (remove /api)
+  const API_BASE =
+    process.env.REACT_APP_API_URL?.replace("/api", "") || "";
+
   // Initialise filters from URL
   const getInitialFilters = () => {
     const params = new URLSearchParams(location.search);
@@ -212,7 +216,7 @@ export default function Products() {
           <div key={p.id} className="product-card">
             {p.imageUrl && (
               <img
-                src={`http://localhost:5000${p.imageUrl}`}
+                src={`${API_BASE}${p.imageUrl}`}
                 alt={p.name}
                 className="product-image"
                 style={{ cursor: "pointer" }}
