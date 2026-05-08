@@ -27,8 +27,10 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
-  "https://oj-furniture-89q69t525-olu-dels-projects.vercel.app"
+  "https://oj-furniture.vercel.app"
 ];
+
+
 
 
 //  CORS MIDDLEWARE
