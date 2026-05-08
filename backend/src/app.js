@@ -29,8 +29,10 @@ const allowedOrigins = [
   "http://localhost:3002",
   "https://oj-furniture-1.onrender.com",
   "https://oj-furniture.onrender.com",
-  "https://oj-furniture-2.onrender.com"
+  "https://oj-furniture-2.onrender.com",
+  "https://oj-furniture-89q69t525-olu-dels-projects.vercel.app"
 ];
+
 
 //  CORS MIDDLEWARE
 app.use(cors({
