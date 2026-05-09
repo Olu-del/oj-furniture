@@ -49,8 +49,7 @@ export default function App() {
       <div className="main-content">
       {/* Main app routes */}
       <Routes>
-        <Route path="/" element={<Navigate to="/Home" />} />
-        <Route path="/Home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/register" element={<Register />} />
         <Route path="/signin" element={<Signin />} />
