@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     // Navigation bar with Links
     <nav >
-      <Link to="/Home">Home</Link>
+      <Link to="/">Home</Link>
       <Link to="/contact">Contact</Link>
       <Link to="/product">Products</Link>
       <Link to="/cart">Basket</Link>
