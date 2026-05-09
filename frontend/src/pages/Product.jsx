@@ -107,13 +107,26 @@ export default function Products() {
   }, [filters.subCategoryId, categories]);
 
   // Add to cart
-  const addToCart = async (productId) => {
+// Add to cart
+const addToCart = async (productId) => {
   const token = localStorage.getItem("token");
 
   try {
+    // Always fetch product to get real stock
+    const productRes = await api.get(`/products/${productId}`);
+    const product = productRes.data;
+    const availableStock = product.stock;
+
+    if (availableStock === 0) {
+      alert("This product is out of stock");
+      return;
+    }
+
     if (token) {
+      // Logged‑in user → backend validates stock
       await api.post("/cart/add", { productId, quantity: 1 });
     } else {
+      // Guest user → validate stock manually
       const guestCart =
         JSON.parse(localStorage.getItem("guestCart")) || [];
 
@@ -121,6 +134,14 @@ export default function Products() {
         (item) => item.productId === productId
       );
 
+      const currentQty = existing ? existing.quantity : 0;
+
+      if (currentQty + 1 > availableStock) {
+        alert(`Only ${availableStock} left in stock`);
+        return;
+      }
+
+      // Add or update item
       if (existing) {
         existing.quantity += 1;
       } else {
@@ -130,7 +151,7 @@ export default function Products() {
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
     }
 
-    // Redirect immediately
+    // Redirect only if successfully added
     navigate("/cart");
 
   } catch (err) {
@@ -138,6 +159,7 @@ export default function Products() {
     alert("Failed to add to cart");
   }
 };
+
 
 
   return (
