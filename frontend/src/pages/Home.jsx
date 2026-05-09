@@ -6,6 +6,10 @@ export default function Home() {
   const [subCategoryCards, setSubCategoryCards] = useState([]);
   const navigate = useNavigate();
 
+  // Build API base for images (remove /api)
+  const API_BASE =
+    process.env.REACT_APP_API_URL?.replace("/api", "") || "";
+
   useEffect(() => {
     const loadHomeData = async () => {
       try {
@@ -17,7 +21,6 @@ export default function Home() {
         const cards = [];
 
         for (const category of categories) {
-          // SAFE: always an array
           const safeSubs = Array.isArray(category.subCategories)
             ? category.subCategories
             : [];
@@ -66,7 +69,7 @@ export default function Home() {
           >
             {card.imageUrl && (
               <img
-                src={`http://localhost:5000${card.imageUrl}`}
+                src={`${API_BASE}${card.imageUrl}`}
                 alt={card.name}
                 className="product-image"
               />
