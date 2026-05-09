@@ -15,6 +15,10 @@ export default function CartPage() {
 
   const navigate = useNavigate();
 
+  // Build API base for images (remove /api)
+  const API_BASE =
+    process.env.REACT_APP_API_URL?.replace("/api", "") || "";
+
   // Load cart on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -44,7 +48,6 @@ export default function CartPage() {
 
       setItems(merged);
 
-      // Calculate totals for guest cart
       const sub = merged.reduce(
         (sum, i) => sum + i.product.price * i.quantity,
         0
@@ -78,32 +81,30 @@ export default function CartPage() {
 
   // Update quantity
   const updateQuantity = async (productId, quantity) => {
-  if (quantity < 1) return;
+    if (quantity < 1) return;
 
-  if (isLoggedIn) {
-    try {
-      await api.put("/cart/update", { productId, quantity });
-      fetchUserCart();
-    } catch (err) {
-      const message = err.response?.data?.error || "Failed to update quantity";
+    if (isLoggedIn) {
+      try {
+        await api.put("/cart/update", { productId, quantity });
+        fetchUserCart();
+      } catch (err) {
+        const message =
+          err.response?.data?.error || "Failed to update quantity";
 
-      alert(message);
+        alert(message);
+        fetchUserCart();
+      }
+    } else {
+      const guestCart =
+        JSON.parse(localStorage.getItem("guestCart")) || [];
+      const updated = guestCart.map((item) =>
+        item.productId === productId ? { ...item, quantity } : item
+      );
 
-      // Refresh cart so UI resets to valid quantity
-      fetchUserCart();
+      localStorage.setItem("guestCart", JSON.stringify(updated));
+      loadGuestCart();
     }
-  } else {
-    const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-    const updated = guestCart.map((item) =>
-      item.productId === productId ? { ...item, quantity } : item
-    );
-
-    localStorage.setItem("guestCart", JSON.stringify(updated));
-    loadGuestCart();
-  }
-};
-
-  
+  };
 
   // Remove item modal
   const confirmRemove = (productId) => {
@@ -117,8 +118,11 @@ export default function CartPage() {
         await api.delete(`/cart/remove/${itemToRemove}`);
         fetchUserCart();
       } else {
-        const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-        const updated = guestCart.filter((i) => i.productId !== itemToRemove);
+        const guestCart =
+          JSON.parse(localStorage.getItem("guestCart")) || [];
+        const updated = guestCart.filter(
+          (i) => i.productId !== itemToRemove
+        );
         localStorage.setItem("guestCart", JSON.stringify(updated));
         loadGuestCart();
       }
@@ -158,8 +162,7 @@ export default function CartPage() {
         <div key={item.productId} className="cart-item">
           {item.product?.imageUrl && (
             <img
-              src={`${process.env.REACT_APP_API_URL}${item.product.imageUrl}`}
-
+              src={`${API_BASE}${item.product.imageUrl}`}
               alt={item.product.name}
               style={{
                 width: "80px",
@@ -171,7 +174,9 @@ export default function CartPage() {
           )}
 
           <div className="cart-info">
-            <h4>{item.product?.name || `Product #${item.productId}`}</h4>
+            <h4>
+              {item.product?.name || `Product #${item.productId}`}
+            </h4>
             <p>Price: £{item.product?.price}</p>
             <p>Delivery: £{item.product?.deliveryPrice}</p>
             <p>
@@ -181,16 +186,27 @@ export default function CartPage() {
           </div>
 
           <div className="cart-controls">
-            <button onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
+            <button
+              onClick={() =>
+                updateQuantity(item.productId, item.quantity - 1)
+              }
+            >
               -
             </button>
             <span>{item.quantity}</span>
-            <button onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
+            <button
+              onClick={() =>
+                updateQuantity(item.productId, item.quantity + 1)
+              }
+            >
               +
             </button>
           </div>
 
-          <button className="remove-btn" onClick={() => confirmRemove(item.productId)}>
+          <button
+            className="remove-btn"
+            onClick={() => confirmRemove(item.productId)}
+          >
             Remove
           </button>
         </div>
@@ -219,7 +235,10 @@ export default function CartPage() {
             <button onClick={handleRemove} className="primary-btn">
               Yes
             </button>
-            <button onClick={() => setModalOpen(false)} className="secondary-btn">
+            <button
+              onClick={() => setModalOpen(false)}
+              className="secondary-btn"
+            >
               Cancel
             </button>
           </div>
