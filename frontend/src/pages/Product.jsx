@@ -150,9 +150,9 @@ const addToCart = async (productId) => {
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
     }
 
-    // Ask user if they want to go to cart or continue shopping
+    // Ask user what they want to do next
     const goToCart = window.confirm(
-      "Product added to cart. Go to cart?"
+      "Product added to cart. Would you like to go to your cart?"
     );
 
     if (goToCart) {
@@ -164,6 +164,11 @@ const addToCart = async (productId) => {
     alert("Failed to add to cart");
   }
 };
+
+     
+     
+
+   
 
 
 
