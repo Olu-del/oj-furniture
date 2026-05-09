@@ -23,6 +23,26 @@ const prisma = new PrismaClient();
 //  CREATE EXPRESS APP FIRST
 const app = express();
 
+app.get("/debug/db", async (req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      take: 5,
+      select: { id: true, name: true, imageUrl: true }
+    });
+
+    res.json({
+      status: "connected",
+      sample: products
+    });
+  } catch (err) {
+    res.json({
+      status: "error",
+      message: err.message
+    });
+  }
+});
+
+
 //  CORS ORIGINS
 const allowedOrigins = [
   "http://localhost:3000",
