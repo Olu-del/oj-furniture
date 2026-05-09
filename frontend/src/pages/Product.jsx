@@ -107,12 +107,11 @@ export default function Products() {
   }, [filters.subCategoryId, categories]);
 
   // Add to cart
-// Add to cart
 const addToCart = async (productId) => {
   const token = localStorage.getItem("token");
 
   try {
-    // Always fetch product to get real stock
+    // Fetch product to get real stock
     const productRes = await api.get(`/product/${productId}`);
     const product = productRes.data;
     const availableStock = product.stock;
@@ -151,14 +150,21 @@ const addToCart = async (productId) => {
       localStorage.setItem("guestCart", JSON.stringify(guestCart));
     }
 
-    // Redirect only if successfully added
-    navigate("/cart");
+    // Ask user if they want to go to cart or continue shopping
+    const goToCart = window.confirm(
+      "Product added to cart. Go to cart?"
+    );
+
+    if (goToCart) {
+      navigate("/cart");
+    }
 
   } catch (err) {
     console.error(err);
     alert("Failed to add to cart");
   }
 };
+
 
 
 
