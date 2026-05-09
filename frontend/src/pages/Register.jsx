@@ -19,11 +19,11 @@ export default function Register() {
  
   // Form submission handler
   const navigate = useNavigate();
+
   const submit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
     try {
-      // Send registration data to backend
       await api.post("/auth/register", {
         firstName,
         lastName,
@@ -36,18 +36,20 @@ export default function Register() {
         country
       });
 
-      // Redirect to sign-in page
-    navigate("/signin");
+      navigate("/signin");   // ⭐ Correct route
 
     } catch (err) {
-      // Show error message from backend if available
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         alert(err.response.data.message);
       } else {
         alert("Something went wrong.");
       }
     }
   };
+
+
+       
+    
 
 
   // Render registration form
