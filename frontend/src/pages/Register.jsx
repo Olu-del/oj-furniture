@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function Register() {
@@ -17,6 +18,7 @@ export default function Register() {
 
  
   // Form submission handler
+  const navigate = useNavigate();
   const submit = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
@@ -34,8 +36,8 @@ export default function Register() {
         country
       });
 
-      // Registration successful and redirect to homepage
-      window.location.href = "/";
+      // Redirect to sign-in page
+    navigate("/signin");
 
     } catch (err) {
       // Show error message from backend if available
