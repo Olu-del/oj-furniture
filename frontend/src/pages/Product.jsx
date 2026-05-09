@@ -113,7 +113,7 @@ const addToCart = async (productId) => {
 
   try {
     // Always fetch product to get real stock
-    const productRes = await api.get(`/products/${productId}`);
+    const productRes = await api.get(`/product/${productId}`);
     const product = productRes.data;
     const availableStock = product.stock;
 
