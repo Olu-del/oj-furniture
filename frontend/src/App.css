@@ -831,7 +831,7 @@ textarea {
   .product-list,
   .admin-product-grid {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 35px;
+    gap: 25px;
   }
 
   .product-card,
