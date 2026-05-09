@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function Register() {
+  const [loading, setLoading] = useState(false);
+
 
   // State variables for form fields
   const [firstName, setFirstName] = useState("");
@@ -22,7 +24,7 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       await api.post("/auth/register", {
         firstName,
@@ -36,7 +38,7 @@ export default function Register() {
         country
       });
 
-      navigate("/signin");   // ⭐ Correct route
+      navigate("/signin"); 
 
     } catch (err) {
       if (err.response?.data?.message) {
@@ -44,7 +46,9 @@ export default function Register() {
       } else {
         alert("Something went wrong.");
       }
-    }
+      }finally {
+      setLoading(false);
+  }
   };
 
 
@@ -145,7 +149,12 @@ export default function Register() {
           />
 
           {/* Submit Button */}
-          <button type="submit">Register</button>
+         <button type="submit" disabled={loading}>
+            {loading && <span className="spinner"></span>}
+            {loading ? "Registering..." : "Register"}
+        </button>
+
+
         </form>
 
         {/* Footer with link to Sign In page */}
