@@ -28,7 +28,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
-  "https://oj-furniture.vercel.app"
+ "https://oj-furniture-1.onrender.com"
 ];
 
 // CORS middleware
@@ -59,7 +59,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// ⭐ Serve images PUBLICLY (fixes 401 errors)
+//  Serve images PUBLICLY (fixes 401 errors)
 app.use(
   "/images",
   express.static(path.join(__dirname, "public/images"), {
