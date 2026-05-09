@@ -825,13 +825,13 @@ textarea {
   .help-centre,
   .about-page,
   .orders-page {
-    max-width: 1200px;
+    max-width: 1400px;
   }
 
   .product-list,
   .admin-product-grid {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
+    gap: 35px;
   }
 
   .product-card,
