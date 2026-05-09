@@ -108,37 +108,37 @@ export default function Products() {
 
   // Add to cart
   const addToCart = async (productId) => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    try {
-      if (token) {
-        await api.post("/cart/add", { productId, quantity: 1 });
+  try {
+    if (token) {
+      await api.post("/cart/add", { productId, quantity: 1 });
+    } else {
+      const guestCart =
+        JSON.parse(localStorage.getItem("guestCart")) || [];
+
+      const existing = guestCart.find(
+        (item) => item.productId === productId
+      );
+
+      if (existing) {
+        existing.quantity += 1;
       } else {
-        const guestCart =
-          JSON.parse(localStorage.getItem("guestCart")) || [];
-
-        const existing = guestCart.find(
-          (item) => item.productId === productId
-        );
-
-        if (existing) {
-          existing.quantity += 1;
-        } else {
-          guestCart.push({ productId, quantity: 1 });
-        }
-
-        localStorage.setItem("guestCart", JSON.stringify(guestCart));
+        guestCart.push({ productId, quantity: 1 });
       }
 
-      const goToCart = window.confirm(
-        "Product added to cart.\n\nGo to cart?"
-      );
-      if (goToCart) navigate("/cart");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add to cart");
+      localStorage.setItem("guestCart", JSON.stringify(guestCart));
     }
-  };
+
+    // Redirect immediately
+    navigate("/cart");
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to add to cart");
+  }
+};
+
 
   return (
     <div className="page">
