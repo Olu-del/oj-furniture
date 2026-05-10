@@ -119,12 +119,27 @@ export default function CartPage() {
         fetchUserCart();
       } else {
         const guestCart =
-          JSON.parse(localStorage.getItem("guestCart")) || [];
-        const updated = guestCart.filter(
-          (i) => i.productId !== itemToRemove
-        );
-        localStorage.setItem("guestCart", JSON.stringify(updated));
-        loadGuestCart();
+    JSON.parse(localStorage.getItem("guestCart")) || [];
+
+  const updated = guestCart.map((item) => {
+    if (item.productId === productId) {
+      const product = items.find((i) => i.productId === productId)?.product;
+
+      if (!product) return item;
+
+      // STOCK VALIDATION
+      if (quantity > product.stock) {
+        alert(`Only ${product.stock} left in stock`);
+        return item; // do not update
+      }
+
+      return { ...item, quantity };
+    }
+    return item;
+  });
+
+  localStorage.setItem("guestCart", JSON.stringify(updated));
+  loadGuestCart
       }
     }
 
