@@ -13,16 +13,21 @@ const transporter = nodemailer.createTransport({
 // prepare and send an email message
 async function sendEmail(options) {
   const mailOptions = {
-    from: `"OJ Furniture" <£{process.env.EMAIL_USER}>`,
+    from: `"OJ Furniture" <${process.env.EMAIL_USER}>`,
     to: options.to,
     subject: options.subject,
     html: options.html
   };
 
-  return transporter.sendMail(mailOptions);
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (err) {
+    console.error("Email sending failed:", err);
+    throw new Error("Email could not be sent");
+  }
 }
 
-// Base HTML template for emails
+// Export
 module.exports = {
   sendEmail
 };
