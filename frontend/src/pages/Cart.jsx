@@ -79,7 +79,7 @@ export default function CartPage() {
     }
   };
 
-  // Update quantity
+  // Update quantity (with guest stock validation)
   const updateQuantity = async (productId, quantity) => {
     if (quantity < 1) return;
 
@@ -97,9 +97,23 @@ export default function CartPage() {
     } else {
       const guestCart =
         JSON.parse(localStorage.getItem("guestCart")) || [];
-      const updated = guestCart.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
-      );
+
+      const updated = guestCart.map((item) => {
+        if (item.productId === productId) {
+          const product = items.find((i) => i.productId === productId)?.product;
+
+          if (!product) return item;
+
+          // STOCK VALIDATION
+          if (quantity > product.stock) {
+            alert(`Only ${product.stock} left in stock`);
+            return item; // do not update
+          }
+
+          return { ...item, quantity };
+        }
+        return item;
+      });
 
       localStorage.setItem("guestCart", JSON.stringify(updated));
       loadGuestCart();
@@ -119,27 +133,14 @@ export default function CartPage() {
         fetchUserCart();
       } else {
         const guestCart =
-    JSON.parse(localStorage.getItem("guestCart")) || [];
+          JSON.parse(localStorage.getItem("guestCart")) || [];
 
-  const updated = guestCart.map((item) => {
-    if (item.productId === productId) {
-      const product = items.find((i) => i.productId === productId)?.product;
+        const updated = guestCart.filter(
+          (i) => i.productId !== itemToRemove
+        );
 
-      if (!product) return item;
-
-      // STOCK VALIDATION
-      if (quantity > product.stock) {
-        alert(`Only ${product.stock} left in stock`);
-        return item; // do not update
-      }
-
-      return { ...item, quantity };
-    }
-    return item;
-  });
-
-  localStorage.setItem("guestCart", JSON.stringify(updated));
-  loadGuestCart
+        localStorage.setItem("guestCart", JSON.stringify(updated));
+        loadGuestCart();
       }
     }
 
