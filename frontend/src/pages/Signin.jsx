@@ -40,7 +40,7 @@ export default function Signin() {
         if (loggedInUser.role === "ADMIN") {
           navigate("/admin");
         } else {
-          navigate("/orders");   // or navigate("/")
+          navigate("/cart");   // or navigate("/")
         }
 
       } catch (err) {
