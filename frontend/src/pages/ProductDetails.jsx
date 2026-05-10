@@ -49,22 +49,35 @@ export default function ProductDetails() {
     try {
       if (token) {
         await api.post("/cart/add", { productId, quantity: 1 });
-      } else {
-        const guestCart =
-          JSON.parse(localStorage.getItem("guestCart")) || [];
+     
+       } else {
+  const guestCart =
+    JSON.parse(localStorage.getItem("guestCart")) || [];
 
-        const existing = guestCart.find(
-          (item) => item.productId === productId
-        );
+  const existing = guestCart.find(
+    (item) => item.productId === productId
+  );
 
-        if (existing) {
-          existing.quantity += 1;
-        } else {
-          guestCart.push({ productId, quantity: 1 });
-        }
+  // Find the full product object
+  const currentProduct = product; // already loaded from API
 
-        localStorage.setItem("guestCart", JSON.stringify(guestCart));
-      }
+  if (existing) {
+    if (existing.quantity + 1 > currentProduct.stock) {
+      alert("Not enough stock available");
+      return;
+    }
+    existing.quantity += 1;
+  } else {
+    if (currentProduct.stock < 1) {
+      alert("This product is out of stock");
+      return;
+    }
+    guestCart.push({ productId, quantity: 1 });
+  }
+
+  localStorage.setItem("guestCart", JSON.stringify(guestCart));
+}
+
 
       alert("Product added to cart");
     } catch (err) {
