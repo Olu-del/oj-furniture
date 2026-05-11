@@ -83,6 +83,18 @@ function baseTemplate(content) {
         margin-top: 20px;
       }
 
+      .signin-link {
+        font-size: 14px;
+        color: #555;
+        margin-top: 20px;
+      }
+
+      .signin-link a {
+        color: #2c3e50;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
       @media only screen and (max-width: 600px) {
         .container {
           width: 100% !important;
@@ -116,6 +128,12 @@ function baseTemplate(content) {
             <tr>
               <td class="body">
                 ${content}
+
+                <!-- UNIVERSAL SIGN-IN LINK -->
+                <p class="signin-link">
+                  Not signed in?
+                  <a href="${process.env.FRONTEND_URL}/signin">Click here to sign in</a>
+                </p>
               </td>
             </tr>
 
@@ -230,14 +248,6 @@ function orderTemplate(firstName, order) {
     <a href="${process.env.FRONTEND_URL}/orders/${order.id}" class="track-btn">
       Track My Order
     </a>
-
-    <br/><br/>
-
-    <h3>Returns Policy</h3>
-    <p>
-      If you experience any issues with your order, you can submit a complaint 
-      or return request within 14 days of delivery.
-    </p>
   `);
 }
 
@@ -267,10 +277,6 @@ function orderOutForDeliveryTemplate(firstName, order) {
     <a href="${process.env.FRONTEND_URL}/orders/${order.id}" class="track-btn">
       Track My Order
     </a>
-
-    <br/><br/>
-
-    <p>If you won’t be home, please ensure someone is available to receive the delivery.</p>
   `);
 }
 
