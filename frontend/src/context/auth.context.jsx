@@ -36,10 +36,10 @@ useEffect(() => {
   }
 
   // Update context user
-  setUser(res.data);
+  setUser(res.data.user);
 
   //  Return the user object directly
-  return res.data;
+  return res.data.user;
 };
 
 
