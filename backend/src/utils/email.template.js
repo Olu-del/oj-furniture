@@ -201,7 +201,7 @@ function orderTemplate(firstName, order) {
       <td>
         ${item.imageUrl ? `
           <img 
-            src="${process.env.BACKEND_URL}${item.imageUrl}"
+           src="${item.imageUrl}"
             alt="${item.name} image"
             class="product-img"
           />
