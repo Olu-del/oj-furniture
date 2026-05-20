@@ -69,7 +69,7 @@ export default function Home() {
           >
             {card.imageUrl && (
               <img
-                src={`${API_BASE}${card.imageUrl}`}
+                src={card.imageUrl}
                 alt={card.name}
                 className="product-image"
               />
