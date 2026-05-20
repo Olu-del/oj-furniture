@@ -249,7 +249,7 @@ const addToCart = async (productId) => {
           <div key={p.id} className="product-card">
             {p.imageUrl && (
               <img
-                src={`${API_BASE}${p.imageUrl}`}
+               src={p.imageUrl}
                 alt={p.name}
                 className="product-image"
                 style={{ cursor: "pointer" }}
