@@ -54,7 +54,7 @@ export default function OrdersPage() {
               >
                 {item.imageUrl && (
                   <img
-                    src={`${api.defaults.baseURL.replace("/api", "")}${item.imageUrl}`}
+                    src={item.imageUrl}
                     alt={item.name}
                     style={{
                       width: "80px",
