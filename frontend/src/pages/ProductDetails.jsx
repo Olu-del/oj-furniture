@@ -103,7 +103,7 @@ export default function ProductDetails() {
       {/* Product Image */}
       {product.imageUrl && (
         <img
-          src={`${API_BASE}${product.imageUrl}`}
+          src={product.imageUrl}
           alt={product.name}
           style={{
             width: "350px",
@@ -168,7 +168,7 @@ export default function ProductDetails() {
               >
                 {r.imageUrl && (
                   <img
-                    src={`${API_BASE}${r.imageUrl}`}
+                    src={r.imageUrl}
                     alt={r.name}
                     style={{
                       width: "100%",
