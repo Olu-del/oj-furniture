@@ -178,7 +178,7 @@ export default function CartPage() {
         <div key={item.productId} className="cart-item">
           {item.product?.imageUrl && (
             <img
-              src={`${API_BASE}${item.product.imageUrl}`}
+              src={item.product.imageUrl}
               alt={item.product.name}
               style={{
                 width: "80px",
