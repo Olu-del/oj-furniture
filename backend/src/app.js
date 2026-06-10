@@ -21,27 +21,32 @@ const auth = require("./middlewares/auth.middleware");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-// ⭐ CREATE EXPRESS APP FIRST
+// CREATE EXPRESS APP FIRST
 const app = express();
 
-// ⭐ CORS ORIGINS
+// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
- "https://oj-furniture-1.onrender.com"
+  "https://oj-furniture-1.onrender.com"
 ];
 
-// ⭐ CORS MIDDLEWARE
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true
-}));
+// CORS middleware
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || origin === "null") {
+        return callback(null, true);
+      }
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true
+  })
+);
+
 
 // Security headers
 app.use(
@@ -54,8 +59,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Serve images
-const path = require("path");
+// Serve uploads publicly
 app.use(
   "/uploads",
   express.static("uploads", {
@@ -69,6 +73,26 @@ app.use(
     }
   })
 );
+
+// Debug route
+app.get("/debug/db", async (req, res) => {
+  try {
+    const products = await prisma.product.findMany({
+      take: 5,
+      select: { id: true, name: true, imageUrl: true }
+    });
+
+    res.json({
+      status: "connected",
+      sample: products
+    });
+  } catch (err) {
+    res.json({
+      status: "error",
+      message: err.message
+    });
+  }
+});
 
 // API routes
 app.use("/api/auth", authRoutes);
