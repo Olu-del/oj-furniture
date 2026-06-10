@@ -236,6 +236,7 @@ exports.mergeCart = async (req, res) => {
 // updates the quantity of a product already in the cart
 exports.updateCartItem = async (req, res) => {
   const { productId, quantity } = req.body;
+  console.log("UPDATE BODY:", req.body);
 
   const pid = Number(productId);
   const qty = Number(quantity);
