@@ -203,12 +203,12 @@ export default function CartPage() {
 
           <div className="cart-controls">
             <button
-              onClick={() =>
-                updateQuantity(item.productId, item.quantity - 1)
-              }
-            >
-              -
-            </button>
+                disabled={item.quantity <= 1}
+                onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+              >
+                -
+              </button>
+
             <span>{item.quantity}</span>
             <button
               onClick={() =>
