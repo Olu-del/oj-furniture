@@ -1,47 +1,44 @@
-import { useEffect, useState } from "react";                                                                                                                         
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 
-// AdminProductForm – used for creating a new product or editing an existing one
 export default function AdminProductForm() {
-  // Get the product ID from route params (if editing)
   const { id } = useParams();
   const navigate = useNavigate();
-  const isEditing = Boolean(id); 
+  const isEditing = Boolean(id);
 
-  // State variables for product fields 
+  // Product fields
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [colour, setColour] = useState("");
   const [condition, setCondition] = useState("");
-  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(""); // Cloudinary URL
   const [dimensions, setDimensions] = useState("");
   const [material, setMaterial] = useState("");
   const [age, setAge] = useState("");
   const [sustainabilityScore, setSustainabilityScore] = useState("");
   const [stock, setStock] = useState("");
 
-  //  Category and Subcategory state
+  // Categories
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [subCategoryId, setSubCategoryId] = useState("");
 
-  // Load all categories on component mount
+  // Load categories
   useEffect(() => {
     api.get("/category").then((res) => setCategories(res.data));
   }, []);
 
-  // Load product data if editing
+  // Load product if editing
   useEffect(() => {
     if (!isEditing) return;
 
     api.get(`/product/${id}`).then((res) => {
       const p = res.data;
 
-      // Populate state with existing product values
       setName(p.name);
       setDescription(p.description);
       setPrice(p.price);
@@ -51,63 +48,59 @@ export default function AdminProductForm() {
       setCategoryId(p.categoryId);
       setSubCategoryId(p.subCategoryId);
       setStock(p.stock);
+      setImageUrl(p.imageUrl || "");
+      setDimensions(p.dimensions || "");
+      setMaterial(p.material || "");
+      setAge(p.age || "");
+      setSustainabilityScore(p.sustainabilityScore || "");
     });
   }, [id, isEditing]);
 
-  // Update subcategories whenever the selected category changes
+  // Update subcategories when category changes
   useEffect(() => {
     const selected = categories.find((c) => c.id === Number(categoryId));
     setSubCategories(selected ? selected.subCategories : []);
   }, [categoryId, categories]);
 
-  // Handle category change – reset subcategory list and selection
   const handleCategoryChange = (e) => {
     const id = Number(e.target.value);
     setCategoryId(id);
 
     const selected = categories.find((c) => c.id === id);
     setSubCategories(selected ? selected.subCategories : []);
-    setSubCategoryId(""); // reset subcategory
+    setSubCategoryId("");
   };
 
-  // Handle form submission for creating or updating product
+  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Use FormData to handle file uploads
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("deliveryPrice", deliveryPrice);
-    formData.append("colour", colour);
-    formData.append("condition", condition);
-    formData.append("categoryId", categoryId);
-    formData.append("subCategoryId", subCategoryId);
-    formData.append("dimensions", dimensions);
-    formData.append("material", material);
-    formData.append("age", age);
-    formData.append("sustainabilityScore", sustainabilityScore);
-    formData.append("stock", stock);
-
-    if (image) formData.append("image", image);
+    const payload = {
+      name,
+      description,
+      price,
+      deliveryPrice,
+      colour,
+      condition,
+      categoryId,
+      subCategoryId,
+      dimensions,
+      material,
+      age,
+      sustainabilityScore,
+      stock,
+      imageUrl, // Cloudinary URL
+    };
 
     try {
       if (isEditing) {
-        // Update existing product
-        await api.put(`/product/${id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        await api.put(`/product/${id}`, payload);
         alert("Product updated successfully.");
       } else {
-        // Create new product
-        await api.post("/product/create", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
+        await api.post("/product/create", payload);
         alert("Product created successfully.");
       }
 
-      // Navigate back to product list
       navigate("/admin/product");
     } catch (err) {
       console.error("Error saving product:", err);
@@ -129,7 +122,7 @@ export default function AdminProductForm() {
           required
         />
 
-        {/* Product Description */}
+        {/* Description */}
         <textarea
           placeholder="Product Description"
           value={description}
@@ -139,7 +132,7 @@ export default function AdminProductForm() {
           style={{ width: "100%", resize: "vertical" }}
         />
 
-        {/* Product Condition */}
+        {/* Condition */}
         <select
           value={condition}
           onChange={(e) => setCondition(e.target.value)}
@@ -222,14 +215,44 @@ export default function AdminProductForm() {
           <option value="Brown">Brown</option>
         </select>
 
-        {/* Image Upload */}
+        {/* Cloudinary Image URL */}
         <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImage(e.target.files[0])}
+          type="text"
+          placeholder="Image URL (Cloudinary)"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          required
         />
 
-        {/* Category and Subcategory */}
+        <p style={{ fontSize: "12px", color: "#555", marginTop: "4px" }}>
+          Upload your image to Cloudinary and paste the secure URL here.
+        </p>
+
+        <div
+          style={{
+            background: "#f7f7f7",
+            padding: "10px",
+            borderRadius: "6px",
+            marginTop: "8px",
+            fontSize: "13px",
+            color: "#444",
+            lineHeight: "1.4",
+          }}
+        >
+          <strong>Note:</strong> Image uploads are now handled through Cloudinary.
+          Please upload your image to Cloudinary and paste the secure URL above.
+          <br />
+          <a
+            href="https://console.cloudinary.com"
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: "#0077cc", textDecoration: "underline" }}
+          >
+            Open Cloudinary
+          </a>
+        </div>
+
+        {/* Category */}
         <select value={categoryId} onChange={handleCategoryChange} required>
           <option value="">Select Category</option>
           {categories.map((c) => (
@@ -239,6 +262,7 @@ export default function AdminProductForm() {
           ))}
         </select>
 
+        {/* Subcategory */}
         <select
           value={subCategoryId}
           onChange={(e) => setSubCategoryId(e.target.value)}
@@ -253,7 +277,7 @@ export default function AdminProductForm() {
           ))}
         </select>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <button type="submit">
           {isEditing ? "Update Product" : "Add Product"}
         </button>

@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function Register() {
+  const [loading, setLoading] = useState(false);
+
 
   // State variables for form fields
   const [firstName, setFirstName] = useState("");
@@ -17,11 +20,12 @@ export default function Register() {
 
  
   // Form submission handler
-  const submit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+  const navigate = useNavigate();
 
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      // Send registration data to backend
       await api.post("/auth/register", {
         firstName,
         lastName,
@@ -34,18 +38,22 @@ export default function Register() {
         country
       });
 
-      // Registration successful and redirect to homepage
-      window.location.href = "/";
+      navigate("/signin"); 
 
     } catch (err) {
-      // Show error message from backend if available
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         alert(err.response.data.message);
       } else {
         alert("Something went wrong.");
       }
-    }
+      }finally {
+      setLoading(false);
+  }
   };
+
+
+       
+    
 
 
   // Render registration form
@@ -141,7 +149,12 @@ export default function Register() {
           />
 
           {/* Submit Button */}
-          <button type="submit">Register</button>
+         <button type="submit" disabled={loading}>
+            {loading && <span className="spinner"></span>}
+            {loading ? "Registering..." : "Register"}
+        </button>
+
+
         </form>
 
         {/* Footer with link to Sign In page */}

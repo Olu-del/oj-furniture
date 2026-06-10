@@ -1,5 +1,6 @@
-// Email HTML templates used across the app
-// Shared HTML wrapper used for all sent emails
+// ===============================
+// BASE EMAIL TEMPLATE
+// ===============================
 function baseTemplate(content) {
   return `
   <!DOCTYPE html>
@@ -8,7 +9,6 @@ function baseTemplate(content) {
     <meta charset="UTF-8" />
 
     <style>
-      /*  GLOBAL STYLES  */
       body {
         margin: 0;
         padding: 0;
@@ -41,7 +41,6 @@ function baseTemplate(content) {
         text-align: center;
       }
 
-      /*  ORDER TABLE  */
       .order-table {
         width: 100%;
         border-collapse: collapse;
@@ -66,7 +65,6 @@ function baseTemplate(content) {
         display: block;
       }
 
-      /*  DELIVERY SUMMARY BOX  */
       .delivery-box {
         background: #f9fafc;
         border-left: 4px solid #2c3e50;
@@ -75,7 +73,6 @@ function baseTemplate(content) {
         border-radius: 4px;
       }
 
-      /*  TRACK ORDER BUTTON  */
       .track-btn {
         display: inline-block;
         padding: 12px 20px;
@@ -86,7 +83,18 @@ function baseTemplate(content) {
         margin-top: 20px;
       }
 
-      /*  RESPONSIVE MOBILE  */
+      .signin-link {
+        font-size: 14px;
+        color: #555;
+        margin-top: 20px;
+      }
+
+      .signin-link a {
+        color: #2c3e50;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
       @media only screen and (max-width: 600px) {
         .container {
           width: 100% !important;
@@ -115,12 +123,17 @@ function baseTemplate(content) {
                   Premium Used Furniture
                 </p>
               </td>
-
             </tr>
 
             <tr>
               <td class="body">
                 ${content}
+
+                <!-- UNIVERSAL SIGN-IN LINK -->
+                <p class="signin-link">
+                  Not signed in?
+                  <a href="${process.env.FRONTEND_URL}/signin">Click here to sign in</a>
+                </p>
               </td>
             </tr>
 
@@ -143,10 +156,11 @@ function baseTemplate(content) {
 
 
 
-//  REGISTRATION EMAIL 
-// shows a welcome message and a link to the store
+// ===============================
+// REGISTRATION EMAIL
+// ===============================
 function registrationTemplate(firstName) {
-  return `
+  return baseTemplate(`
     <h2>Welcome ${firstName} 🎉</h2>
     <p>Thank you for registering with <strong>OJ Furniture</strong>.</p>
     <p>You can now browse and order quality used furniture.</p>
@@ -154,32 +168,32 @@ function registrationTemplate(firstName) {
     <br/>
 
     <a href="${process.env.FRONTEND_URL}"
-      style="display:inline-block;
-      padding:12px 20px;
-      background:#2c3e50;
-      color:#ffffff;
-      text-decoration:none;
-      border-radius:4px;">
+      style="display:inline-block; padding:12px 20px; background:#2c3e50; color:#ffffff; text-decoration:none; border-radius:4px;">
       Visit Our Store
     </a>
-  `;
+  `);
 }
 
 
-//  CONTACT RESPONSE EMAIL 
-// sends a confirmation that the user's message was received
+
+// ===============================
+// CONTACT RESPONSE EMAIL
+// ===============================
 function contactTemplate(name) {
-  return `
+  return baseTemplate(`
     <h2>Hello ${name},</h2>
     <p>We have received your message.</p>
     <p>Our team will respond shortly.</p>
     <br/>
     <p>Thank you for contacting OJ Furniture.</p>
-  `;
+  `);
 }
 
 
-//  ORDER CONFIRMATION EMAIL 
+
+// ===============================
+// ORDER CONFIRMATION EMAIL
+// ===============================
 function orderTemplate(firstName, order) {
 
   const itemsHtml = order.orderItems.map(item => `
@@ -187,8 +201,8 @@ function orderTemplate(firstName, order) {
       <td>
         ${item.imageUrl ? `
           <img 
-            src="${process.env.FRONTEND_URL}${item.imageUrl}"
-            alt="${item.name}" 
+           src="${item.imageUrl}"
+            alt="${item.name} image"
             class="product-img"
           />
         ` : ""}
@@ -196,9 +210,7 @@ function orderTemplate(firstName, order) {
       </td>
 
       <td align="center">${item.quantity}</td>
-
       <td align="right">£${Number(item.price).toFixed(2)}</td>
-
       <td align="right">£${Number(item.deliveryPrice || 0).toFixed(2)}</td>
     </tr>
   `).join("");
@@ -227,33 +239,23 @@ function orderTemplate(firstName, order) {
       <p><strong>Delivery Date:</strong> ${
         order.deliveryDate
           ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric"
+              weekday: "long", day: "numeric", month: "long", year: "numeric"
             })
           : "Not selected"
       }</p>
     </div>
 
-    <a href="http://localhost:3000/orders/${order.id}" class="track-btn">
+    <a href="${process.env.FRONTEND_URL}/orders/${order.id}" class="track-btn">
       Track My Order
     </a>
-
-    <br/><br/>
-
-    <h3>Returns Policy</h3>
-    <p>
-      If you experience any issues with your order, you can submit a complaint 
-      or return request within 14 days of delivery.  
-      Visit your account page for more details.
-    </p>
   `);
 }
 
 
-//  ORDER UPDATES AND COMPLAINT STATUS EMAILS
-//Order out for delivery email
+
+// ===============================
+// ORDER OUT FOR DELIVERY EMAIL
+// ===============================
 function orderOutForDeliveryTemplate(firstName, order) {
   return baseTemplate(`
     <h2>Your Order is Out for Delivery</h2>
@@ -266,27 +268,23 @@ function orderOutForDeliveryTemplate(firstName, order) {
       <p><strong>Delivery Date:</strong> ${
         order.deliveryDate
           ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric"
+              weekday: "long", day: "numeric", month: "long", year: "numeric"
             })
           : "Not selected"
       }</p>
     </div>
 
-    <a href="http://localhost:3000/orders/${order.id}" class="track-btn">
+    <a href="${process.env.FRONTEND_URL}/orders/${order.id}" class="track-btn">
       Track My Order
     </a>
-
-    <br/><br/>
-
-    <p>If you won’t be home, please ensure someone is available to receive the delivery.</p>
   `);
 }
 
 
-// Delivery confirmation email with order details 
+
+// ===============================
+// ORDER DELIVERED EMAIL
+// ===============================
 function orderDeliveredTemplate(firstName, order) {
   return baseTemplate(`
     <h2>Your Order Has Been Delivered</h2>
@@ -298,10 +296,7 @@ function orderDeliveredTemplate(firstName, order) {
       <p><strong>Delivered On:</strong> ${
         order.deliveryDate
           ? new Date(order.deliveryDate).toLocaleDateString("en-GB", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric"
+              weekday: "long", day: "numeric", month: "long", year: "numeric"
             })
           : "Today"
       }</p>
@@ -312,22 +307,23 @@ function orderDeliveredTemplate(firstName, order) {
     <h3>Need help?</h3>
     <p>You can report an issue or request a return within 14 days.</p>
 
-    <a href="http://localhost:3000/complaint?orderId=${order.id}" class="track-btn">
+    <a href="${process.env.FRONTEND_URL}/complaint?orderId=${order.id}" class="track-btn">
       Report an Issue
     </a>
   `);
 }
 
 
-// Complaint received email confirming the complaint submission and next steps
+
+// ===============================
+// COMPLAINT RECEIVED EMAIL
+// ===============================
 function complaintReceivedTemplate(firstName, orderId) {
   return baseTemplate(`
     <h2>Complaint Received</h2>
 
     <p>Hi ${firstName},</p>
-    <p>We have received your complaint regarding order <strong>number: ${orderId}</strong>.</p>
-
-    <p>Our support team will review your message and respond shortly.</p>
+    <p>We have received your complaint regarding order <strong>${orderId}</strong>.</p>
 
     <div class="delivery-box">
       <p><strong>Status:</strong> OPEN</p>
@@ -340,7 +336,11 @@ function complaintReceivedTemplate(firstName, orderId) {
   `);
 }
 
-// Complaint status update email with dynamic content based on the current status of the complaint
+
+
+// ===============================
+// COMPLAINT STATUS UPDATE EMAIL
+// ===============================
 function complaintStatusTemplate(firstName, complaint) {
   let title = "";
   let message = "";
@@ -350,8 +350,7 @@ function complaintStatusTemplate(firstName, complaint) {
       title = "Your Complaint is Being Reviewed";
       message = `
         <p>Hi ${firstName},</p>
-        <p>Your complaint regarding order <strong>${complaint.orderId}</strong> is now being reviewed by our support team.</p>
-        <p>We will update you as soon as we have more information.</p>
+        <p>Your complaint regarding order <strong>${complaint.orderId}</strong> is now being reviewed.</p>
       `;
       break;
 
@@ -359,8 +358,7 @@ function complaintStatusTemplate(firstName, complaint) {
       title = "Your Complaint Has Been Resolved";
       message = `
         <p>Hi ${firstName},</p>
-        <p>Good news — your complaint for order <strong>${complaint.orderId}</strong> has now been resolved.</p>
-        <p>If you have any further questions or concerns, feel free to reply to this email.</p>
+        <p>Your complaint for order <strong>${complaint.orderId}</strong> has now been resolved.</p>
       `;
       break;
 
@@ -368,8 +366,7 @@ function complaintStatusTemplate(firstName, complaint) {
       title = "Your Complaint Has Been Rejected";
       message = `
         <p>Hi ${firstName},</p>
-        <p>We’ve reviewed your complaint for order <strong>${complaint.orderId}</strong>, and unfortunately it has been rejected.</p>
-        <p>If you believe this decision was made in error, you can reply to this email for further clarification.</p>
+        <p>Your complaint for order <strong>${complaint.orderId}</strong> has been rejected.</p>
       `;
       break;
 
@@ -398,24 +395,18 @@ function complaintStatusTemplate(firstName, complaint) {
 
 
 
-// Customer satisfaction survey email sent after order delivery, with a link to the survey form
+// ===============================
+// SURVEY EMAIL
+// ===============================
 function surveyEmailTemplate(firstName, orderId) {
   return baseTemplate(`
     <h2>Thank you for your order, ${firstName}!</h2>
 
     <p>Your order has now been delivered.</p>
-    <p>We would love to hear your feedback about your experience using our website.</p>
+    <p>We would love to hear your feedback about your experience.</p>
 
     <a href="${process.env.FRONTEND_URL}/survey/${orderId}"
-      style="
-        display:inline-block;
-        padding:12px 20px;
-        background:#4CAF50;
-        color:#ffffff;
-        text-decoration:none;
-        border-radius:4px;
-        margin-top:10px;
-      ">
+      style="display:inline-block; padding:12px 20px; background:#4CAF50; color:#ffffff; text-decoration:none; border-radius:4px; margin-top:10px;">
       Take Survey
     </a>
 
@@ -426,7 +417,10 @@ function surveyEmailTemplate(firstName, orderId) {
 }
 
 
-//  EXPORT TEMPLATES 
+
+// ===============================
+// EXPORT
+// ===============================
 module.exports = {
   baseTemplate,
   registrationTemplate,

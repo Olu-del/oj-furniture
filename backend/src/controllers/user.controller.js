@@ -23,7 +23,7 @@ exports.getMe = async (req, res) => {
 
     // find user in the database using the ID stored in the token
     const user = await prisma.user.findUnique({
-      where: { id: decoded.id },
+      where: { id: decoded.userId },
 
       // only return selected fields (avoid sending sensitive info like password)
       select: {

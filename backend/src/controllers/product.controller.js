@@ -18,7 +18,8 @@ exports.createProduct = async (req, res) => {
     dimensions,
     material,
     age,
-    sustainabilityScore
+    sustainabilityScore,
+    imageUrl   // Cloudinary URL
   } = req.body;
 
   if (condition) condition = condition.toUpperCase();
@@ -42,9 +43,8 @@ exports.createProduct = async (req, res) => {
         age: age ? Number(age) : null,
         sustainabilityScore: sustainabilityScore ? Number(sustainabilityScore) : null,
 
-        imageUrl: req.file
-          ? `/images/${req.file.filename}`
-          : "/images/placeholder.png"
+        // Cloudinary URL (required)
+        imageUrl: imageUrl || null
       }
     });
 
@@ -55,12 +55,11 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// GET PRODUCTS (SAFE)
+// GET PRODUCTS
 exports.getProducts = async (req, res) => {
   const { categoryId, subCategoryId, colour, sort } = req.query;
 
   const where = {};
-
   if (categoryId) where.categoryId = Number(categoryId);
   if (subCategoryId) where.subCategoryId = Number(subCategoryId);
   if (colour) where.colour = colour;
@@ -79,7 +78,7 @@ exports.getProducts = async (req, res) => {
       }
     });
 
-    res.json(Array.isArray(products) ? products : []);
+    res.json(products || []);
   } catch (err) {
     console.error(err);
     res.json([]);
@@ -99,7 +98,7 @@ exports.getProductsByIds = async (req, res) => {
       where: { id: { in: ids.map(Number) } }
     });
 
-    res.json(Array.isArray(products) ? products : []);
+    res.json(products || []);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -143,7 +142,8 @@ exports.updateProduct = async (req, res) => {
     dimensions,
     material,
     age,
-    sustainabilityScore
+    sustainabilityScore,
+    imageUrl   // Cloudinary URL
   } = req.body;
 
   if (condition) condition = condition.toUpperCase();
@@ -168,7 +168,8 @@ exports.updateProduct = async (req, res) => {
         category: { connect: { id: Number(categoryId) } },
         subCategory: { connect: { id: Number(subCategoryId) } },
 
-        ...(req.file && { imageUrl: `/images/${req.file.filename}` })
+        // Cloudinary URL (overwrite if provided)
+        ...(imageUrl && { imageUrl })
       }
     });
 
@@ -209,7 +210,7 @@ exports.searchProducts = async (req, res) => {
       }
     });
 
-    res.json(Array.isArray(products) ? products : []);
+    res.json(products || []);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Search failed" });

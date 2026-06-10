@@ -61,7 +61,7 @@ export default function AdminProducts() {
             {/* Product image, clickable to navigate to product details */}
             {p.imageUrl && (
               <img
-                src={`${api.defaults.baseURL.replace("/api", "")}${p.imageUrl}`}
+                src={p.imageUrl}
                 alt={p.name}
                 className="admin-product-thumbnail"
                 onClick={() => navigate(`/product/${p.id}`)}

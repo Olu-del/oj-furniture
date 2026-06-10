@@ -3,76 +3,81 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function ProductDetails() {
-  const { id } = useParams(); // Get product ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
 
- 
-  // State variables
-  const [product, setProduct] = useState(null); // The main product details
-  const [related, setRelated] = useState([]);   // Related products (same subcategory)
+  // Build API base for images (remove /api)
+  const API_BASE =
+    process.env.REACT_APP_API_URL?.replace("/api", "") || "";
 
-  
-  // Helper function to format price in GBP
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+
+  // GBP formatter
   const formatGBP = (amount) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",
       currency: "GBP"
-    }).format(Number(amount));
+    }).format(Number(amount || 0));
 
- 
-  // Fetch product details and related products on mount or when `id` changes
+  // Fetch product + related items
   useEffect(() => {
     const fetchProduct = async () => {
       const res = await api.get(`/product/${id}`);
       setProduct(res.data);
 
-      // If product has a subcategory, fetch related products
       if (res.data.subCategoryId) {
         const relatedRes = await api.get(
           `/product?subCategoryId=${res.data.subCategoryId}`
         );
 
-        // Exclude the current product from related list
         const filtered = relatedRes.data.filter(
           (p) => p.id !== res.data.id
         );
 
-        setRelated(filtered.slice(0, 4)); // Limit to 4 related products
+        setRelated(filtered.slice(0, 4));
       }
     };
 
     fetchProduct();
   }, [id]);
 
-  
-  // Add product to cart (handles signed-in users and guests)
+  // Add to cart
   const addToCart = async (productId) => {
     const token = localStorage.getItem("token");
 
     try {
       if (token) {
-        // Signed-in user and add to server-side cart
-        await api.post("/cart/add", {
-          productId,
-          quantity: 1
-        });
-      } else {
-        // Guest user, store in localStorage
-        const guestCart =
-          JSON.parse(localStorage.getItem("guestCart")) || [];
+        await api.post("/cart/add", { productId, quantity: 1 });
+     
+       } else {
+  const guestCart =
+    JSON.parse(localStorage.getItem("guestCart")) || [];
 
-        const existing = guestCart.find(
-          (item) => item.productId === productId
-        );
+  const existing = guestCart.find(
+    (item) => item.productId === productId
+  );
 
-        if (existing) {
-          existing.quantity += 1; // Increment if already in cart
-        } else {
-          guestCart.push({ productId, quantity: 1 }); // Add new item
-        }
+  // Find the full product object
+  const currentProduct = product; // already loaded from API
 
-        localStorage.setItem("guestCart", JSON.stringify(guestCart));
-      }
+  if (existing) {
+    if (existing.quantity + 1 > currentProduct.stock) {
+      alert("Not enough stock available");
+      return;
+    }
+    existing.quantity += 1;
+  } else {
+    if (currentProduct.stock < 1) {
+      alert("This product is out of stock");
+      return;
+    }
+    guestCart.push({ productId, quantity: 1 });
+  }
+
+  localStorage.setItem("guestCart", JSON.stringify(guestCart));
+}
+
 
       alert("Product added to cart");
     } catch (err) {
@@ -80,12 +85,8 @@ export default function ProductDetails() {
     }
   };
 
-  
-  // Loading state
   if (!product) return <p>Loading...</p>;
 
-  
-  // Render
   return (
     <div className="page">
       {/* Back button */}
@@ -102,7 +103,7 @@ export default function ProductDetails() {
       {/* Product Image */}
       {product.imageUrl && (
         <img
-          src={`${api.defaults.baseURL.replace("/api", "")}${product.imageUrl}`}
+          src={product.imageUrl}
           alt={product.name}
           style={{
             width: "350px",
@@ -112,7 +113,7 @@ export default function ProductDetails() {
         />
       )}
 
-      {/* Multi-line Description */}
+      {/* Description */}
       <p
         style={{
           whiteSpace: "pre-line",
@@ -127,7 +128,7 @@ export default function ProductDetails() {
       <p><strong>Price:</strong> {formatGBP(product.price)}</p>
       <p><strong>Delivery:</strong> {formatGBP(product.deliveryPrice)}</p>
 
-      {/* Add to Cart Button / Out of Stock */}
+      {/* Add to Cart */}
       <button
         disabled={product.stock === 0}
         onClick={() => addToCart(product.id)}
@@ -140,12 +141,10 @@ export default function ProductDetails() {
         {product.stock === 0 ? "Out of Stock" : "Add To Cart"}
       </button>
 
-      {/* Related Products Section */}
+      {/* Related Products */}
       {related.length > 0 && (
         <>
-          <h3 style={{ marginTop: "40px" }}>
-            Related Products
-          </h3>
+          <h3 style={{ marginTop: "40px" }}>Related Products</h3>
 
           <div
             style={{
@@ -164,12 +163,12 @@ export default function ProductDetails() {
                   borderRadius: "6px",
                   cursor: "pointer",
                   textAlign: "center"
-                }}           
+                }}
                 onClick={() => navigate(`/product/${r.id}`)}
               >
                 {r.imageUrl && (
                   <img
-                    src={`${api.defaults.baseURL.replace("/api", "")}${r.imageUrl}`}
+                    src={r.imageUrl}
                     alt={r.name}
                     style={{
                       width: "100%",
@@ -188,3 +187,4 @@ export default function ProductDetails() {
     </div>
   );
 }
+
