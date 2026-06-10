@@ -240,9 +240,7 @@ exports.updateCartItem = async (req, res) => {
 
   const pid = Number(productId);
   const qty = Number(quantity);
-if (qty < 1 || isNaN(qty)) {
-  return res.status(400).json({ error: "Invalid quantity" });
-}
+
   const cart = await prisma.cart.findUnique({ where: { userId: req.userId } });
   if (!cart) return res.status(404).json({ error: "Cart not found" });
 
