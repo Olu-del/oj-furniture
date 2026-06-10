@@ -203,18 +203,23 @@ export default function CartPage() {
 
           <div className="cart-controls">
             <button
-                disabled={item.quantity <= 1}
-                onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-              >
-                -
-              </button>
-
-            <span>{item.quantity}</span>
-            <button
-              onClick={() =>
-                updateQuantity(item.productId, item.quantity + 1)
-              }
+              disabled={item.quantity <= 1}
+              onClick={() => updateQuantity(item.productId, item.quantity - 1)}
             >
+              -
+            </button>
+
+            <button
+              disabled={item.quantity >= item.product.stock}
+              onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+              
+            >
+              {item.quantity >= item.product.stock && (
+              <p className="stock-warning">
+                Only {item.product.stock} left in stock
+              </p>
+            )}
+
               +
             </button>
           </div>
