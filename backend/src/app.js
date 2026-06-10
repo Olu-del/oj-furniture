@@ -20,10 +20,10 @@ const surveyRoutes = require("./routes/survey.routes");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// ⭐ CREATE EXPRESS APP FIRST
+//  CREATE EXPRESS APP FIRST
 const app = express();
 
-// ⭐ CORS ORIGINS
+//  CORS ORIGINS
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3002",
@@ -32,7 +32,7 @@ const allowedOrigins = [
   "https://oj-furniture-2.onrender.com"
 ];
 
-// ⭐ CORS MIDDLEWARE
+//  CORS MIDDLEWARE
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
@@ -59,11 +59,25 @@ app.use(cookieParser());
 
 // Serve images
 const path = require("path");
+// app.use(
+//   "/images",
+//   express.static(path.join(__dirname, "public/images"), {
+//     setHeaders: (res) => {
+//       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+//       const reqOrigin = res.req.headers.origin;
+//       if (allowedOrigins.includes(reqOrigin)) {
+//         res.setHeader("Access-Control-Allow-Origin", reqOrigin);
+//       }
+//       res.setHeader("Access-Control-Allow-Credentials", "true");
+//     }
+//   })
+// );
 app.use(
-  "/images",
-  express.static(path.join(__dirname, "public/images"), {
+  "/uploads",
+  express.static("uploads", {
     setHeaders: (res) => {
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      // reflect origin if allowed
       const reqOrigin = res.req.headers.origin;
       if (allowedOrigins.includes(reqOrigin)) {
         res.setHeader("Access-Control-Allow-Origin", reqOrigin);
@@ -72,7 +86,6 @@ app.use(
     }
   })
 );
-
 // API routes
 app.use('/api/auth', authRoutes);
 app.use("/api/contact", contactRoutes);
